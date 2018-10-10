@@ -1,6 +1,4 @@
 # AIAD1819
-<<<<<<< HEAD
-=======
 
 ## TODO
 - [ ] implementar regras do jogo
@@ -11,9 +9,8 @@
   1. começar com jogadas aleatorias
   2. passar para agentes puramente competitivos
   3. implementar negociação de cooperação
-  
+
 ## Links  
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
   * [Game Rules](http://www.ultraboardgames.com/risk/game-rules.php)
   * [1st part description](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/proj1_definicao.pdf)
->>>>>>> 1fc18a88d5133f031a53365faac04d6095e87db5
