@@ -13,12 +13,12 @@ public class Game {
 
 	public Game() {
 		territories = new ArrayList<Territory>();
-		
+
 		loadTerritories();
-		
-		for (int i = 0; i < this.territories.size(); i++) {
+
+		/*for (int i = 0; i < this.territories.size(); i++) {
 			this.territories.get(i).dump();
-		}
+		}*/
 	}
 
 	public static void main(String[] args) {
@@ -34,8 +34,8 @@ public class Game {
 	private boolean loadTerritories(){
 		try{
 
-			File file = new File("assets/" + Game.boardFileName);
-			System.out.println(file.getAbsolutePath());
+			File file = new File("src/assets/" + Game.boardFileName);
+
 			if(file.exists()){
 
 				FileReader fr = new FileReader(file);
@@ -79,7 +79,7 @@ public class Game {
 	 * @return true if successfull, false otherwise
 	 */
 	private boolean processDataLine(int currentTerritoryID, String[] neighbours) {
-		
+
 		if(currentTerritoryID > this.territories.size())
 		{
 			fillTerritories(currentTerritoryID);
@@ -98,7 +98,7 @@ public class Game {
 				fillTerritories(currentNeighbourID);
 			}
 			
-			this.territories.get(currentTerritoryID).addNeighbour(this.territories.get(currentNeighbourID));
+			this.territories.get(currentTerritoryID-1).addNeighbour(this.territories.get(currentNeighbourID-1));
 
 		}
 
