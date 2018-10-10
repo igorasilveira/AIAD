@@ -8,24 +8,34 @@ import java.util.ArrayList;
 
 public class Game {
 
-	private ArrayList<Territory> territories;
+	/**
+	 * Name of the file used to store the board territories adjacency data
+	 */
 	private static final String boardFileName = "board.dat";
 
+	/**
+	 * List of all the territories in the board
+	 */
+	private ArrayList<Territory> territories;
+
+	/**
+	 * Constructs a game class with no territories
+	 */
 	public Game() {
 		territories = new ArrayList<Territory>();
-
-		loadTerritories();
-
-		/*for (int i = 0; i < this.territories.size(); i++) {
-			this.territories.get(i).dump();
-		}*/
 	}
 
 	public static void main(String[] args) {
 		Game g = new Game();
-
+		g.setup();
 	}
 
+	/**
+	 * Sets the game settings and data
+	 */
+	private void setup() {
+		loadTerritories();		
+	}
 
 	/**
 	 * Reads the asset containing the territories data
@@ -97,13 +107,9 @@ public class Game {
 			{
 				fillTerritories(currentNeighbourID);
 			}
-			
+
 			this.territories.get(currentTerritoryID-1).addNeighbour(this.territories.get(currentNeighbourID-1));
-
 		}
-
-
-
 		return true;
 	}
 
