@@ -54,7 +54,7 @@ public class Territory {
 	 */
 	public boolean isNeighbour(Territory territory) {
 		for (int i = 0; i < this.neighbours.size(); i++) {
-			if(this.territoryID == territory.territoryID)
+			if(this.neighbours.get(i).territoryID == territory.territoryID)
 			{
 				return true;
 			}

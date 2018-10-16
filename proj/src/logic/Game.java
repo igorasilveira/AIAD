@@ -28,6 +28,10 @@ public class Game {
 	public static void main(String[] args) {
 		Game g = new Game();
 		g.setup();
+		
+		for(int i = 0; i < g.territories.size(); i++) {
+			 g.territories.get(i).dump();
+		}
 	}
 
 	/**
@@ -108,7 +112,7 @@ public class Game {
 				fillTerritories(currentNeighbourID);
 			}
 
-			this.territories.get(currentTerritoryID-1).addNeighbour(this.territories.get(currentNeighbourID-1));
+			this.getTerritoryByID(currentTerritoryID).addNeighbour(this.getTerritoryByID(currentNeighbourID));
 		}
 		return true;
 	}
@@ -123,6 +127,14 @@ public class Game {
 		{
 			this.territories.add(new Territory(this.territories.size()));
 		}
+	}
+	
+	public Territory getTerritoryByID(int id) {
+		if(id > this.territories.size()) {
+			return null;
+		}
+		
+		return this.territories.get(id-1);
 	}
 
 }
