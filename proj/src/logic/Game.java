@@ -6,39 +6,51 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import logic.Utils.Army;
+
 public class Game {
 
 	/**
 	 * Name of the file used to store the board territories adjacency data
 	 */
 	private static final String boardFileName = "board.dat";
+	
+	/**
+	 * Name of the file used to store the card data
+	 */
+	private static final String cardsFileName = "cards.dat";
 
 	/**
 	 * List of all the territories in the board
 	 */
 	private ArrayList<Territory> territories;
+	
+	/**
+	 * List of all the cards
+	 */
+	private ArrayList<Card> cards;
 
 	/**
 	 * Constructs a game class with no territories
 	 */
 	public Game() {
 		territories = new ArrayList<Territory>();
+		cards = new ArrayList<Card>();
+		
+		loadTerritories();
+		loadCards();
 	}
 
 	public static void main(String[] args) {
 		Game g = new Game();
-		g.setup();
 		
-		for(int i = 0; i < g.territories.size(); i++) {
-			 g.territories.get(i).dump();
+		/*for(int i = 0; i < g.territories.size(); i++) {
+			g.territories.get(i).dump();
 		}
-	}
-
-	/**
-	 * Sets the game settings and data
-	 */
-	private void setup() {
-		loadTerritories();		
+		
+		for(int i = 0; i < g.cards.size(); i++) {
+			 g.cards.get(i).dump();
+		}*/
 	}
 
 	/**
@@ -59,7 +71,7 @@ public class Game {
 				int lineCount = 1;
 				while(line != null)
 				{
-					if(!processDataLine(lineCount, line.split(",")))
+					if(!processTerritoryLine(lineCount, line.split(",")))
 					{
 						System.out.println("Line format for board.dat asset should be integers separated by commas");
 						reader.close();
@@ -92,7 +104,7 @@ public class Game {
 	 * @param neighbours line content (array with neighbours' id's)
 	 * @return true if successfull, false otherwise
 	 */
-	private boolean processDataLine(int currentTerritoryID, String[] neighbours) {
+	private boolean processTerritoryLine(int currentTerritoryID, String[] neighbours) {
 
 		if(currentTerritoryID > this.territories.size())
 		{
@@ -129,6 +141,74 @@ public class Game {
 		}
 	}
 	
+	
+	
+	/**
+	 * Reads the asset containing the territories data
+	 * @return true if successful, false otherwise
+	 */
+	private boolean loadCards(){
+		try{
+
+			File file = new File("src/assets/" + Game.cardsFileName);
+
+			if(file.exists()){
+
+				FileReader fr = new FileReader(file);
+				BufferedReader reader = new BufferedReader(fr);
+
+				String line = reader.readLine();
+				int lineCount = 1;
+				while(line != null)
+				{
+					if(!processCardLine(lineCount, line))
+					{
+						System.out.println("Line format for cards.dat asset should be: \"a\" for artillery, \"c\" for cavalry, \"i\" for infantry and \"w\" for wildcard");
+						reader.close();
+						return false;
+					}
+					lineCount++;
+					line = reader.readLine();
+				}
+
+				reader.close();
+
+
+			}else{
+				System.out.println("Couldn't find " + Game.cardsFileName + " in \"assets\" folder!");
+				return false;
+			}
+
+		}catch(IOException e){
+			return false;
+		}
+
+
+		System.out.println("Cards successfully loaded!");
+		return true;
+	}
+	
+	private boolean processCardLine(int territoryID, String line) {
+		switch(line) {
+		case "i":
+			this.cards.add(new Card(territoryID, Army.Infantry));
+			break;
+		case "c":
+			this.cards.add(new Card(territoryID, Army.Cavalry));
+			break;
+		case "a":
+			this.cards.add(new Card(territoryID, Army.Artillery));
+			break;
+		case "w":
+			this.cards.add(new Card(-1, null));
+			break;
+		default:
+			return false;
+		}
+		
+		return true;
+	}
+
 	public Territory getTerritoryByID(int id) {
 		if(id > this.territories.size()) {
 			return null;
