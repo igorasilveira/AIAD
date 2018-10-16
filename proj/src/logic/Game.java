@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import logic.Utils.Army;
 
@@ -39,6 +40,8 @@ public class Game {
 		
 		loadTerritories();
 		loadCards();
+		
+		shuffleCards();
 	}
 
 	public static void main(String[] args) {
@@ -51,6 +54,13 @@ public class Game {
 		for(int i = 0; i < g.cards.size(); i++) {
 			 g.cards.get(i).dump();
 		}*/
+	}
+	
+	/**
+	 * Shuffles cards
+	 */
+	private void shuffleCards() {
+		Collections.shuffle(this.cards);
 	}
 
 	/**
