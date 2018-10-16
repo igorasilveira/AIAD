@@ -14,3 +14,4 @@
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
   * [Game Rules](http://www.ultraboardgames.com/risk/game-rules.php)
   * [1st part description](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/proj1_definicao.pdf)
+  * [Cards](https://drive.google.com/drive/folders/0BwJ1gMT0fLRPSWFISFNQNkVCZVk)
