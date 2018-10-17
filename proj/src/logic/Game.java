@@ -14,8 +14,13 @@ public class Game {
 	/**
 	 * Name of the file used to store the board territories adjacency data
 	 */
-	private static final String boardFileName = "board.dat";
-	
+	private static final String territoriesFileName = "territories.dat";
+
+	/**
+	 * Name of the file used to store the board continents value data
+	 */
+	private static final String continentsFileName = "continents.dat";
+
 	/**
 	 * Name of the file used to store the card data
 	 */
@@ -24,8 +29,8 @@ public class Game {
 	/**
 	 * List of all the territories in the board
 	 */
-	private ArrayList<Territory> territories;
-	
+	private ArrayList<Continent> continents;
+
 	/**
 	 * List of all the cards
 	 */
@@ -35,27 +40,28 @@ public class Game {
 	 * Constructs a game class with no territories
 	 */
 	public Game() {
-		territories = new ArrayList<Territory>();
+		continents = new ArrayList<Continent>();
 		cards = new ArrayList<Card>();
-		
+
+		loadContinents();
 		loadTerritories();
 		loadCards();
-		
+
 		shuffleCards();
 	}
 
 	public static void main(String[] args) {
 		Game g = new Game();
-		
-		/*for(int i = 0; i < g.territories.size(); i++) {
-			g.territories.get(i).dump();
+
+		for(int i = 0; i < g.continents.size(); i++) {
+			g.continents.get(i).dump();
 		}
-		
+
 		for(int i = 0; i < g.cards.size(); i++) {
 			 g.cards.get(i).dump();
-		}*/
+		}
 	}
-	
+
 	/**
 	 * Shuffles cards
 	 */
@@ -68,9 +74,10 @@ public class Game {
 	 * @return true if successful, false otherwise
 	 */
 	private boolean loadTerritories(){
+		ArrayList<Territory> territories = new ArrayList<Territory>();
 		try{
 
-			File file = new File("src/assets/" + Game.boardFileName);
+			File file = new File("src/assets/" + Game.territoriesFileName);
 
 			if(file.exists()){
 
@@ -81,9 +88,10 @@ public class Game {
 				int lineCount = 1;
 				while(line != null)
 				{
-					if(!processTerritoryLine(lineCount, line.split(",")))
+					String[] territoryInfo = line.split(";");
+					if(!processTerritoryLine(territories, lineCount, territoryInfo[0],  territoryInfo[1].split(",")))
 					{
-						System.out.println("Line format for board.dat asset should be integers separated by commas");
+						System.out.println("Line format for territories.dat asset should be integers separated by commas");
 						reader.close();
 						return false;
 					}
@@ -95,7 +103,57 @@ public class Game {
 
 
 			}else{
-				System.out.println("Couldn't find " + Game.boardFileName + " in \"assets\" folder!");
+				System.out.println("Couldn't find " + Game.territoriesFileName + " in \"assets\" folder!");
+				return false;
+			}
+
+		}catch(IOException e){
+			return false;
+		}
+
+
+		System.out.println("Territories successfully loaded!");
+		return true;
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	private boolean loadContinents(){
+		try{
+
+			File file = new File("src/assets/" + Game.continentsFileName);
+
+			if(file.exists()){
+
+				FileReader fr = new FileReader(file);
+				BufferedReader reader = new BufferedReader(fr);
+
+				String line = reader.readLine();
+				int lineCount = 1;
+				while(line != null)
+				{
+					try {
+						
+						int currentContinentVal = Integer.parseInt(line);
+						this.continents.add(new Continent(lineCount, currentContinentVal));	
+					} catch (Exception e) {
+						System.out.println("Line format for continents.dat asset should be an integer");
+						reader.close();
+						return false;
+					}
+
+					lineCount++;
+					line = reader.readLine();
+				}
+
+				reader.close();
+
+
+			}else{
+				System.out.println("Couldn't find " + Game.continentsFileName + " in \"assets\" folder!");
 				return false;
 			}
 
@@ -114,13 +172,20 @@ public class Game {
 	 * @param neighbours line content (array with neighbours' id's)
 	 * @return true if successfull, false otherwise
 	 */
-	private boolean processTerritoryLine(int currentTerritoryID, String[] neighbours) {
-
-		if(currentTerritoryID > this.territories.size())
-		{
-			fillTerritories(currentTerritoryID);
+	private boolean processTerritoryLine(ArrayList<Territory> territories, int currentTerritoryID, String continent, String[] neighbours) {
+		int continentID;
+		
+		try {
+			continentID = Integer.parseInt(continent);	
+		} catch (NumberFormatException e) { //not an integer program should shut down
+			return false;
 		}
-
+		
+		if(currentTerritoryID > territories.size())
+		{
+			fillTerritories(territories, currentTerritoryID);
+		}
+		Territory current = territories.get(currentTerritoryID-1);
 		for (int i = 0; i < neighbours.length; i++) {
 			int currentNeighbourID;
 			try {
@@ -129,30 +194,33 @@ public class Game {
 				return false;
 			}
 
-			if(currentNeighbourID > this.territories.size())
+			if(currentNeighbourID > territories.size())
 			{
-				fillTerritories(currentNeighbourID);
+				fillTerritories(territories, currentNeighbourID);
 			}
-
-			this.getTerritoryByID(currentTerritoryID).addNeighbour(this.getTerritoryByID(currentNeighbourID));
+			Territory neighbour = territories.get(currentNeighbourID-1);
+			current.addNeighbour(neighbour);
 		}
+		this.continents.get(continentID - 1).addTerritory(current);
 		return true;
 	}
+	
+	
 
 	/**
 	 * Function that creates the needed amount of territories to match the total of territories given as a parameter
 	 * @param totalGoal goal amount of territories
 	 */
-	private void fillTerritories(int totalGoal)
+	private void fillTerritories(ArrayList<Territory> territories, int totalGoal)
 	{
-		while(this.territories.size() < totalGoal)
+		while(territories.size() < totalGoal)
 		{
-			this.territories.add(new Territory(this.territories.size()));
+			territories.add(new Territory(territories.size() + 1));
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Reads the asset containing the territories data
 	 * @return true if successful, false otherwise
@@ -197,7 +265,7 @@ public class Game {
 		System.out.println("Cards successfully loaded!");
 		return true;
 	}
-	
+
 	private boolean processCardLine(int territoryID, String line) {
 		switch(line) {
 		case "i":
@@ -215,16 +283,16 @@ public class Game {
 		default:
 			return false;
 		}
-		
+
 		return true;
 	}
 
-	public Territory getTerritoryByID(int id) {
+	/*	public Territory getTerritoryByID(int id) {
 		if(id > this.territories.size()) {
 			return null;
 		}
-		
+
 		return this.territories.get(id-1);
-	}
+	}*/
 
 }

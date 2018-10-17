@@ -67,11 +67,11 @@ public class Territory {
 	 */
 	public void dump()
 	{
-		System.out.print("I am:" + (this.territoryID + 1));
+		System.out.print("I am: " + (this.territoryID));
 		System.out.print("\tNeighbour of:");
 		
 		for (int i = 0; i < this.neighbours.size(); i++) {
-			System.out.print(" " + (this.neighbours.get(i).getTerritoryID() + 1));
+			System.out.print(" " + (this.neighbours.get(i).getTerritoryID()));
 		}
 		System.out.print("\n");
 	}
