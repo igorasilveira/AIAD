@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import logic.Utils.Army;
@@ -58,7 +59,7 @@ public class Game {
 		}
 
 		for(int i = 0; i < g.cards.size(); i++) {
-			 g.cards.get(i).dump();
+			g.cards.get(i).dump();
 		}
 	}
 
@@ -118,8 +119,8 @@ public class Game {
 
 
 	/**
-	 * 
-	 * @return
+	 * Reads the asset containing the continents' data
+	 * @return true if successful, false otherwise
 	 */
 	private boolean loadContinents(){
 		try{
@@ -136,7 +137,7 @@ public class Game {
 				while(line != null)
 				{
 					try {
-						
+
 						int currentContinentVal = Integer.parseInt(line);
 						this.continents.add(new Continent(lineCount, currentContinentVal));	
 					} catch (Exception e) {
@@ -174,13 +175,13 @@ public class Game {
 	 */
 	private boolean processTerritoryLine(ArrayList<Territory> territories, int currentTerritoryID, String continent, String[] neighbours) {
 		int continentID;
-		
+
 		try {
 			continentID = Integer.parseInt(continent);	
 		} catch (NumberFormatException e) { //not an integer program should shut down
 			return false;
 		}
-		
+
 		if(currentTerritoryID > territories.size())
 		{
 			fillTerritories(territories, currentTerritoryID);
@@ -204,8 +205,8 @@ public class Game {
 		this.continents.get(continentID - 1).addTerritory(current);
 		return true;
 	}
-	
-	
+
+
 
 	/**
 	 * Function that creates the needed amount of territories to match the total of territories given as a parameter
@@ -222,7 +223,7 @@ public class Game {
 
 
 	/**
-	 * Reads the asset containing the territories data
+	 * Reads the asset containing the cards data
 	 * @return true if successful, false otherwise
 	 */
 	private boolean loadCards(){
@@ -266,6 +267,12 @@ public class Game {
 		return true;
 	}
 
+	/**
+	 * Method that processes a line from the asset containing cards' info
+	 * @param territoryID id of the territory the card refers to
+	 * @param line line from the asset
+	 * @return true if successful, false otherwise
+	 */
 	private boolean processCardLine(int territoryID, String line) {
 		switch(line) {
 		case "i":
@@ -287,12 +294,30 @@ public class Game {
 		return true;
 	}
 
-	/*	public Territory getTerritoryByID(int id) {
-		if(id > this.territories.size()) {
-			return null;
-		}
+	/**
+	 * Method that decides the battle given the attacker's and the defender's dice rolls
+	 * @param attacker array of dice rolls the attacker got
+	 * @param defender array of dice rolls the defender got
+	 * @return array with results from battle each true means attacker wins and each false means defender wins
+	 */
+	public static boolean[] decideBattle(int[] attacker, int[] defender)
+	{
+		boolean[] results = new boolean[Math.min(attacker.length, defender.length)];
 
-		return this.territories.get(id-1);
-	}*/
+		Arrays.sort(attacker); Arrays.sort(defender);
+		int offset = 1;
+		while(attacker.length >= offset && defender.length >= offset)
+		{
+			if(attacker[attacker.length - offset] > defender[defender.length - offset])
+			{ //attacker wins
+				results[offset - 1] = true;
+			} else
+			{ //defender wins (including in case of a tie)
+				results[offset - 1] = false;
+			}
+			offset++;
+		}
+		return results;
+	}
 
 }
