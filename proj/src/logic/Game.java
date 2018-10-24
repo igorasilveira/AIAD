@@ -53,14 +53,6 @@ public class Game {
 
 	public static void main(String[] args) {
 		Game g = new Game();
-
-		for(int i = 0; i < g.continents.size(); i++) {
-			g.continents.get(i).dump();
-		}
-
-		for(int i = 0; i < g.cards.size(); i++) {
-			g.cards.get(i).dump();
-		}
 	}
 
 	/**

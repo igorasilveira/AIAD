@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class Utils {
@@ -9,6 +10,8 @@ public class Utils {
 		Army(int val) { this.value = val; }
 	    public int getValue() { return value; }
 	}
+	
+	public static final HashMap<Integer, Integer> startingUnits = Utils.initUnits();
 
 	/**
 	 * Method that rolls the given amount of dice
@@ -26,5 +29,16 @@ public class Utils {
 		}
 
 		return results;
+	}
+
+	private static HashMap<Integer, Integer> initUnits() {
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		
+		map.put(3, 35);
+		map.put(4, 30);
+		map.put(5, 25);
+		map.put(6, 20);
+		
+		return map;
 	}
 }
