@@ -3,7 +3,7 @@
 ## TODO
 * implementar regras do jogo
   - [X] Game Board
-  - [ ] Piece Value
+  - [X] Piece Value
   - [ ] Game Start Setup
   - [X] Cards Existence
   - [ ] Game Play
