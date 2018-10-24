@@ -2,10 +2,10 @@
 
 ## TODO
 * implementar regras do jogo
-  - [ ] Game Board
+  - [X] Game Board
   - [ ] Piece Value
   - [ ] Game Start Setup
-  - [ ] Cards Existence
+  - [X] Cards Existence
   - [ ] Game Play
 	  - [ ] Place New Armies
 	  - [ ] Cards Functionality (Earning, trading)
