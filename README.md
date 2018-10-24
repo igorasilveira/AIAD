@@ -1,11 +1,24 @@
 # AIAD1819
 
 ## TODO
-- [ ] implementar regras do jogo
-- [ ] implementar tabuleiro como agente que:
+* implementar regras do jogo
+  - [ ] Game Board
+  - [ ] Piece Value
+  - [ ] Game Start Setup
+  - [ ] Cards Existence
+  - [ ] Game Play
+	  - [ ] Place New Armies
+	  - [ ] Cards Functionality (Earning, trading)
+	  - [ ] Atacking
+		  - [ ] To attack
+		  - [X] Decide Battle
+	  - [ ] Fortify Position
+  - [ ] Victory Check (End of the game)
+  
+* implementar tabuleiro como agente que:
   * controla a vez do jogador (tabuleiro toma iniciativa de mandar estado do jogo ao agente jogador)
   * responde a jogador depois de cada jogada se esta é válida ou não
-- [ ] implementar jogadores como agentes
+* implementar jogadores como agentes
   1. começar com jogadas aleatorias
   2. passar para agentes puramente competitivos
   3. implementar negociação de cooperação
