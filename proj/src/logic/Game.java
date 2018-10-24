@@ -292,7 +292,7 @@ public class Game {
 	 * @param defender array of dice rolls the defender got
 	 * @return array with results from battle each true means attacker wins and each false means defender wins
 	 */
-	public static boolean[] decideBattle(int[] attacker, int[] defender)
+	public boolean[] decideBattle(int[] attacker, int[] defender)
 	{
 		boolean[] results = new boolean[Math.min(attacker.length, defender.length)];
 
@@ -310,6 +310,26 @@ public class Game {
 			offset++;
 		}
 		return results;
+	}
+	
+	/**
+	 * Checks if all territories are controlled by the same player (condition to win)
+	 * @return the id of the winning player or zero if game isn't finished
+	 */
+	public int isGameFinished(){
+		int firstPlayerID = 0;
+		for (Continent continent : continents) {
+			for (Territory territory : continent.getTerritories()) {
+				if(firstPlayerID == 0)
+				{
+					firstPlayerID = territory.getPlayerID();
+				} else {
+					if(territory.getPlayerID() != firstPlayerID) return 0;
+				}
+				
+			}
+		}
+		return firstPlayerID;
 	}
 
 }

@@ -18,8 +18,8 @@
 		  - [ ] To attack
 		  - [X] Decide Battle
 	  - [ ] Fortify Position
-  - [ ] Victory Check (End of the game)
-  
+  - [X] Victory Check (End of the game)
+
 * implementar tabuleiro como agente que:
   * controla a vez do jogador (tabuleiro toma iniciativa de mandar estado do jogo ao agente jogador)
   * responde a jogador depois de cada jogada se esta é válida ou não

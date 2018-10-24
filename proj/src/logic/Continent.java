@@ -18,6 +18,11 @@ public class Continent {
 		this.territories.add(territory);
 	}
 	
+	public ArrayList<Territory> getTerritories()
+	{
+		return this.territories;
+	}
+	
 	/**
 	 * Method used to print in the console the data in this continent
 	 */

@@ -15,14 +15,30 @@ public class Territory {
 	private int territoryID;
 	
 	/**
+	 * Id of player that controls the territory, 0 if not taken yet
+	 */
+	private int playerID;
+	
+	//TODO save amount of troops of each type
+	
+	/**
 	 * Creates a territory given its id
 	 * @param territoryID id of the territory created
 	 */
 	public Territory(int territoryID) {
 		this.territoryID = territoryID;
 		this.neighbours = new ArrayList<Territory>();
+		this.playerID = 0;
 	}
 	
+	public int getPlayerID() {
+		return playerID;
+	}
+
+	public void setPlayerID(int playerID) {
+		this.playerID = playerID;
+	}
+
 	/**
 	 * Getter for field territoryID
 	 * @return id of the current territory
