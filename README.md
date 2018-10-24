@@ -5,7 +5,7 @@
   - [X] Game Board
   - [X] Piece Value
   - [ ] Game Start Setup
-  	  - [ ] Amount of Pieces Per player
+  	  - [X] Starting units Per player
 	  - [ ] Initial die roll to set who starts (in this case, since agents wont have relative physical position, instead of 'to the left', die rolls will set the order)
 	  - [ ] When territories are all claimed, continue until all armies are placed
 	  - [X] Shuflle cards
