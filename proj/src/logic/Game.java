@@ -36,14 +36,21 @@ public class Game {
 	 * List of all the cards
 	 */
 	private ArrayList<Card> cards;
+	
+	/**
+	 * List of all the Players
+	 */
+	private ArrayList<Player> players;
 
 	/**
 	 * Constructs a game class with no territories
 	 */
-	public Game() {
+	public Game(int numberOfPlayers) {
 		continents = new ArrayList<Continent>();
 		cards = new ArrayList<Card>();
-
+		players = new ArrayList<Player>();
+		
+		loadPlayers(numberOfPlayers);
 		loadContinents();
 		loadTerritories();
 		loadCards();
@@ -52,7 +59,7 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		Game g = new Game();
+		Game g = new Game(3);
 	}
 
 	/**
@@ -60,6 +67,17 @@ public class Game {
 	 */
 	private void shuffleCards() {
 		Collections.shuffle(this.cards);
+	}
+	
+	/**
+	 * Creates players
+	 */
+	public void loadPlayers(int numberOfPlayers) {
+		int units = Utils.startingUnits.get(numberOfPlayers);
+		
+		for(int i = 0; i < numberOfPlayers; i++) {
+			this.players.add(new Player(i+1, units));
+		}
 	}
 
 	/**
