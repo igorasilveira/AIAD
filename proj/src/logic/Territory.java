@@ -19,7 +19,11 @@ public class Territory {
 	 */
 	private int playerID;
 	
-	//TODO save amount of troops of each type
+	/**
+	 * Number of units that each player has on this territory, index is ID-1
+	 */
+	private ArrayList<Integer> playerUnits;
+	
 	
 	/**
 	 * Creates a territory given its id
@@ -29,6 +33,7 @@ public class Territory {
 		this.territoryID = territoryID;
 		this.neighbours = new ArrayList<Territory>();
 		this.playerID = 0;
+		this.playerUnits = new ArrayList<Integer>();
 	}
 	
 	public int getPlayerID() {
@@ -76,6 +81,14 @@ public class Territory {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Method used to get number of units each player has on this territory
+	 * @return ArrayList containing the information
+	 */
+	public ArrayList<Integer> getUnitsPerPlayer(){
+		return this.playerUnits;
 	}
 	
 	/**
