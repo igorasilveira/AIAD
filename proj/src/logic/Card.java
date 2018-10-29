@@ -1,8 +1,10 @@
 package logic;
 
-import logic.Utils.Army;
-
 public class Card {
+	public enum Army {
+		Cavalry, Infantry, Artillery;
+	}
+	
 	/**
 	 * Unique id to identify the territory. -1 if it is a wildcard.
 	 */

@@ -4,12 +4,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Utils {
-	public enum Army {
-		Cavalry(5), Infantry(1), Artillery(10);
-		private final int value;
-		Army(int val) { this.value = val; }
-	    public int getValue() { return value; }
-	}
 	
 	public static final HashMap<Integer, Integer> startingUnits = Utils.initUnits();
 

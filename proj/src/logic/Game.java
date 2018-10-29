@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import logic.Utils.Army;
+import logic.Card.Army;
 
 public class Game {
 
