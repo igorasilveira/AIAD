@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 
 import logic.Card.Army;
 
@@ -49,15 +50,21 @@ public class Game {
 	 * Game Stage
 	 */
 	private GameStage stage;
+	
+	/**
+	 * index on the list of players the has the turn
+	 */
+	private int turn;
 
 	/**
 	 * Constructs a game class with no territories
 	 */
 	public Game(int numberOfPlayers) {
-		continents = new ArrayList<Continent>();
-		cards = new ArrayList<Card>();
-		players = new ArrayList<Player>();
-		stage = GameStage.Setup;
+		this.continents = new ArrayList<Continent>();
+		this.cards = new ArrayList<Card>();
+		this.players = new ArrayList<Player>();
+		this.stage = GameStage.Setup;
+		this.turn = 0;
 		
 		loadPlayers(numberOfPlayers);
 		loadContinents();
@@ -68,19 +75,131 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		Game g = new Game(3);
+		Game g = new Game(4);
 		g.start();
 	}
 
+	/**
+	 * starts the game
+	 */
 	public void start() {
-		while(stage != GameStage.Finished) {
-			switch(stage) {
+		System.out.println("Started Setup!");
+		
+		int startingPlayer = new Random().nextInt(this.players.size());
+		this.turn = startingPlayer;
+		
+		while(this.stage != GameStage.Finished) {
+			switch(this.stage) {
 			case Setup:
+				Player p = this.players.get(this.turn);
+				
+				ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
+				
+				if(unclaimed.size() > 0) {
+					Collections.shuffle(unclaimed);
+					
+					Territory t = unclaimed.get(0);
+					
+					t.setPlayerID(p.getID());
+					t.setUnits(1);
+					
+					p.decreaseUnits(1);
+				}
+				else {
+					ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+					Collections.shuffle(claimed);
+					
+					Territory t = claimed.get(0);
+					t.increaseUnits(1);
+					
+					p.decreaseUnits(1);
+				}
+				
+				nextTurn();
+				
+				if(setupFinished()) {
+					this.stage = GameStage.Middle;
+					this.turn = startingPlayer;
+				}
 				break;
 			case Middle:
+				this.stage = GameStage.Finished;
 				break;
 			}
 		}
+		
+		System.out.println("Done!\n");
+		
+		for(Player p : this.players) {
+			ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+			
+			System.out.println("Player " + p.getID() + " claimed " + claimed.size() + " territories!");
+			for(Territory t : claimed) {
+				System.out.println("Territory " + t.getTerritoryID() + " has " + t.getUnits() + " units");
+			}
+			System.out.println("");
+		}
+		
+	}
+	
+	/**
+	 * @return list of unclaimed territories
+	 */
+	private ArrayList<Territory> getUnclaimedTerrritories() {
+		ArrayList<Territory> unclaimed = new ArrayList<Territory>();
+		
+		for (Continent continent : continents) {
+			for (Territory territory : continent.getTerritories()) {
+				if(territory.getPlayerID() == 0) {
+					unclaimed.add(territory);
+				}
+			}
+		}
+		return unclaimed;
+	}
+	
+	/**
+	 * 
+	 * @param id player id
+	 * @return territories claimed by that player
+	 */
+	private ArrayList<Territory> getClaimedTerrritories(int id) {
+		ArrayList<Territory> claimed = new ArrayList<Territory>();
+		
+		for (Continent continent : continents) {
+			for (Territory territory : continent.getTerritories()) {
+				if(territory.getPlayerID() == id) {
+					claimed.add(territory);
+				}
+			}
+		}
+		return claimed;
+	}
+	
+	/**
+	 * changes the turn to the next player
+	 */
+	private void nextTurn() {
+		if(this.turn == this.players.size() - 1) {
+			this.turn = 0;
+		}
+		else {
+			this.turn++;
+		}
+	}
+	
+	/**
+	 * Method that checks if the game setup is finished
+	 * @return true if it is finished and false otherwise
+	 */
+	private boolean setupFinished() {
+		for(int i = 0; i < this.players.size(); i++) {
+			if(this.players.get(i).getUnitsLeft() > 0) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
@@ -93,7 +212,7 @@ public class Game {
 	/**
 	 * Creates players
 	 */
-	public void loadPlayers(int numberOfPlayers) {
+	private void loadPlayers(int numberOfPlayers) {
 		int units = Utils.startingUnits.get(numberOfPlayers);
 		
 		for(int i = 0; i < numberOfPlayers; i++) {

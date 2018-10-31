@@ -20,9 +20,9 @@ public class Territory {
 	private int playerID;
 	
 	/**
-	 * Number of units that each player has on this territory, index is Player ID-1
+	 * Number of units that a player has on this territory
 	 */
-	private ArrayList<Integer> playerUnits;
+	private int units;
 	
 	
 	/**
@@ -33,7 +33,7 @@ public class Territory {
 		this.territoryID = territoryID;
 		this.neighbours = new ArrayList<Territory>();
 		this.playerID = 0;
-		this.playerUnits = new ArrayList<Integer>();
+		this.units = 0;
 	}
 	
 	public int getPlayerID() {
@@ -87,8 +87,24 @@ public class Territory {
 	 * Method used to get number of units each player has on this territory
 	 * @return ArrayList containing the information
 	 */
-	public ArrayList<Integer> getUnitsPerPlayer(){
-		return this.playerUnits;
+	public int getUnits(){
+		return this.units;
+	}
+	
+	/**
+	 * setter for the number of units
+	 * @param units
+	 */
+	public void setUnits(int units) {
+		this.units = units;
+	}
+	
+	/**
+	 * increases the number of units
+	 * @param amount amount to increase
+	 */
+	public void increaseUnits(int amount) {
+		this.units += amount;
 	}
 	
 	/**
