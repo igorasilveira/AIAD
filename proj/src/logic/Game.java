@@ -11,6 +11,9 @@ import java.util.Collections;
 import logic.Card.Army;
 
 public class Game {
+	public enum GameStage {
+		Setup, Middle, Finished
+	}
 
 	/**
 	 * Name of the file used to store the board territories adjacency data
@@ -41,6 +44,11 @@ public class Game {
 	 * List of all the Players
 	 */
 	private ArrayList<Player> players;
+	
+	/**
+	 * Game Stage
+	 */
+	private GameStage stage;
 
 	/**
 	 * Constructs a game class with no territories
@@ -49,6 +57,7 @@ public class Game {
 		continents = new ArrayList<Continent>();
 		cards = new ArrayList<Card>();
 		players = new ArrayList<Player>();
+		stage = GameStage.Setup;
 		
 		loadPlayers(numberOfPlayers);
 		loadContinents();
@@ -60,6 +69,18 @@ public class Game {
 
 	public static void main(String[] args) {
 		Game g = new Game(3);
+		g.start();
+	}
+
+	public void start() {
+		while(stage != GameStage.Finished) {
+			switch(stage) {
+			case Setup:
+				break;
+			case Middle:
+				break;
+			}
+		}
 	}
 
 	/**

@@ -20,7 +20,7 @@ public class Territory {
 	private int playerID;
 	
 	/**
-	 * Number of units that each player has on this territory, index is ID-1
+	 * Number of units that each player has on this territory, index is Player ID-1
 	 */
 	private ArrayList<Integer> playerUnits;
 	
