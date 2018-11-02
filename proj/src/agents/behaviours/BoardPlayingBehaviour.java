@@ -1,24 +1,37 @@
 package agents.behaviours;
 
+import java.util.ArrayList;
+
+import agents.BoardAgent;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import logic.Game;
+import logic.Game.GameStage;
 
 public class BoardPlayingBehaviour extends Behaviour {
 
-	public BoardPlayingBehaviour(Agent a) {
+	private Game game;
+	public BoardPlayingBehaviour(Agent a, ArrayList<AID> players) {
 		super(a);
-		// TODO Auto-generated constructor stub
+		this.game = ((BoardAgent) a).getGame();
+		game.start(players);
 	}
 
 	@Override
 	public void action() {
-		// TODO Auto-generated method stub
+		//Get current AID
+		// Send message to aid
+		//Get answer from aid
+		//Check valid response
+		//Send response to game
+		//Send response do AID
+		
 	}
 
 	@Override
 	public boolean done() {
-		// TODO Auto-generated method stub
-		return false;
+		return game.getStage().equals(GameStage.Finished);
 	}
 
 }

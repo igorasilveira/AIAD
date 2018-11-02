@@ -17,15 +17,16 @@ public class BoardAgent extends Agent {
 	private ArrayList<AID> players = new ArrayList<AID>();
 
 	public void setup() {
-
+		
+		this.game = new Game();
+		
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("player");
 		template.addServices(sd);
 		
-		
 		addBehaviour(new BoardSetupBehaviour(this, template));
-		addBehaviour(new BoardPlayingBehaviour(this));
+		addBehaviour(new BoardPlayingBehaviour(this, players));
 
 		System.out.println(getLocalName() + ": starting to work!");
 	}
@@ -37,9 +38,6 @@ public class BoardAgent extends Agent {
 		return game;
 	}
 
-	public void setGame(Game game) {
-		this.game = game;
-	}
 
 	public int getPlayerAmount() {
 		return players.size();
