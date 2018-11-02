@@ -2,23 +2,7 @@
 
 ## TODO
 * implementar regras do jogo
-  - [X] Game Board
-  - [X] Piece Value
-  - [ ] Game Start Setup
-  	  - [X] Starting units Per player
-	  - [ ] Initial die roll to set who starts (in this case, since agents wont have relative physical position, instead of 'to the left', die rolls will set the order)
-	  - [ ] When territories are all claimed, continue until all armies are placed
-	  - [X] Shuflle cards
-	  - [ ] Game starts with highest rolling player
-  - [X] Cards Existence
-  - [ ] Game Play
-	  - [ ] Place New Armies
-	  - [ ] Cards Functionality (Earning, trading)
-	  - [ ] Atacking
-		  - [ ] To attack
-		  - [X] Decide Battle
-	  - [ ] Fortify Position
-  - [X] Victory Check (End of the game)
+	  - [ ] Cards Functionality (Earning, trading) (if there's time)
 
 * implementar tabuleiro como agente que:
   * controla a vez do jogador (tabuleiro toma iniciativa de mandar estado do jogo ao agente jogador)
@@ -27,6 +11,24 @@
   1. começar com jogadas aleatorias
   2. passar para agentes puramente competitivos
   3. implementar negociação de cooperação
+
+### Comunicação entre agentes
+* Board->Player 
+	* send: game state (class game) 
+		* REQUEST 
+	* answer: Player->Board
+* Player->Board 
+	* send: move (attack class or fortify class) or end turn 
+		* PROPOSE 
+	* answer: worked or not 
+		* AGREE REFUSE
+* Player->Player 
+	* send: treaty proposition
+		* PROPOSE
+	* answer: yes or no
+		* ACCEPT-PROPOSAL
+		* REJECT-PROPOSAL
+
 
 ## Links  
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
