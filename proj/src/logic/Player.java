@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.ArrayList;
+
 public class Player {
 	/**
 	 * Units that are not on the board
@@ -11,9 +13,15 @@ public class Player {
 	 */
 	private final int id;
 	
+	/**
+	 * Cards that the player has
+	 */
+	private ArrayList<Card> cards;
+	
 	public Player(int id, int units) {
 		this.id = id;
 		this.unitsLeft = units;
+		this.cards = new ArrayList<Card>();
 	}
 	
 	public int getID() {
@@ -49,6 +57,21 @@ public class Player {
 	 */
 	public void setUnits(int units) {
 		this.unitsLeft = units;
+	}
+	
+	/**
+	 * adds card to the list of cards
+	 * @param card card to add
+	 */
+	public void addCard(Card card) {
+		this.cards.add(card);
+	}
+	
+	/**
+	 * @return Player card list
+	 */
+	public ArrayList<Card> getCards() {
+		return this.cards;
 	}
 	
 }

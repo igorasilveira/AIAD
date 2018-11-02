@@ -43,6 +43,11 @@ public class Game {
 	private ArrayList<Card> cards;
 	
 	/**
+	 * Sets of cards turned in
+	 */
+	private int setsTurnedIn;
+	
+	/**
 	 * List of all the Players
 	 */
 	private ArrayList<Player> players;
@@ -66,6 +71,7 @@ public class Game {
 		this.players = new ArrayList<Player>();
 		this.stage = GameStage.Setup;
 		this.turn = 0;
+		this.setsTurnedIn = 0;
 		
 		loadPlayers(numberOfPlayers);
 		loadContinents();
@@ -109,7 +115,7 @@ public class Game {
 				}
 				else {
 					//TODO agent chooses territory
-					ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+					ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
 					Collections.shuffle(claimed);
 					
 					Territory t = claimed.get(0);
@@ -129,12 +135,36 @@ public class Game {
 				p.setUnits(0);
 				p.increaseUnits(getNewUnits(p.getID()));
 				
-				//TODO check cards
+				//check cards
+				//if player has 5 or more cards he has to turn in a set, until he has 4 cards or fewer
 				
-				ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+				ArrayList<Card> playerCards = p.getCards();
+				ArrayList<CardSet> sets;
+				
+				while(playerCards.size() >= 5) {
+					sets = getCardSets(playerCards);
+					//TODO choose set
+					Collections.shuffle(sets);
+					CardSet set = sets.get(0);
+					
+					p.increaseUnits(turnInCardSet(set, playerCards));
+				}
+				
+				//TODO turning in a set is optional if you have 4 cards or fewer
+				sets = getCardSets(playerCards);
+				
+				if(sets.size() > 0) {
+					//TODO choose if you want to turn in set
+					Collections.shuffle(sets);
+					CardSet set = sets.get(0);
+					
+					p.increaseUnits(turnInCardSet(set, playerCards));
+				}
+				
+				ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
 				
 				while(p.getUnitsLeft() > 0) {
-					//agent chooses territory
+					//TODO agent chooses territory
 					Collections.shuffle(claimed);
 					
 					Territory t = claimed.get(0);
@@ -146,7 +176,7 @@ public class Game {
 				
 				ArrayList<Attack> attacks = getAttackOptions(p.getID());
 
-				//decide battle
+				//TODO decide battle
 				Random r = new Random();
 				
 				while(attacks.size() > 0) {
@@ -154,7 +184,7 @@ public class Game {
 
 					Attack a = attacks.get(0);
 					
-					//decide number of dice
+					//TODO decide number of dice
 					int atDice = r.nextInt(3)+1;
 					int defDice = r.nextInt(2)+1;
 					
@@ -173,35 +203,54 @@ public class Game {
 					}
 					
 					if(a.defender.getUnits() == 0) {
+						int defenderID = a.defender.getPlayerID();
+						
 						a.defender.setPlayerID(p.getID());
 						a.defender.increaseUnits(1);
 						
 						a.attacker.decreaseUnits(1);
+						
+						//TODO move units from the attacking territory if you want
+						int amount = r.nextInt(a.attacker.getUnits());
+						a.attacker.decreaseUnits(amount);
+						a.defender.increaseUnits(amount);
+						
+						//check if player was eliminated
+						//remove player from list
+						//TODO need to get cards from the player and if the total is 5 or more then you have to turn in 
+						//card sets and place the new units
+						
+						if(playerLost(defenderID)) {
+							removePlayer(defenderID);
+						}
 					}
 					
 					attacks = getAttackOptions(p.getID());
 				}
 				
 				
-				//TODO fortify position (function getFortifyOptions)
+				//TODO fortify position (function getFortifyOptions), only once and you can move as many units as you want,
+				//but you cant leave a territory with 0 units
 				
 				//check if you have to receive cards
-				if(getClaimedTerrritories(p.getID()).size() > claimed.size()) {
-					//TODO receive card
+				if(getClaimedTerritories(p.getID()).size() > claimed.size()) {
+					if(this.cards.size() > 0) {
+						p.addCard(this.cards.remove(0));
+					}
 				}
 				
 				/**************/
 				System.out.println("Turn: Player " + p.getID());
 				
 				for(Player pl : this.players) {
-					ArrayList<Territory> c = getClaimedTerrritories(pl.getID());
+					ArrayList<Territory> c = getClaimedTerritories(pl.getID());
 					
 					System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
 				}
 				System.out.println("");
 				/**************/
 				
-				nextTurnAndRemove();
+				nextTurn();
 				
 				if(isGameFinished() != 0) {
 					this.stage = GameStage.Finished;
@@ -213,7 +262,7 @@ public class Game {
 		System.out.println("Done!\n");
 		
 		for(Player p : this.players) {
-			ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+			ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
 			
 			System.out.println("Player " + p.getID() + " has " + claimed.size() + " territories!");
 			for(Territory t : claimed) {
@@ -224,6 +273,164 @@ public class Game {
 		
 	}
 	
+	/**
+	 * removes a player when he loses
+	 * @param id
+	 */
+	private void removePlayer(int id) {
+		int turnID = this.players.get(this.turn).getID();
+		
+		for(int i = 0; i < this.players.size(); i++) {
+			if(this.players.get(i).getID() == id) {
+				this.players.remove(i);
+				break;
+			}
+		}
+		
+		for(int i = 0; i < this.players.size(); i++) {
+			if(this.players.get(i).getID() == turnID) {
+				this.turn = i;
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * turns in card set
+	 * @param cards
+	 */
+	private int turnInCardSet(CardSet set, ArrayList<Card> cards) {
+		this.setsTurnedIn++;
+		
+		while(set.cards.size() > 0) {
+			Card card = set.cards.get(0);
+			
+			for(int i = 0; i < cards.size(); i++) {
+				if(card.isEqual(cards.get(i))) {
+					set.cards.remove(0);
+					cards.remove(i);
+					break;
+				}
+			}
+		}
+		
+		return (2*this.setsTurnedIn)+2;
+	}
+	
+	private ArrayList<CardSet> getCardSets(ArrayList<Card> cards){
+		ArrayList<CardSet> sets = new ArrayList<CardSet>();
+		ArrayList<Card> buffer = new ArrayList<Card>();
+		
+		//check 3 infantry
+		buffer.clear();
+		
+		for(Card card : cards) {
+			if(card.army == Army.Infantry) {
+				buffer.add(card);
+				if(buffer.size() == 3) {
+					break;
+				}
+			}
+		}
+		
+		if(buffer.size() == 3) {
+			sets.add(new CardSet(buffer));
+		}
+		
+		//check 3 cavalry
+		buffer.clear();
+		
+		for(Card card : cards) {
+			if(card.army == Army.Cavalry) {
+				buffer.add(card);
+				if(buffer.size() == 3) {
+					break;
+				}
+			}
+		}
+		
+		if(buffer.size() == 3) {
+			sets.add(new CardSet(buffer));
+		}
+		
+		
+		//check 3 artillery
+		buffer.clear();
+		
+		for(Card card : cards) {
+			if(card.army == Army.Artillery) {
+				buffer.add(card);
+				if(buffer.size() == 3) {
+					break;
+				}
+			}
+		}
+		
+		if(buffer.size() == 3) {
+			sets.add(new CardSet(buffer));
+		}
+
+		//check 1 infantry, 1 cavalry, 1 artillery
+		buffer.clear();
+
+		for(Card card : cards) {
+			if(card.army == Army.Infantry) {
+				buffer.add(card);
+				break;
+			}
+		}
+		
+		for(Card card : cards) {
+			if(card.army == Army.Cavalry) {
+				buffer.add(card);
+				break;
+			}
+		}
+		
+		for(Card card : cards) {
+			if(card.army == Army.Artillery) {
+				buffer.add(card);
+				break;
+			}
+		}
+
+		if(buffer.size() == 3) {
+			sets.add(new CardSet(buffer));
+		}
+
+		//check two cards with one wildcard
+		buffer.clear();
+		
+		for(Card card : cards) {
+			if(card.army == null) {
+				buffer.add(card);
+				break;
+			}
+		}
+		
+		if(buffer.size() > 0) {
+			for(Card card : cards) {
+				if(card.army != null) {
+					buffer.add(card);
+					if(buffer.size() == 3) {
+						break;
+					}
+				}
+			}
+		}
+		
+		if(buffer.size() == 3) {
+			sets.add(new CardSet(buffer));
+		}
+		
+		return sets;
+	}
+	
+	/**
+	 * 
+	 * @param id player id
+	 * @return returns fortify options
+	 */
 	private ArrayList<Fortify> getFortifyOptions(int id){
 		ArrayList<Fortify> fortify = new ArrayList<Fortify>();
 
@@ -276,8 +483,12 @@ public class Game {
 	private int getNewUnits(int id) {
 		int result = 0;
 		
-		ArrayList<Territory> claimed = getClaimedTerrritories(id);
+		ArrayList<Territory> claimed = getClaimedTerritories(id);
 		result = claimed.size()/3;
+		
+		if(result < 3) {
+			result = 3;
+		}
 		
 		for(Continent continent : this.continents) {
 			boolean controls = true;
@@ -318,7 +529,7 @@ public class Game {
 	 * @param id player id
 	 * @return territories claimed by that player
 	 */
-	private ArrayList<Territory> getClaimedTerrritories(int id) {
+	private ArrayList<Territory> getClaimedTerritories(int id) {
 		ArrayList<Territory> claimed = new ArrayList<Territory>();
 		
 		for (Continent continent : this.continents) {
@@ -344,37 +555,25 @@ public class Game {
 	}
 	
 	/**
-	 * changes the turn to the next player and deletes player if he has no territories
+	 * 
+	 * @param id player id
+	 * @return true if the player lost, false otherwise
 	 */
-	private void nextTurnAndRemove() {
-		if(this.turn == this.players.size() - 1) {
-			this.turn = 0;
-		}
-		else {
-			this.turn++;
-		}
-		
-		int id = this.players.get(this.turn).getID();
-		boolean found = false;
+	private boolean playerLost(int id) {
+		boolean lost = true;
 		
 		loop:{
 			for (Continent continent : this.continents) {
 				for (Territory territory : continent.getTerritories()) {
 					if(territory.getPlayerID() == id) {
-						found = true;
+						lost = false;
 						break loop;
 					}
 				}
 			}
 		}
 
-		if(!found) {
-			this.players.remove(this.turn);
-			
-			if(this.turn == this.players.size()) {
-				this.turn = 0;
-			}
-		}
+		return lost;
 	}
 	
 	/**
