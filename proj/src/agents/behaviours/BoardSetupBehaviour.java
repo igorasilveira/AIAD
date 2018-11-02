@@ -29,6 +29,10 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 				AID agent = dfds[i].getName();
 				System.out.println("New agent in town: " + agent.getLocalName());
 
+				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.addReceiver(agent);
+				msg.setContent("Welcome!!");
+				this.myAgent.send(msg);
 
 				((BoardAgent) this.getAgent()).togglePlayer(agent);
 				if(((BoardAgent) this.getAgent()).getPlayerAmount()  > 6)
@@ -67,6 +71,7 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 		public void run() {
 			((BoardAgent) behaviour.getAgent()).getGame().setStage(GameStage.Setup);
 			System.out.println(((BoardAgent) behaviour.getAgent()).getGame().getStage());
+			((BoardAgent) behaviour.getAgent()).addBehaviour(new BoardPlayingBehaviour((BoardAgent) behaviour.getAgent()));
 			((BoardAgent) behaviour.getAgent()).removeBehaviour(behaviour);
 		}
 		

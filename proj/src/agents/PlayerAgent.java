@@ -1,15 +1,18 @@
 package agents;
 
 import agents.behaviours.PlayerPlayingBehaviour;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class PlayerAgent extends Agent {
 	
-	
+	private AID boardAID;
 	
 	public void setup() {
 		
@@ -24,7 +27,11 @@ public class PlayerAgent extends Agent {
 		} catch(FIPAException fe) {
 			fe.printStackTrace();
 		}
-
+		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+		ACLMessage msg = blockingReceive();
+		this.boardAID = msg.getSender();
+		
+		System.out.println(this.boardAID.toString());
 
 		addBehaviour(new PlayerPlayingBehaviour(this));
 		

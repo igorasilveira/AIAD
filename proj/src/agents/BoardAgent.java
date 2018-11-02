@@ -2,7 +2,6 @@ package agents;
 
 import java.util.ArrayList;
 
-import agents.behaviours.BoardPlayingBehaviour;
 import agents.behaviours.BoardSetupBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
@@ -26,7 +25,7 @@ public class BoardAgent extends Agent {
 		template.addServices(sd);
 		
 		addBehaviour(new BoardSetupBehaviour(this, template));
-		addBehaviour(new BoardPlayingBehaviour(this, players));
+		
 
 		System.out.println(getLocalName() + ": starting to work!");
 	}
@@ -36,6 +35,10 @@ public class BoardAgent extends Agent {
 
 	public Game getGame() {
 		return game;
+	}
+	
+	public ArrayList<AID> getPlayers() {
+		return players;
 	}
 
 
