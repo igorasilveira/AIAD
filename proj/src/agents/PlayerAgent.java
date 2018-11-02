@@ -1,7 +1,6 @@
 package agents;
 
 import agents.behaviours.PlayerPlayingBehaviour;
-import agents.behaviours.PlayerSetupBehaviour;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -25,9 +24,8 @@ public class PlayerAgent extends Agent {
 		} catch(FIPAException fe) {
 			fe.printStackTrace();
 		}
-		
-		
-		//addBehaviour(new PlayerSetupBehaviour(this));
+
+
 		addBehaviour(new PlayerPlayingBehaviour(this));
 		
 		System.out.println(getLocalName() + ": starting to work!");

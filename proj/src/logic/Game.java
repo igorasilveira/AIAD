@@ -14,7 +14,7 @@ import logic.Card.Army;
 
 public class Game {
 	public enum GameStage {
-		Setup, Playing, Finished
+		Waiting, Setup, Playing, Finished
 	}
 
 	/**
@@ -60,14 +60,14 @@ public class Game {
 	/**
 	 * Constructs a game class with no territories
 	 */
-	public Game(int numberOfPlayers) {
+	public Game() {
 		this.continents = new ArrayList<Continent>();
 		this.cards = new ArrayList<Card>();
 		this.players = new ArrayList<Player>();
-		this.stage = GameStage.Setup;
+		this.stage = GameStage.Waiting;
 		this.turn = 0;
 		
-		loadPlayers(numberOfPlayers);
+		
 		loadContinents();
 		loadTerritories();
 		loadCards();
@@ -76,14 +76,15 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		Game g = new Game(4);
-		g.start();
+		Game g = new Game();
+		g.start(4);
 	}
-
+	
 	/**
 	 * starts the game
 	 */
-	public void start() {
+	public void start(int numberOfPlayers) {
+		loadPlayers(numberOfPlayers);
 		System.out.println("Started Setup!");
 		
 		int startingPlayer = new Random().nextInt(this.players.size());
@@ -688,6 +689,17 @@ public class Game {
 			}
 		}
 		return firstPlayerID;
+	}
+	
+	
+	public void setStage(GameStage stage)
+	{
+		this.stage = stage;
+	}
+	
+	public GameStage getStage()
+	{
+		return this.stage;
 	}
 
 }
