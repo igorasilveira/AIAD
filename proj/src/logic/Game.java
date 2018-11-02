@@ -134,7 +134,7 @@ public class Game {
 				ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
 				
 				while(p.getUnitsLeft() > 0) {
-					//TODO agent chooses territory
+					//agent chooses territory
 					Collections.shuffle(claimed);
 					
 					Territory t = claimed.get(0);
@@ -146,7 +146,7 @@ public class Game {
 				
 				ArrayList<Attack> attacks = getAttackOptions(p.getID());
 
-				//TODO decide battle
+				//decide battle
 				Random r = new Random();
 				
 				while(attacks.size() > 0) {
@@ -154,7 +154,7 @@ public class Game {
 
 					Attack a = attacks.get(0);
 					
-					//TODO decide number of dice
+					//decide number of dice
 					int atDice = r.nextInt(3)+1;
 					int defDice = r.nextInt(2)+1;
 					
@@ -183,9 +183,13 @@ public class Game {
 				}
 				
 				
-				//TODO fortify position
+				//TODO fortify position (function getFortifyOptions)
 				
-				//TODO check if you have to receive cards
+				//check if you have to receive cards
+				if(getClaimedTerrritories(p.getID()).size() > claimed.size()) {
+					//TODO receive card
+				}
+				
 				/**************/
 				System.out.println("Turn: Player " + p.getID());
 				
@@ -218,6 +222,26 @@ public class Game {
 			System.out.println("");
 		}
 		
+	}
+	
+	private ArrayList<Fortify> getFortifyOptions(int id){
+		ArrayList<Fortify> fortify = new ArrayList<Fortify>();
+
+		for(Continent continent : this.continents) {
+			for(Territory from : continent.getTerritories()) {
+
+				if(from.getPlayerID() == id && from.getUnits() >= 2) {
+					
+					for(Territory to : from.getNeighbours()) {
+						if(to.getPlayerID() == id) {
+							fortify.add(new Fortify(from, to, from.getUnits() - 1));
+						}
+					}
+				}
+			}
+		}
+
+		return fortify;
 	}
 	
 	/**
