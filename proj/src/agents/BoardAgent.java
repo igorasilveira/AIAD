@@ -26,7 +26,7 @@ public class BoardAgent extends Agent {
 		template.addServices(sd);
 		
 		addBehaviour(new BoardSetupBehaviour(this, template));
-		addBehaviour(new BoardPlayingBehaviour(this));
+		addBehaviour(new BoardPlayingBehaviour(this, players));
 
 		System.out.println(getLocalName() + ": starting to work!");
 	}

@@ -1,5 +1,7 @@
 package logic;
 
+import jade.core.AID;
+
 public class Player {
 	/**
 	 * Units that are not on the board
@@ -11,9 +13,12 @@ public class Player {
 	 */
 	private final int id;
 	
-	public Player(int id, int units) {
+	private final AID aid;
+	
+	public Player(int id, int units, AID aid) {
 		this.id = id;
 		this.unitsLeft = units;
+		this.aid = aid;
 	}
 	
 	public int getID() {

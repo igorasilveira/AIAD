@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
+import jade.core.AID;
 import logic.Card.Army;
 
 public class Game {
@@ -77,13 +78,13 @@ public class Game {
 
 	public static void main(String[] args) {
 		Game g = new Game();
-		g.start(4);
+	
 	}
 	
 	/**
 	 * starts the game
 	 */
-	public void start(int numberOfPlayers) {
+	public void start(ArrayList<AID> numberOfPlayers) {
 		loadPlayers(numberOfPlayers);
 		System.out.println("Started Setup!");
 		
@@ -402,11 +403,11 @@ public class Game {
 	/**
 	 * Creates players
 	 */
-	private void loadPlayers(int numberOfPlayers) {
-		int units = Utils.startingUnits.get(numberOfPlayers);
+	private void loadPlayers(ArrayList<AID> players) {
+		int units = Utils.startingUnits.get(players.size());
 		
-		for(int i = 0; i < numberOfPlayers; i++) {
-			this.players.add(new Player(i+1, units));
+		for(int i = 0; i < players.size(); i++) {
+			this.players.add(new Player(i+1, units, players.get(i)));
 		}
 	}
 
