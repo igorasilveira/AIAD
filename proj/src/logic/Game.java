@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import logic.Card.Army;
 
 public class Game {
 	public enum GameStage {
-		Setup, Middle, Finished
+		Setup, Playing, Finished
 	}
 
 	/**
@@ -89,15 +90,16 @@ public class Game {
 		this.turn = startingPlayer;
 		
 		while(this.stage != GameStage.Finished) {
+			Player p = this.players.get(this.turn);
+			
 			switch(this.stage) {
 			case Setup:
-				Player p = this.players.get(this.turn);
-				
 				ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
-				
+
 				if(unclaimed.size() > 0) {
+					//TODO agent chooses territory
 					Collections.shuffle(unclaimed);
-					
+
 					Territory t = unclaimed.get(0);
 					
 					t.setPlayerID(p.getID());
@@ -106,6 +108,7 @@ public class Game {
 					p.decreaseUnits(1);
 				}
 				else {
+					//TODO agent chooses territory
 					ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
 					Collections.shuffle(claimed);
 					
@@ -118,12 +121,91 @@ public class Game {
 				nextTurn();
 				
 				if(setupFinished()) {
-					this.stage = GameStage.Middle;
+					this.stage = GameStage.Playing;
 					this.turn = startingPlayer;
 				}
 				break;
-			case Middle:
-				this.stage = GameStage.Finished;
+			case Playing:
+				p.setUnits(0);
+				p.increaseUnits(getNewUnits(p.getID()));
+				
+				//TODO check cards
+				
+				ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
+				
+				while(p.getUnitsLeft() > 0) {
+					//agent chooses territory
+					Collections.shuffle(claimed);
+					
+					Territory t = claimed.get(0);
+					t.increaseUnits(1);
+					
+					p.decreaseUnits(1);
+				}
+				
+				
+				ArrayList<Attack> attacks = getAttackOptions(p.getID());
+
+				//decide battle
+				Random r = new Random();
+				
+				while(attacks.size() > 0) {
+					Collections.shuffle(attacks);
+
+					Attack a = attacks.get(0);
+					
+					//decide number of dice
+					int atDice = r.nextInt(3)+1;
+					int defDice = r.nextInt(2)+1;
+					
+					boolean[] result = diceRollWinner(atDice, defDice);
+					
+					int i = 0;
+					while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
+						if(result[i]) {
+							a.defender.decreaseUnits(1);
+						}
+						else {
+							a.attacker.decreaseUnits(1);
+						}
+						
+						i++;
+					}
+					
+					if(a.defender.getUnits() == 0) {
+						a.defender.setPlayerID(p.getID());
+						a.defender.increaseUnits(1);
+						
+						a.attacker.decreaseUnits(1);
+					}
+					
+					attacks = getAttackOptions(p.getID());
+				}
+				
+				
+				//TODO fortify position (function getFortifyOptions)
+				
+				//check if you have to receive cards
+				if(getClaimedTerrritories(p.getID()).size() > claimed.size()) {
+					//TODO receive card
+				}
+				
+				/**************/
+				System.out.println("Turn: Player " + p.getID());
+				
+				for(Player pl : this.players) {
+					ArrayList<Territory> c = getClaimedTerrritories(pl.getID());
+					
+					System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
+				}
+				System.out.println("");
+				/**************/
+				
+				nextTurnAndRemove();
+				
+				if(isGameFinished() != 0) {
+					this.stage = GameStage.Finished;
+				}
 				break;
 			}
 		}
@@ -133,13 +215,86 @@ public class Game {
 		for(Player p : this.players) {
 			ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
 			
-			System.out.println("Player " + p.getID() + " claimed " + claimed.size() + " territories!");
+			System.out.println("Player " + p.getID() + " has " + claimed.size() + " territories!");
 			for(Territory t : claimed) {
-				System.out.println("Territory " + t.getTerritoryID() + " has " + t.getUnits() + " units");
+				System.out.println("Territory " + t.territoryID + " has " + t.getUnits() + " units");
 			}
 			System.out.println("");
 		}
 		
+	}
+	
+	private ArrayList<Fortify> getFortifyOptions(int id){
+		ArrayList<Fortify> fortify = new ArrayList<Fortify>();
+
+		for(Continent continent : this.continents) {
+			for(Territory from : continent.getTerritories()) {
+
+				if(from.getPlayerID() == id && from.getUnits() >= 2) {
+					
+					for(Territory to : from.getNeighbours()) {
+						if(to.getPlayerID() == id) {
+							fortify.add(new Fortify(from, to, from.getUnits() - 1));
+						}
+					}
+				}
+			}
+		}
+
+		return fortify;
+	}
+	
+	/**
+	 * 
+	 * @param id attacking player id
+	 * @return attack options for that player
+	 */
+	private ArrayList<Attack> getAttackOptions(int id) {
+		ArrayList<Attack> attacks = new ArrayList<Attack>();
+		
+		for(Continent continent : this.continents) {
+			for(Territory territory : continent.getTerritories()) {
+				
+				if(territory.getPlayerID() == id && territory.getUnits() >= 2) {
+					
+					for(Territory neighbour : territory.getNeighbours()) {
+						if(neighbour.getPlayerID() != id) {
+							attacks.add(new Attack(territory, neighbour));
+						}
+					}
+				}
+			}
+		}
+		
+		return attacks;
+	}
+	
+	/**
+	 * @param id player id
+	 * @return number of units player receives on the beggining of the turn
+	 */
+	private int getNewUnits(int id) {
+		int result = 0;
+		
+		ArrayList<Territory> claimed = getClaimedTerrritories(id);
+		result = claimed.size()/3;
+		
+		for(Continent continent : this.continents) {
+			boolean controls = true;
+			
+			for(Territory territory : continent.getTerritories()) {
+				if(territory.getPlayerID() != id) {
+					controls = false;
+					break;
+				}
+			}
+			
+			if(controls) {
+				result+=continent.value;
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -148,7 +303,7 @@ public class Game {
 	private ArrayList<Territory> getUnclaimedTerrritories() {
 		ArrayList<Territory> unclaimed = new ArrayList<Territory>();
 		
-		for (Continent continent : continents) {
+		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
 				if(territory.getPlayerID() == 0) {
 					unclaimed.add(territory);
@@ -166,7 +321,7 @@ public class Game {
 	private ArrayList<Territory> getClaimedTerrritories(int id) {
 		ArrayList<Territory> claimed = new ArrayList<Territory>();
 		
-		for (Continent continent : continents) {
+		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
 				if(territory.getPlayerID() == id) {
 					claimed.add(territory);
@@ -185,6 +340,40 @@ public class Game {
 		}
 		else {
 			this.turn++;
+		}
+	}
+	
+	/**
+	 * changes the turn to the next player and deletes player if he has no territories
+	 */
+	private void nextTurnAndRemove() {
+		if(this.turn == this.players.size() - 1) {
+			this.turn = 0;
+		}
+		else {
+			this.turn++;
+		}
+		
+		int id = this.players.get(this.turn).getID();
+		boolean found = false;
+		
+		loop:{
+			for (Continent continent : this.continents) {
+				for (Territory territory : continent.getTerritories()) {
+					if(territory.getPlayerID() == id) {
+						found = true;
+						break loop;
+					}
+				}
+			}
+		}
+
+		if(!found) {
+			this.players.remove(this.turn);
+			
+			if(this.turn == this.players.size()) {
+				this.turn = 0;
+			}
 		}
 	}
 	
@@ -446,27 +635,38 @@ public class Game {
 
 	/**
 	 * Method that decides the battle given the attacker's and the defender's dice rolls
-	 * @param attacker array of dice rolls the attacker got
-	 * @param defender array of dice rolls the defender got
+	 * @param attacker number of dice to use
+	 * @param defender number of dice to use
 	 * @return array with results from battle each true means attacker wins and each false means defender wins
 	 */
-	public boolean[] decideBattle(int[] attacker, int[] defender)
+	public boolean[] diceRollWinner(int attacker, int defender)
 	{
-		boolean[] results = new boolean[Math.min(attacker.length, defender.length)];
-
-		Arrays.sort(attacker); Arrays.sort(defender);
-		int offset = 1;
-		while(attacker.length >= offset && defender.length >= offset)
-		{
-			if(attacker[attacker.length - offset] > defender[defender.length - offset])
-			{ //attacker wins
-				results[offset - 1] = true;
-			} else
-			{ //defender wins (including in case of a tie)
-				results[offset - 1] = false;
-			}
-			offset++;
+		if(attacker < 1 || attacker > 3) {
+			return null;
 		}
+		
+		if(defender < 1 || defender > 2) {
+			return null;
+		}
+		
+		boolean[] results = new boolean[Math.min(attacker, defender)];
+		
+		int[] attackerDice = Utils.rollDice(attacker);
+		int[] defenderDice = Utils.rollDice(defender);
+		
+		int index = 0;
+		while(index < attackerDice.length && index < defenderDice.length) {
+			if(attackerDice[index] > defenderDice[index]){ 
+				//attacker wins
+				results[index] = true;
+			} 
+			else{ 
+				//defender wins (including in case of a tie)
+				results[index] = false;
+			}
+			index++;
+		}
+		
 		return results;
 	}
 	
@@ -476,7 +676,7 @@ public class Game {
 	 */
 	public int isGameFinished(){
 		int firstPlayerID = 0;
-		for (Continent continent : continents) {
+		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
 				if(firstPlayerID == 0)
 				{

@@ -35,4 +35,20 @@ public class Player {
 		this.unitsLeft -= amount;
 	}
 	
+	/**
+	 * increases the number of units
+	 * @param amount amount to increase
+	 */
+	public void increaseUnits(int amount) {
+		this.unitsLeft += amount;
+	}
+	
+	/**
+	 * set the units to the given amount
+	 * @param units 
+	 */
+	public void setUnits(int units) {
+		this.unitsLeft = units;
+	}
+	
 }
