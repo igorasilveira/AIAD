@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.ArrayList;
 import jade.core.AID;
 
 public class Player {
@@ -13,6 +14,10 @@ public class Player {
 	 */
 	private final int id;
 	
+	/**
+	 * Cards that the player has
+	 */
+	private ArrayList<Card> cards;
 	private final AID aid;
 	
 	public Player(int id, int units, AID aid) {
@@ -54,6 +59,21 @@ public class Player {
 	 */
 	public void setUnits(int units) {
 		this.unitsLeft = units;
+	}
+	
+	/**
+	 * adds card to the list of cards
+	 * @param card card to add
+	 */
+	public void addCard(Card card) {
+		this.cards.add(card);
+	}
+	
+	/**
+	 * @return Player card list
+	 */
+	public ArrayList<Card> getCards() {
+		return this.cards;
 	}
 	
 }

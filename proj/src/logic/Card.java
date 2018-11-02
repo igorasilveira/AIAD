@@ -8,16 +8,28 @@ public class Card {
 	/**
 	 * Unique id to identify the territory. -1 if it is a wildcard.
 	 */
-	private int territoryID;
+	public final int territoryID;
 	
 	/**
 	 * Army type of the card. null if it is a wildcard.
 	 */
-	private Army army;
+	public final Army army;
 	
 	public Card(int territoryID, Army army) {
 		this.territoryID = territoryID;
 		this.army = army;
+	}
+	
+	public boolean isEqual(Card card) {
+		if(this.territoryID != card.territoryID) {
+			return false;
+		}
+		
+		if(this.army != card.army) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public void dump() {
