@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -10,9 +11,9 @@ public class Utils {
 	/**
 	 * Method that rolls the given amount of dice
 	 * @param diceAmount amount of dice to be rolled
-	 * @return array of length diceAmount with the values gotten from the dice rolls
+	 * @return array of length diceAmount with the values gotten from the dice rolls in decreasing order
 	 */
-	int[] rollDice(int diceAmount)
+	public static int[] rollDice(int diceAmount)
 	{
 		int[] results = new int[diceAmount];
 
@@ -20,6 +21,14 @@ public class Utils {
 
 		for (int i = 0; i < results.length; i++) {
 			results[i] = rand.nextInt(6) + 1;
+		}
+		
+		Arrays.sort(results);
+		
+		for (int i = 0; i < results.length/2; i++) {
+			int buffer = results[i];
+			results[i] = results[results.length - 1 - i];
+			results[results.length - 1 - i] = buffer;
 		}
 
 		return results;

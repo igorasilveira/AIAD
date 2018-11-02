@@ -12,7 +12,7 @@ public class Territory {
 	/**
 	 * Unique id to identify the territory its value is one unit above its position in {@link Game} class' territories array list
 	 */
-	private int territoryID;
+	public final int territoryID;
 	
 	/**
 	 * Id of player that controls the territory, 0 if not taken yet
@@ -42,14 +42,6 @@ public class Territory {
 
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
-	}
-
-	/**
-	 * Getter for field territoryID
-	 * @return id of the current territory
-	 */
-	public int getTerritoryID() {
-		return territoryID;
 	}
 	
 	/**
@@ -116,7 +108,7 @@ public class Territory {
 		System.out.print("\tNeighbour of:");
 		
 		for (int i = 0; i < this.neighbours.size(); i++) {
-			System.out.print(" " + (this.neighbours.get(i).getTerritoryID()));
+			System.out.print(" " + (this.neighbours.get(i).territoryID));
 		}
 		System.out.print("\n");
 	}

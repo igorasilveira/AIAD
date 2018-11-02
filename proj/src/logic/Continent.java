@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Continent {
 	private ArrayList<Territory> territories;
-	public int continentID;
+	public final int continentID;
 	public final int value;
 	
 	public Continent(int id, int value) {
