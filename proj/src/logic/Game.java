@@ -147,19 +147,61 @@ public class Game {
 				ArrayList<Attack> attacks = getAttackOptions(p.getID());
 
 				//TODO decide battle
+				Random r = new Random();
+				
 				while(attacks.size() > 0) {
 					Collections.shuffle(attacks);
 
 					Attack a = attacks.get(0);
 					
+					//TODO decide number of dice
+					int atDice = r.nextInt(3)+1;
+					int defDice = r.nextInt(2)+1;
 					
+					boolean[] result = diceRollWinner(atDice, defDice);
+					
+					int i = 0;
+					while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
+						if(result[i]) {
+							a.defender.decreaseUnits(1);
+						}
+						else {
+							a.attacker.decreaseUnits(1);
+						}
+						
+						i++;
+					}
+					
+					if(a.defender.getUnits() == 0) {
+						a.defender.setPlayerID(p.getID());
+						a.defender.increaseUnits(1);
+						
+						a.attacker.decreaseUnits(1);
+					}
+					
+					attacks = getAttackOptions(p.getID());
 				}
 				
 				
 				//TODO fortify position
 				
 				//TODO check if you have to receive cards
-				this.stage = GameStage.Finished;
+				/**************/
+				System.out.println("Turn: Player " + p.getID());
+				
+				for(Player pl : this.players) {
+					ArrayList<Territory> c = getClaimedTerrritories(pl.getID());
+					
+					System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
+				}
+				System.out.println("");
+				/**************/
+				
+				nextTurnAndRemove();
+				
+				if(isGameFinished() != 0) {
+					this.stage = GameStage.Finished;
+				}
 				break;
 			}
 		}
@@ -169,7 +211,7 @@ public class Game {
 		for(Player p : this.players) {
 			ArrayList<Territory> claimed = getClaimedTerrritories(p.getID());
 			
-			System.out.println("Player " + p.getID() + " claimed " + claimed.size() + " territories!");
+			System.out.println("Player " + p.getID() + " has " + claimed.size() + " territories!");
 			for(Territory t : claimed) {
 				System.out.println("Territory " + t.territoryID + " has " + t.getUnits() + " units");
 			}
@@ -274,6 +316,40 @@ public class Game {
 		}
 		else {
 			this.turn++;
+		}
+	}
+	
+	/**
+	 * changes the turn to the next player and deletes player if he has no territories
+	 */
+	private void nextTurnAndRemove() {
+		if(this.turn == this.players.size() - 1) {
+			this.turn = 0;
+		}
+		else {
+			this.turn++;
+		}
+		
+		int id = this.players.get(this.turn).getID();
+		boolean found = false;
+		
+		loop:{
+			for (Continent continent : this.continents) {
+				for (Territory territory : continent.getTerritories()) {
+					if(territory.getPlayerID() == id) {
+						found = true;
+						break loop;
+					}
+				}
+			}
+		}
+
+		if(!found) {
+			this.players.remove(this.turn);
+			
+			if(this.turn == this.players.size()) {
+				this.turn = 0;
+			}
 		}
 	}
 	

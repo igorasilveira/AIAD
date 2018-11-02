@@ -100,6 +100,14 @@ public class Territory {
 	}
 	
 	/**
+	 * decreases the number of units
+	 * @param amount amount to decrease
+	 */
+	public void decreaseUnits(int amount) {
+		this.units -= amount;
+	}
+	
+	/**
 	 * Method used to print in the console the data in this territory
 	 */
 	public void dump()

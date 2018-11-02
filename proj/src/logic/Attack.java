@@ -1,11 +1,11 @@
 package logic;
 
 public class Attack {
-	public final Territory from;
-	public final Territory to;
+	public final Territory attacker;
+	public final Territory defender;
 	
-	public Attack(Territory from, Territory to) {
-		this.from = from;
-		this.to= to;
+	public Attack(Territory attacker, Territory defender) {
+		this.attacker = attacker;
+		this.defender= defender;
 	}
 }
