@@ -22,6 +22,10 @@
 		* PROPOSE 
 	* answer: worked or not 
 		* AGREE REFUSE
+* Board->Player 
+	* send: game state + attack class 
+		* ??
+	* answer: number of dice
 * Player->Player 
 	* send: treaty proposition
 		* PROPOSE
