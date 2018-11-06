@@ -1,9 +1,10 @@
 package logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import jade.core.AID;
 
-public class Player {
+public class Player implements Serializable {
 	/**
 	 * Units that are not on the board
 	 */

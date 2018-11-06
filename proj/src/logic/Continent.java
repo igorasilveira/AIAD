@@ -1,8 +1,9 @@
 package logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Continent {
+public class Continent implements Serializable {
 	private ArrayList<Territory> territories;
 	public final int continentID;
 	public final int value;

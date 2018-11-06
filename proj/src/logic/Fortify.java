@@ -1,6 +1,8 @@
 package logic;
 
-public class Fortify {
+import java.io.Serializable;
+
+public class Fortify implements Serializable {
 	public final Territory from;
 	public final Territory to;
 	

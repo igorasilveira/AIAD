@@ -1,8 +1,9 @@
 package logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Territory {
+public class Territory implements Serializable{
 
 	/**
 	 * List of all adjacent or connected territories

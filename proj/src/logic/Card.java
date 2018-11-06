@@ -1,6 +1,8 @@
 package logic;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable {
 	public enum Army {
 		Cavalry, Infantry, Artillery;
 	}

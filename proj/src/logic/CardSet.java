@@ -1,8 +1,9 @@
 package logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CardSet {
+public class CardSet implements Serializable {
 	public ArrayList<Card> cards;
 	
 	public CardSet(ArrayList<Card> cards) {

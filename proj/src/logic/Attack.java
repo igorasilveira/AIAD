@@ -1,6 +1,8 @@
 package logic;
 
-public class Attack {
+import java.io.Serializable;
+
+public class Attack implements Serializable {
 	public final Territory attacker;
 	public final Territory defender;
 	

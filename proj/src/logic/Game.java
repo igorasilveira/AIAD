@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -11,7 +12,7 @@ import java.util.Random;
 import jade.core.AID;
 import logic.Card.Army;
 
-public class Game {
+public class Game implements Serializable {
 	public enum GameStage {
 		Waiting, Setup, Playing, Finished
 	}
