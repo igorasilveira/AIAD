@@ -58,6 +58,7 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+
 	}
 
 	
@@ -71,8 +72,7 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 		public void run() {
 			((BoardAgent) behaviour.getAgent()).getGame().setStage(GameStage.Setup);
 			System.out.println(((BoardAgent) behaviour.getAgent()).getGame().getStage());
-			((BoardAgent) behaviour.getAgent()).addBehaviour(new BoardPlayingBehaviour((BoardAgent) behaviour.getAgent()));
-			((BoardAgent) behaviour.getAgent()).removeBehaviour(behaviour);
+			behaviour.scheduleNext(true, 0);
 		}
 		
 	}
