@@ -25,6 +25,7 @@ public class Player implements Serializable {
 		this.id = id;
 		this.unitsLeft = units;
 		this.aid = aid;
+		this.cards = new ArrayList<Card>();
 	}
 	
 	public int getID() {
