@@ -2,9 +2,11 @@ package agents;
 
 import java.util.ArrayList;
 
+import agents.behaviours.BoardPlayingBehaviour;
 import agents.behaviours.BoardSetupBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import logic.Game;
@@ -23,9 +25,12 @@ public class BoardAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("player");
 		template.addServices(sd);
-		
-		addBehaviour(new BoardSetupBehaviour(this, template));
-		
+
+		SequentialBehaviour sequentialBehaviour = new SequentialBehaviour();
+		sequentialBehaviour.addSubBehaviour(new BoardSetupBehaviour(this, template));
+		sequentialBehaviour.addSubBehaviour(new BoardPlayingBehaviour(this));
+
+		addBehaviour(sequentialBehaviour);
 
 		System.out.println(getLocalName() + ": starting to work!");
 	}
