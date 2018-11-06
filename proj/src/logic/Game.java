@@ -189,10 +189,9 @@ public class Game implements Serializable {
 					Attack a = attacks.get(0);
 					
 					//TODO decide number of dice
-					int atDice = r.nextInt(3)+1;
 					int defDice = r.nextInt(2)+1;
 					
-					boolean[] result = diceRollWinner(atDice, defDice);
+					boolean[] result = diceRollWinner(a.diceAmount, defDice);
 					
 					int i = 0;
 					while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
@@ -462,7 +461,7 @@ public class Game implements Serializable {
 	 */
 	private ArrayList<Attack> getAttackOptions(int id) {
 		ArrayList<Attack> attacks = new ArrayList<Attack>();
-		
+		Random r  = new Random();
 		for(Continent continent : this.continents) {
 			for(Territory territory : continent.getTerritories()) {
 				
@@ -470,7 +469,8 @@ public class Game implements Serializable {
 					
 					for(Territory neighbour : territory.getNeighbours()) {
 						if(neighbour.getPlayerID() != id) {
-							attacks.add(new Attack(territory, neighbour));
+							int dice = r.nextInt(3)+1;
+							attacks.add(new Attack(territory, neighbour, dice));
 						}
 					}
 				}

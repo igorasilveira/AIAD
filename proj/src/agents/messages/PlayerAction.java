@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class PlayerAction implements Serializable {
 
-	private Actions action;
+	protected Actions action;
 	
 	public PlayerAction(Actions action) {
 		// represents any possible action

@@ -6,7 +6,7 @@ import logic.Game;
 
 public class RequestPlayerAction extends PlayerAction{
 
-	private Game game;
+	protected Game game;
 
 	public RequestPlayerAction(Actions action, Game game) {
 		super(action);
