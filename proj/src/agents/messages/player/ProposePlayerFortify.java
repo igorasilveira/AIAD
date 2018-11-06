@@ -10,8 +10,8 @@ public class ProposePlayerFortify  extends ProposePlayerAction {
 
 	private int maxAmount;
 
-	public ProposePlayerFortify(int PlayerID, Territory originTerritory, Territory destinationTerritory, int maxAmount) {
-		super(Actions.Fortify, PlayerID);
+	public ProposePlayerFortify(Territory originTerritory, Territory destinationTerritory, int maxAmount) {
+		super(Actions.Fortify);
 		this.originTerritory = originTerritory;
 		this.destinationTerritory= destinationTerritory;
 		this.maxAmount = maxAmount;

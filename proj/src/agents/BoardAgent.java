@@ -2,8 +2,9 @@ package agents;
 
 import java.util.ArrayList;
 
-import agents.behaviours.BoardPlayingBehaviour;
-import agents.behaviours.BoardSetupBehaviour;
+import agents.behaviours.board.BoardPlayingBehaviour;
+import agents.behaviours.board.BoardSetupBehaviour;
+import agents.behaviours.board.BoardWaitingBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
@@ -21,14 +22,15 @@ public class BoardAgent extends Agent {
 	public void setup() {
 		
 		this.game = new Game();
-		
+
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("player");
 		template.addServices(sd);
 
 		sequentialBehaviour = new SequentialBehaviour();
-		sequentialBehaviour.addSubBehaviour(new BoardSetupBehaviour(this, template));
+		sequentialBehaviour.addSubBehaviour(new BoardWaitingBehaviour(this, template));
+		sequentialBehaviour.addSubBehaviour(new BoardSetupBehaviour(this));
 		sequentialBehaviour.addSubBehaviour(new BoardPlayingBehaviour(this));
 		addBehaviour(sequentialBehaviour);
 

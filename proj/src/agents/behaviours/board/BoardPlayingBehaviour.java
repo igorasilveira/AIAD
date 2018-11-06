@@ -1,4 +1,4 @@
-package agents.behaviours;
+package agents.behaviours.board;
 
 import java.io.IOException;
 
@@ -22,7 +22,6 @@ public class BoardPlayingBehaviour extends Behaviour {
 	public BoardPlayingBehaviour(Agent a) {
 		super(a);
 		this.game = ((BoardAgent) a).getGame();
-
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 	@Override
 	public void action() {
-		//Get current AID
+		/*//Get current AID
 		AID currentPlayer = this.game.getCurrentAID();
 
 		PlayerAction request;
@@ -115,7 +114,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-		}
+		}*/
 
 	}
 

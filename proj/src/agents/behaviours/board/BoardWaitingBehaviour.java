@@ -1,4 +1,4 @@
-package agents.behaviours;
+package agents.behaviours.board;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import agents.BoardAgent;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -14,12 +13,12 @@ import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 import logic.Game.GameStage;
 
-public class BoardSetupBehaviour extends SubscriptionInitiator {
+public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
 	private TimerTask task = new TimerSchedule(this);
 	private Timer timer = new Timer(true);
 	
-	public BoardSetupBehaviour(Agent agent, DFAgentDescription dfad) {
+	public BoardWaitingBehaviour(Agent agent, DFAgentDescription dfad) {
 		super(agent, DFService.createSubscriptionMessage(agent, agent.getDefaultDF(), dfad, null));
 	}
 
@@ -33,15 +32,15 @@ public class BoardSetupBehaviour extends SubscriptionInitiator {
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 				msg.addReceiver(agent);
 				msg.setContent("Welcome!!");
-				this.myAgent.send(msg);
+				myAgent.send(msg);
 
-				((BoardAgent) this.getAgent()).togglePlayer(agent);
-				if(((BoardAgent) this.getAgent()).getPlayerAmount()  > 6)
+				((BoardAgent) myAgent).togglePlayer(agent);
+				if(((BoardAgent) myAgent).getPlayerAmount()  > 6)
 				{
-					((BoardAgent) this.getAgent()).togglePlayer(agent);
+					((BoardAgent) myAgent).togglePlayer(agent);
 				}
 
-				if(((BoardAgent) this.getAgent()).getPlayerAmount()  > 2)
+				if(((BoardAgent) myAgent).getPlayerAmount()  > 2)
 				{
 					timer.schedule(task, 1000);
 					System.out.println("Scheduled timer");
@@ -64,8 +63,8 @@ public class BoardSetupBehaviour extends SubscriptionInitiator {
 
 	
 	public class TimerSchedule extends TimerTask {
-		BoardSetupBehaviour behaviour;
-		public TimerSchedule(BoardSetupBehaviour behaviour) {
+		BoardWaitingBehaviour behaviour;
+		public TimerSchedule(BoardWaitingBehaviour behaviour) {
 			super();
 			this.behaviour = behaviour;
 		}

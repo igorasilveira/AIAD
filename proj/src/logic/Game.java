@@ -63,6 +63,11 @@ public class Game implements Serializable {
 	private int turn;
 
 	/**
+	 *  variable to store generated initial player index between methods
+	 */
+	private int startingPlayer;
+
+	/**
 	 * Constructs a game class with no territories
 	 */
 	public Game() {
@@ -75,16 +80,9 @@ public class Game implements Serializable {
 
 	}
 
-	public static void main(String[] args) {
-		Game g = new Game();
-	
-	}
-	
-	/**
-	 * starts the game
-	 */
-	public void start(ArrayList<AID> numberOfPlayers) {
+	public void setup(ArrayList<AID> numberOfPlayers) {
 
+		System.out.println("Running game setup");
 
 		loadContinents();
 		loadTerritories();
@@ -94,11 +92,24 @@ public class Game implements Serializable {
 
 		loadPlayers(numberOfPlayers);
 
+		startingPlayer = new Random().nextInt(this.players.size());
+		turn = startingPlayer;
+
+	}
+
+	public static void main(String[] args) {
+		Game g = new Game();
+
+	}
+
+	/**
+	 * starts the game
+	 */
+	public void start(ArrayList<AID> numberOfPlayers) {
+
 		System.out.println("Started Setup!");
-		
-		int startingPlayer = new Random().nextInt(this.players.size());
-		this.turn = startingPlayer;
-		
+
+
 		while(this.stage != GameStage.Finished) {
 			
 			
@@ -561,7 +572,7 @@ public class Game implements Serializable {
 	/**
 	 * changes the turn to the next player
 	 */
-	private void nextTurn() {
+	public void nextTurn() {
 		if(this.turn == this.players.size() - 1) {
 			this.turn = 0;
 		}
@@ -596,7 +607,7 @@ public class Game implements Serializable {
 	 * Method that checks if the game setup is finished
 	 * @return true if it is finished and false otherwise
 	 */
-	private boolean setupFinished() {
+	public boolean setupFinished() {
 		for(int i = 0; i < this.players.size(); i++) {
 			if(this.players.get(i).getUnitsLeft() > 0) {
 				return false;
@@ -917,7 +928,7 @@ public class Game implements Serializable {
 	}
 
 	public AID getCurrentAID() {
-		return players.get(this.turn).getAid();
+		return players.get(turn).getAid();
 	}
 
 	
