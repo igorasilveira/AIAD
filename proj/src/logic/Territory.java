@@ -25,6 +25,11 @@ public class Territory implements Serializable{
 	 */
 	private int units;
 	
+	/**
+	 * Id of the continent this territory belongs to
+	 */
+	private int continentID;
+	
 	
 	/**
 	 * Creates a territory given its id
@@ -108,6 +113,14 @@ public class Territory implements Serializable{
 		this.units -= amount;
 	}
 	
+	public int getContinentID() {
+		return continentID;
+	}
+
+	public void setContinentID(int continentID) {
+		this.continentID = continentID;
+	}
+
 	/**
 	 * Method used to print in the console the data in this territory
 	 */

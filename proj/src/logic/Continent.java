@@ -16,6 +16,7 @@ public class Continent implements Serializable {
 	
 	public void addTerritory(Territory territory)
 	{
+		territory.setContinentID(this.continentID);
 		this.territories.add(territory);
 	}
 	
