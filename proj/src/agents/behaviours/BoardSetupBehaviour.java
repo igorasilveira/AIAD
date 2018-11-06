@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import agents.BoardAgent;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -13,7 +14,7 @@ import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 import logic.Game.GameStage;
 
-public class BoardSetupBehaviour extends SubscriptionInitiator{
+public class BoardSetupBehaviour extends SubscriptionInitiator {
 
 	private TimerTask task = new TimerSchedule(this);
 	private Timer timer = new Timer(true);
@@ -42,7 +43,7 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 
 				if(((BoardAgent) this.getAgent()).getPlayerAmount()  > 2)
 				{
-					timer.schedule(task, 10000);
+					timer.schedule(task, 1000);
 					System.out.println("Scheduled timer");
 				} else
 				{
@@ -71,8 +72,9 @@ public class BoardSetupBehaviour extends SubscriptionInitiator{
 		@Override
 		public void run() {
 			((BoardAgent) behaviour.getAgent()).getGame().setStage(GameStage.Setup);
-			System.out.println(((BoardAgent) behaviour.getAgent()).getGame().getStage());
-			behaviour.scheduleNext(true, 0);
+			System.out.println("Timer Complete");
+			((BoardAgent) behaviour.getAgent()).getSequentialBehaviour().removeSubBehaviour(behaviour);
+			((BoardAgent) behaviour.getAgent()).getSequentialBehaviour().reset();
 		}
 		
 	}

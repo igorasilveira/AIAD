@@ -72,13 +72,7 @@ public class Game implements Serializable {
 		this.stage = GameStage.Waiting;
 		this.turn = 0;
 		this.setsTurnedIn = 0;
-		
-		
-		loadContinents();
-		loadTerritories();
-		loadCards();
 
-		shuffleCards();
 	}
 
 	public static void main(String[] args) {
@@ -90,7 +84,16 @@ public class Game implements Serializable {
 	 * starts the game
 	 */
 	public void start(ArrayList<AID> numberOfPlayers) {
+
+
+		loadContinents();
+		loadTerritories();
+		loadCards();
+
+		shuffleCards();
+
 		loadPlayers(numberOfPlayers);
+
 		System.out.println("Started Setup!");
 		
 		int startingPlayer = new Random().nextInt(this.players.size());

@@ -14,6 +14,7 @@ import logic.Game;
 public class BoardAgent extends Agent {
 
 	private Game game;
+	private SequentialBehaviour sequentialBehaviour;
 
 	private ArrayList<AID> players = new ArrayList<AID>();
 
@@ -26,10 +27,9 @@ public class BoardAgent extends Agent {
 		sd.setType("player");
 		template.addServices(sd);
 
-		SequentialBehaviour sequentialBehaviour = new SequentialBehaviour();
+		sequentialBehaviour = new SequentialBehaviour();
 		sequentialBehaviour.addSubBehaviour(new BoardSetupBehaviour(this, template));
 		sequentialBehaviour.addSubBehaviour(new BoardPlayingBehaviour(this));
-
 		addBehaviour(sequentialBehaviour);
 
 		System.out.println(getLocalName() + ": starting to work!");
@@ -61,5 +61,10 @@ public class BoardAgent extends Agent {
 			}
 		}
 		this.players.add(player);
+	}
+
+
+	public SequentialBehaviour getSequentialBehaviour() {
+		return sequentialBehaviour;
 	}
 }
