@@ -1,49 +1,33 @@
 package agents.messages.player;
 
+import logic.Territory;
+
 public class ProposePlayerFortify  extends ProposePlayerAction {
 
-	private int originContinentID;
-	private int originTerritoryID;
-	private int destinationContinentID;
-	private int destinationTerritoryID;
-	
+	private Territory originTerritory;
+	private Territory destinationTerritory;
+
 	private int maxAmount;
-	
+
 	public ProposePlayerFortify() {
 		super();
 		// player proposes a fortification to the board
 	}
 
-	public int getOriginContinentID() {
-		return originContinentID;
+	public Territory getOriginTerritoryID() {
+		return originTerritory;
 	}
 
-	public void setOriginContinentID(int originContinentID) {
-		this.originContinentID = originContinentID;
+	public void setOriginTerritoryID(Territory originTerritoryID) {
+		this.originTerritory = originTerritoryID;
 	}
 
-	public int getOriginTerritoryID() {
-		return originTerritoryID;
+	public Territory getDestinationTerritoryID() {
+		return destinationTerritory;
 	}
 
-	public void setOriginTerritoryID(int originTerritoryID) {
-		this.originTerritoryID = originTerritoryID;
-	}
-
-	public int getDestinationContinentID() {
-		return destinationContinentID;
-	}
-
-	public void setDestinationContinentID(int destinationContinentID) {
-		this.destinationContinentID = destinationContinentID;
-	}
-
-	public int getDestinationTerritoryID() {
-		return destinationTerritoryID;
-	}
-
-	public void setDestinationTerritoryID(int destinationTerritoryID) {
-		this.destinationTerritoryID = destinationTerritoryID;
+	public void setDestinationTerritoryID(Territory destinationTerritoryID) {
+		this.destinationTerritory = destinationTerritoryID;
 	}
 
 	public int getMaxAmount() {
