@@ -5,7 +5,7 @@ import agents.messages.PlayerAction;
 
 public class ProposePlayerAction extends PlayerAction {
 
-	private int playerID;
+	protected int playerID;
 
 	public ProposePlayerAction(Actions action, int playerID) {
 		super(action);
