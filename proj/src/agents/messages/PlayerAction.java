@@ -6,8 +6,9 @@ public class PlayerAction implements Serializable {
 
 	private Actions action;
 	
-	public PlayerAction() {
+	public PlayerAction(Actions action) {
 		// represents any possible action
+		this.action = action;
 	}
 
 	public Actions getAction() {

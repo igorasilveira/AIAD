@@ -1,5 +1,6 @@
 package agents.messages.player;
 
+import agents.messages.Actions;
 import logic.Territory;
 
 public class ProposePlayerFortify  extends ProposePlayerAction {
@@ -9,9 +10,11 @@ public class ProposePlayerFortify  extends ProposePlayerAction {
 
 	private int maxAmount;
 
-	public ProposePlayerFortify() {
-		super();
-		// player proposes a fortification to the board
+	public ProposePlayerFortify(int PlayerID, Territory originTerritory, Territory destinationTerritory, int maxAmount) {
+		super(Actions.Fortify, PlayerID);
+		this.originTerritory = originTerritory;
+		this.destinationTerritory= destinationTerritory;
+		this.maxAmount = maxAmount;
 	}
 
 	public Territory getOriginTerritoryID() {
