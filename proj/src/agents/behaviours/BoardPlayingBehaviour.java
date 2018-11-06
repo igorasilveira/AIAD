@@ -89,11 +89,18 @@ public class BoardPlayingBehaviour extends Behaviour {
 				}
 				break;
 			case Attack:
-				//Request defender to choose dice amount
-				//Apply attack or break if not valid
+				if(this.game.getStage() == GameStage.Playing)
+				{
+					//Request defender to choose dice amount
+					//Apply attack or break if not valid	
+				}
 				break;
 			case Fortify:	
-				//apply changes or break if not valid
+				if(this.game.getStage() == GameStage.Playing)
+				{
+					//apply changes or break if not valid
+				}
+				
 				break;
 			case Done:
 				if (setupMade)
