@@ -107,8 +107,10 @@ public class Game implements Serializable {
 	 */
 	public void start(ArrayList<AID> numberOfPlayers) {
 
-		System.out.println("Started Setup!");
+		System.out.println("Started GAME!");
 
+		//TODO remove
+		boolean x = true;
 
 		while(this.stage != GameStage.Finished) {
 			
@@ -124,6 +126,20 @@ public class Game implements Serializable {
 				}
 				break;
 			case Playing:
+				if (x) {
+
+					/**************/
+					System.out.println("Turn: Player " + getCurrentPlayer().getID());
+
+					for(Player pl : this.players) {
+						ArrayList<Territory> c = getClaimedTerritories(pl.getID());
+
+						System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
+					}
+					System.out.println("");
+					/**************/
+					x = false;
+				}
 				this.playingTurn();			
 				nextTurn();
 				
@@ -176,7 +192,21 @@ public class Game implements Serializable {
 		}
 
 	}
-	
+
+	public Player getCurrentPlayer() {
+		return players.get(turn);
+	}
+
+	//TODO remove this functions
+	public int findByAID(AID aid) {
+		for (Player player :
+				players) {
+			if (player.getAid() == aid)
+				return player.getID();
+		}
+		return -1;
+	}
+
 	public void playingTurn()
 	{
 		Player currentPlayer = this.players.get(this.turn);
@@ -266,7 +296,9 @@ public class Game implements Serializable {
 				//remove player from list
 				//TODO need to get cards from the player and if the total is 5 or more then you have to turn in 
 				//card sets and place the new units
-				
+
+				System.out.println("ATTACKING PLAYER " + defenderID);
+
 				if(playerLost(defenderID)) {
 					removePlayer(defenderID);
 				}
@@ -538,7 +570,7 @@ public class Game implements Serializable {
 	/**
 	 * @return list of unclaimed territories
 	 */
-	private ArrayList<Territory> getUnclaimedTerrritories() {
+	public ArrayList<Territory> getUnclaimedTerrritories() {
 		ArrayList<Territory> unclaimed = new ArrayList<Territory>();
 		
 		for (Continent continent : this.continents) {
@@ -556,7 +588,7 @@ public class Game implements Serializable {
 	 * @param id player id
 	 * @return territories claimed by that player
 	 */
-	private ArrayList<Territory> getClaimedTerritories(int id) {
+	public ArrayList<Territory> getClaimedTerritories(int id) {
 		ArrayList<Territory> claimed = new ArrayList<Territory>();
 		
 		for (Continent continent : this.continents) {
@@ -567,6 +599,23 @@ public class Game implements Serializable {
 			}
 		}
 		return claimed;
+	}
+
+	/**
+	 *
+	 * @param id territory id
+	 * @return terrytory corresponding to the searched id
+	 */
+	public Territory getTerritory(int id) {
+		for (Continent continent : this.continents) {
+			for (Territory territory : continent.getTerritories()) {
+				if(territory.territoryID == id) {
+					return territory;
+				}
+			}
+		}
+
+		return null;
 	}
 	
 	/**
@@ -915,8 +964,11 @@ public class Game implements Serializable {
 		}
 		return firstPlayerID;
 	}
-	
-	
+
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
+
 	public void setStage(GameStage stage)
 	{
 		this.stage = stage;
