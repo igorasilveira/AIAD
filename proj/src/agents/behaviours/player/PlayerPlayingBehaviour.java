@@ -1,4 +1,4 @@
-package agents.behaviours;
+package agents.behaviours.player;
 
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -12,6 +12,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 	@Override
 	public void action() {
+		System.out.println("Player Playing Behaviour");
 		// TODO Auto-generated method stub
 		
 	}

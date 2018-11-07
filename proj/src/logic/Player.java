@@ -77,5 +77,9 @@ public class Player implements Serializable {
 	public ArrayList<Card> getCards() {
 		return this.cards;
 	}
+
+	public AID getAid() {
+		return aid;
+	}
 	
 }

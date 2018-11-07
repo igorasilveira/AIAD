@@ -9,8 +9,8 @@ public class ProposePlayerAttack extends ProposePlayerAction {
 	private Territory defenderTerritory;
 	private int amountOfDice;
 
-	public ProposePlayerAttack(int PlayerID, Territory attackerTerritory, Territory defenderTerritory, int amountOfDice) {
-		super(Actions.Attack, PlayerID);
+	public ProposePlayerAttack(Territory attackerTerritory, Territory defenderTerritory, int amountOfDice) {
+		super(Actions.Attack);
 		this.attackerTerritory = attackerTerritory;
 		this.defenderTerritory= defenderTerritory;
 		this.amountOfDice = amountOfDice;

@@ -63,6 +63,11 @@ public class Game implements Serializable {
 	private int turn;
 
 	/**
+	 *  variable to store generated initial player index between methods
+	 */
+	private int startingPlayer;
+
+	/**
 	 * Constructs a game class with no territories
 	 */
 	public Game() {
@@ -75,16 +80,9 @@ public class Game implements Serializable {
 
 	}
 
-	public static void main(String[] args) {
-		Game g = new Game();
-	
-	}
-	
-	/**
-	 * starts the game
-	 */
-	public void start(ArrayList<AID> numberOfPlayers) {
+	public void setup(ArrayList<AID> numberOfPlayers) {
 
+		System.out.println("Running game setup");
 
 		loadContinents();
 		loadTerritories();
@@ -94,40 +92,30 @@ public class Game implements Serializable {
 
 		loadPlayers(numberOfPlayers);
 
+		startingPlayer = new Random().nextInt(this.players.size());
+		turn = startingPlayer;
+
+	}
+
+	public static void main(String[] args) {
+		Game g = new Game();
+
+	}
+
+	/**
+	 * starts the game
+	 */
+	public void start(ArrayList<AID> numberOfPlayers) {
+
 		System.out.println("Started Setup!");
-		
-		int startingPlayer = new Random().nextInt(this.players.size());
-		this.turn = startingPlayer;
-		
+
+
 		while(this.stage != GameStage.Finished) {
-			Player p = this.players.get(this.turn);
+			
 			
 			switch(this.stage) {
 			case Setup:
-				ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
-
-				if(unclaimed.size() > 0) {
-					//TODO agent chooses territory
-					Collections.shuffle(unclaimed);
-
-					Territory t = unclaimed.get(0);
-					
-					t.setPlayerID(p.getID());
-					t.setUnits(1);
-					
-					p.decreaseUnits(1);
-				}
-				else {
-					//TODO agent chooses territory
-					ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
-					Collections.shuffle(claimed);
-					
-					Territory t = claimed.get(0);
-					t.increaseUnits(1);
-					
-					p.decreaseUnits(1);
-				}
-				
+				this.setupTurn();				
 				nextTurn();
 				
 				if(setupFinished()) {
@@ -136,123 +124,7 @@ public class Game implements Serializable {
 				}
 				break;
 			case Playing:
-				p.setUnits(0);
-				p.increaseUnits(getNewUnits(p.getID()));
-				
-				//check cards
-				//if player has 5 or more cards he has to turn in a set, until he has 4 cards or fewer
-				
-				ArrayList<Card> playerCards = p.getCards();
-				ArrayList<CardSet> sets;
-				
-				while(playerCards.size() >= 5) {
-					sets = getCardSets(playerCards);
-					//TODO choose set
-					Collections.shuffle(sets);
-					CardSet set = sets.get(0);
-					
-					p.increaseUnits(turnInCardSet(set, playerCards));
-				}
-				
-				//TODO turning in a set is optional if you have 4 cards or fewer
-				sets = getCardSets(playerCards);
-				
-				if(sets.size() > 0) {
-					//TODO choose if you want to turn in set
-					Collections.shuffle(sets);
-					CardSet set = sets.get(0);
-					
-					p.increaseUnits(turnInCardSet(set, playerCards));
-				}
-				
-				ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
-				
-				while(p.getUnitsLeft() > 0) {
-					//TODO agent chooses territory
-					Collections.shuffle(claimed);
-					
-					Territory t = claimed.get(0);
-					t.increaseUnits(1);
-					
-					p.decreaseUnits(1);
-				}
-				
-				
-				ArrayList<Attack> attacks = getAttackOptions(p.getID());
-
-				//TODO decide battle
-				Random r = new Random();
-				
-				while(attacks.size() > 0) {
-					Collections.shuffle(attacks);
-
-					Attack a = attacks.get(0);
-					
-					//TODO decide number of dice
-					int defDice = r.nextInt(2)+1;
-					
-					boolean[] result = diceRollWinner(a.diceAmount, defDice);
-					
-					int i = 0;
-					while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
-						if(result[i]) {
-							a.defender.decreaseUnits(1);
-						}
-						else {
-							a.attacker.decreaseUnits(1);
-						}
-						
-						i++;
-					}
-					
-					if(a.defender.getUnits() == 0) {
-						int defenderID = a.defender.getPlayerID();
-						
-						a.defender.setPlayerID(p.getID());
-						a.defender.increaseUnits(1);
-						
-						a.attacker.decreaseUnits(1);
-						
-						//TODO move units from the attacking territory if you want
-						int amount = r.nextInt(a.attacker.getUnits());
-						a.attacker.decreaseUnits(amount);
-						a.defender.increaseUnits(amount);
-						
-						//check if player was eliminated
-						//remove player from list
-						//TODO need to get cards from the player and if the total is 5 or more then you have to turn in 
-						//card sets and place the new units
-						
-						if(playerLost(defenderID)) {
-							removePlayer(defenderID);
-						}
-					}
-					
-					attacks = getAttackOptions(p.getID());
-				}
-				
-				
-				//TODO fortify position (function getFortifyOptions), only once and you can move as many units as you want,
-				//but you cant leave a territory with 0 units
-				
-				//check if you have to receive cards
-				if(getClaimedTerritories(p.getID()).size() > claimed.size()) {
-					if(this.cards.size() > 0) {
-						p.addCard(this.cards.remove(0));
-					}
-				}
-				
-				/**************/
-				System.out.println("Turn: Player " + p.getID());
-				
-				for(Player pl : this.players) {
-					ArrayList<Territory> c = getClaimedTerritories(pl.getID());
-					
-					System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
-				}
-				System.out.println("");
-				/**************/
-				
+				this.playingTurn();			
 				nextTurn();
 				
 				if(isGameFinished() != 0) {
@@ -274,6 +146,157 @@ public class Game implements Serializable {
 			System.out.println("");
 		}
 		
+	}
+	
+	
+	public void setupTurn() {
+		Player currentPlayer = this.players.get(this.turn);
+		ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
+
+		if(unclaimed.size() > 0) {
+			//TODO agent chooses territory
+			Collections.shuffle(unclaimed);
+
+			Territory t = unclaimed.get(0);
+			
+			t.setPlayerID(currentPlayer.getID());
+			t.setUnits(1);
+			
+			currentPlayer.decreaseUnits(1);
+		}
+		else {
+			//TODO agent chooses territory
+			ArrayList<Territory> claimed = getClaimedTerritories(currentPlayer.getID());
+			Collections.shuffle(claimed);
+			
+			Territory t = claimed.get(0);
+			t.increaseUnits(1);
+			
+			currentPlayer.decreaseUnits(1);
+		}
+
+	}
+	
+	public void playingTurn()
+	{
+		Player currentPlayer = this.players.get(this.turn);
+		currentPlayer.setUnits(0);
+		currentPlayer.increaseUnits(getNewUnits(currentPlayer.getID()));
+		
+		//check cards
+		//if player has 5 or more cards he has to turn in a set, until he has 4 cards or fewer
+		
+		ArrayList<Card> playerCards = currentPlayer.getCards();
+		ArrayList<CardSet> sets;
+		
+		while(playerCards.size() >= 5) {
+			sets = getCardSets(playerCards);
+			//TODO choose set
+			Collections.shuffle(sets);
+			CardSet set = sets.get(0);
+			
+			currentPlayer.increaseUnits(turnInCardSet(set, playerCards));
+		}
+		
+		//TODO turning in a set is optional if you have 4 cards or fewer
+		sets = getCardSets(playerCards);
+		
+		if(sets.size() > 0) {
+			//TODO choose if you want to turn in set
+			Collections.shuffle(sets);
+			CardSet set = sets.get(0);
+			
+			currentPlayer.increaseUnits(turnInCardSet(set, playerCards));
+		}
+		
+		ArrayList<Territory> claimed = getClaimedTerritories(currentPlayer.getID());
+		
+		while(currentPlayer.getUnitsLeft() > 0) {
+			//TODO agent chooses territory
+			Collections.shuffle(claimed);
+			
+			Territory t = claimed.get(0);
+			t.increaseUnits(1);
+			
+			currentPlayer.decreaseUnits(1);
+		}
+		
+		
+		ArrayList<Attack> attacks = getAttackOptions(currentPlayer.getID());
+
+		//TODO decide battle
+		Random r = new Random();
+		
+		while(attacks.size() > 0) {
+			Collections.shuffle(attacks);
+
+			Attack a = attacks.get(0);
+			
+			//TODO decide number of dice
+			int defDice = r.nextInt(2)+1;
+			
+			boolean[] result = diceRollWinner(a.diceAmount, defDice);
+			
+			int i = 0;
+			while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
+				if(result[i]) {
+					a.defender.decreaseUnits(1);
+				}
+				else {
+					a.attacker.decreaseUnits(1);
+				}
+				
+				i++;
+			}
+			
+			if(a.defender.getUnits() == 0) {
+				int defenderID = a.defender.getPlayerID();
+				
+				a.defender.setPlayerID(currentPlayer.getID());
+				a.defender.increaseUnits(1);
+				
+				a.attacker.decreaseUnits(1);
+				
+				//TODO move units from the attacking territory if you want
+				int amount = r.nextInt(a.attacker.getUnits());
+				a.attacker.decreaseUnits(amount);
+				a.defender.increaseUnits(amount);
+				
+				//check if player was eliminated
+				//remove player from list
+				//TODO need to get cards from the player and if the total is 5 or more then you have to turn in 
+				//card sets and place the new units
+				
+				if(playerLost(defenderID)) {
+					removePlayer(defenderID);
+				}
+			}
+			
+			attacks = getAttackOptions(currentPlayer.getID());
+		}
+		
+		
+		//TODO fortify position (function getFortifyOptions), only once and you can move as many units as you want,
+		//but you cant leave a territory with 0 units
+		
+		//check if you have to receive cards
+		if(getClaimedTerritories(currentPlayer.getID()).size() > claimed.size()) {
+			if(this.cards.size() > 0) {
+				currentPlayer.addCard(this.cards.remove(0));
+			}
+		}
+		
+		/**************/
+		System.out.println("Turn: Player " + currentPlayer.getID());
+		
+		for(Player pl : this.players) {
+			ArrayList<Territory> c = getClaimedTerritories(pl.getID());
+			
+			System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
+		}
+		System.out.println("");
+		/**************/
+
 	}
 	
 	/**
@@ -549,7 +572,7 @@ public class Game implements Serializable {
 	/**
 	 * changes the turn to the next player
 	 */
-	private void nextTurn() {
+	public void nextTurn() {
 		if(this.turn == this.players.size() - 1) {
 			this.turn = 0;
 		}
@@ -584,7 +607,7 @@ public class Game implements Serializable {
 	 * Method that checks if the game setup is finished
 	 * @return true if it is finished and false otherwise
 	 */
-	private boolean setupFinished() {
+	public boolean setupFinished() {
 		for(int i = 0; i < this.players.size(); i++) {
 			if(this.players.get(i).getUnitsLeft() > 0) {
 				return false;
@@ -904,4 +927,9 @@ public class Game implements Serializable {
 		return this.stage;
 	}
 
+	public AID getCurrentAID() {
+		return players.get(turn).getAid();
+	}
+
+	
 }
