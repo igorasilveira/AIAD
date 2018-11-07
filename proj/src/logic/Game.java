@@ -41,22 +41,22 @@ public class Game implements Serializable {
 	 * List of all the cards
 	 */
 	private ArrayList<Card> cards;
-	
+
 	/**
 	 * Sets of cards turned in
 	 */
 	private int setsTurnedIn;
-	
+
 	/**
 	 * List of all the Players
 	 */
 	private ArrayList<Player> players;
-	
+
 	/**
 	 * Game Stage
 	 */
 	private GameStage stage;
-	
+
 	/**
 	 * index on the list of players the has the turn
 	 */
@@ -113,13 +113,13 @@ public class Game implements Serializable {
 		boolean x = true;
 
 		while(this.stage != GameStage.Finished) {
-			
-			
+
+
 			switch(this.stage) {
 			case Setup:
 				this.setupTurn();				
 				nextTurn();
-				
+
 				if(setupFinished()) {
 					this.stage = GameStage.Playing;
 					this.turn = startingPlayer;
@@ -142,29 +142,29 @@ public class Game implements Serializable {
 				}
 				this.playingTurn();			
 				nextTurn();
-				
+
 				if(isGameFinished() != 0) {
 					this.stage = GameStage.Finished;
 				}
 				break;
 			}
 		}
-		
+
 		System.out.println("Done!\n");
-		
+
 		for(Player p : this.players) {
 			ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
-			
+
 			System.out.println("Player " + p.getID() + " has " + claimed.size() + " territories!");
 			for(Territory t : claimed) {
 				System.out.println("Territory " + t.territoryID + " has " + t.getUnits() + " units");
 			}
 			System.out.println("");
 		}
-		
+
 	}
-	
-	
+
+
 	public void setupTurn() {
 		Player currentPlayer = this.players.get(this.turn);
 		ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
@@ -174,20 +174,20 @@ public class Game implements Serializable {
 			Collections.shuffle(unclaimed);
 
 			Territory t = unclaimed.get(0);
-			
+
 			t.setPlayerID(currentPlayer.getID());
 			t.setUnits(1);
-			
+
 			currentPlayer.decreaseUnits(1);
 		}
 		else {
 			//TODO agent chooses territory
 			ArrayList<Territory> claimed = getClaimedTerritories(currentPlayer.getID());
 			Collections.shuffle(claimed);
-			
+
 			Territory t = claimed.get(0);
 			t.increaseUnits(1);
-			
+
 			currentPlayer.decreaseUnits(1);
 		}
 
@@ -200,7 +200,7 @@ public class Game implements Serializable {
 	//TODO remove this functions
 	public int findByAID(AID aid) {
 		for (Player player :
-				players) {
+			players) {
 			if (player.getAid() == aid)
 				return player.getID();
 		}
@@ -212,61 +212,61 @@ public class Game implements Serializable {
 		Player currentPlayer = this.players.get(this.turn);
 		currentPlayer.setUnits(0);
 		currentPlayer.increaseUnits(getNewUnits(currentPlayer.getID()));
-		
+
 		//check cards
 		//if player has 5 or more cards he has to turn in a set, until he has 4 cards or fewer
-		
+
 		ArrayList<Card> playerCards = currentPlayer.getCards();
 		ArrayList<CardSet> sets;
-		
+
 		while(playerCards.size() >= 5) {
 			sets = getCardSets(playerCards);
 			//TODO choose set
 			Collections.shuffle(sets);
 			CardSet set = sets.get(0);
-			
+
 			currentPlayer.increaseUnits(turnInCardSet(set, playerCards));
 		}
-		
+
 		//TODO turning in a set is optional if you have 4 cards or fewer
 		sets = getCardSets(playerCards);
-		
+
 		if(sets.size() > 0) {
 			//TODO choose if you want to turn in set
 			Collections.shuffle(sets);
 			CardSet set = sets.get(0);
-			
+
 			currentPlayer.increaseUnits(turnInCardSet(set, playerCards));
 		}
-		
+
 		ArrayList<Territory> claimed = getClaimedTerritories(currentPlayer.getID());
-		
+
 		while(currentPlayer.getUnitsLeft() > 0) {
 			//TODO agent chooses territory
 			Collections.shuffle(claimed);
-			
+
 			Territory t = claimed.get(0);
 			t.increaseUnits(1);
-			
+
 			currentPlayer.decreaseUnits(1);
 		}
-		
-		
+
+
 		ArrayList<Attack> attacks = getAttackOptions(currentPlayer.getID());
 
 		//TODO decide battle
 		Random r = new Random();
-		
+
 		while(attacks.size() > 0) {
 			Collections.shuffle(attacks);
 
 			Attack a = attacks.get(0);
-			
+
 			//TODO decide number of dice
 			int defDice = r.nextInt(2)+1;
-			
+
 			boolean[] result = diceRollWinner(a.diceAmount, defDice);
-			
+
 			int i = 0;
 			while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
 				if(result[i]) {
@@ -275,23 +275,23 @@ public class Game implements Serializable {
 				else {
 					a.attacker.decreaseUnits(1);
 				}
-				
+
 				i++;
 			}
-			
+
 			if(a.defender.getUnits() == 0) {
 				int defenderID = a.defender.getPlayerID();
-				
+
 				a.defender.setPlayerID(currentPlayer.getID());
 				a.defender.increaseUnits(1);
-				
+
 				a.attacker.decreaseUnits(1);
-				
+
 				//TODO move units from the attacking territory if you want
 				int amount = r.nextInt(a.attacker.getUnits());
 				a.attacker.decreaseUnits(amount);
 				a.defender.increaseUnits(amount);
-				
+
 				//check if player was eliminated
 				//remove player from list
 				//TODO need to get cards from the player and if the total is 5 or more then you have to turn in 
@@ -303,48 +303,48 @@ public class Game implements Serializable {
 					removePlayer(defenderID);
 				}
 			}
-			
+
 			attacks = getAttackOptions(currentPlayer.getID());
 		}
-		
-		
+
+
 		//TODO fortify position (function getFortifyOptions), only once and you can move as many units as you want,
 		//but you cant leave a territory with 0 units
-		
+
 		//check if you have to receive cards
 		if(getClaimedTerritories(currentPlayer.getID()).size() > claimed.size()) {
 			if(this.cards.size() > 0) {
 				currentPlayer.addCard(this.cards.remove(0));
 			}
 		}
-		
-		/**************/
+
+		/*
 		System.out.println("Turn: Player " + currentPlayer.getID());
-		
+
 		for(Player pl : this.players) {
 			ArrayList<Territory> c = getClaimedTerritories(pl.getID());
-			
+
 			System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
 		}
 		System.out.println("");
-		/**************/
+		 */
 
 	}
-	
+
 	/**
 	 * removes a player when he loses
 	 * @param id
 	 */
 	private void removePlayer(int id) {
 		int turnID = this.players.get(this.turn).getID();
-		
+
 		for(int i = 0; i < this.players.size(); i++) {
 			if(this.players.get(i).getID() == id) {
 				this.players.remove(i);
 				break;
 			}
 		}
-		
+
 		for(int i = 0; i < this.players.size(); i++) {
 			if(this.players.get(i).getID() == turnID) {
 				this.turn = i;
@@ -352,36 +352,37 @@ public class Game implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * turns in card set
-	 * @param cards
+	 * @param playerCards
 	 */
-	private int turnInCardSet(CardSet set, ArrayList<Card> cards) {
+	public int turnInCardSet(CardSet set, ArrayList<Card> playerCards) {
 		this.setsTurnedIn++;
-		
-		while(set.cards.size() > 0) {
-			Card card = set.cards.get(0);
-			
-			for(int i = 0; i < cards.size(); i++) {
-				if(card.isEqual(cards.get(i))) {
-					set.cards.remove(0);
-					cards.remove(i);
+		ArrayList<Card> cards = set.getCards();
+		while(cards.size() > 0) {
+
+			Card card = cards.get(0);
+
+			for(int i = 0; i < playerCards.size(); i++) {
+				if(card.isEqual(playerCards.get(i))) {
+					cards.remove(0);
+					playerCards.remove(i);
 					break;
 				}
 			}
 		}
-		
+
 		return (2*this.setsTurnedIn)+2;
 	}
-	
-	private ArrayList<CardSet> getCardSets(ArrayList<Card> cards){
+
+	public ArrayList<CardSet> getCardSets(ArrayList<Card> cards){
 		ArrayList<CardSet> sets = new ArrayList<CardSet>();
 		ArrayList<Card> buffer = new ArrayList<Card>();
-		
+
 		//check 3 infantry
 		buffer.clear();
-		
+
 		for(Card card : cards) {
 			if(card.army == Army.Infantry) {
 				buffer.add(card);
@@ -390,14 +391,14 @@ public class Game implements Serializable {
 				}
 			}
 		}
-		
+
 		if(buffer.size() == 3) {
 			sets.add(new CardSet(buffer));
 		}
-		
+
 		//check 3 cavalry
 		buffer.clear();
-		
+
 		for(Card card : cards) {
 			if(card.army == Army.Cavalry) {
 				buffer.add(card);
@@ -406,15 +407,15 @@ public class Game implements Serializable {
 				}
 			}
 		}
-		
+
 		if(buffer.size() == 3) {
 			sets.add(new CardSet(buffer));
 		}
-		
-		
+
+
 		//check 3 artillery
 		buffer.clear();
-		
+
 		for(Card card : cards) {
 			if(card.army == Army.Artillery) {
 				buffer.add(card);
@@ -423,7 +424,7 @@ public class Game implements Serializable {
 				}
 			}
 		}
-		
+
 		if(buffer.size() == 3) {
 			sets.add(new CardSet(buffer));
 		}
@@ -437,14 +438,14 @@ public class Game implements Serializable {
 				break;
 			}
 		}
-		
+
 		for(Card card : cards) {
 			if(card.army == Army.Cavalry) {
 				buffer.add(card);
 				break;
 			}
 		}
-		
+
 		for(Card card : cards) {
 			if(card.army == Army.Artillery) {
 				buffer.add(card);
@@ -458,14 +459,14 @@ public class Game implements Serializable {
 
 		//check two cards with one wildcard
 		buffer.clear();
-		
+
 		for(Card card : cards) {
 			if(card.army == null) {
 				buffer.add(card);
 				break;
 			}
 		}
-		
+
 		if(buffer.size() > 0) {
 			for(Card card : cards) {
 				if(card.army != null) {
@@ -476,14 +477,14 @@ public class Game implements Serializable {
 				}
 			}
 		}
-		
+
 		if(buffer.size() == 3) {
 			sets.add(new CardSet(buffer));
 		}
-		
+
 		return sets;
 	}
-	
+
 	/**
 	 * 
 	 * @param id player id
@@ -496,7 +497,7 @@ public class Game implements Serializable {
 			for(Territory from : continent.getTerritories()) {
 
 				if(from.getPlayerID() == id && from.getUnits() >= 2) {
-					
+
 					for(Territory to : from.getNeighbours()) {
 						if(to.getPlayerID() == id) {
 							fortify.add(new Fortify(from, to, from.getUnits() - 1));
@@ -508,7 +509,7 @@ public class Game implements Serializable {
 
 		return fortify;
 	}
-	
+
 	/**
 	 * 
 	 * @param id attacking player id
@@ -519,9 +520,9 @@ public class Game implements Serializable {
 		Random r  = new Random();
 		for(Continent continent : this.continents) {
 			for(Territory territory : continent.getTerritories()) {
-				
+
 				if(territory.getPlayerID() == id && territory.getUnits() >= 2) {
-					
+
 					for(Territory neighbour : territory.getNeighbours()) {
 						if(neighbour.getPlayerID() != id) {
 							int dice = r.nextInt(3)+1;
@@ -531,48 +532,48 @@ public class Game implements Serializable {
 				}
 			}
 		}
-		
+
 		return attacks;
 	}
-	
+
 	/**
 	 * @param id player id
 	 * @return number of units player receives on the beggining of the turn
 	 */
-	private int getNewUnits(int id) {
+	public int getNewUnits(int id) {
 		int result = 0;
-		
+
 		ArrayList<Territory> claimed = getClaimedTerritories(id);
 		result = claimed.size()/3;
-		
+
 		if(result < 3) {
 			result = 3;
 		}
-		
+
 		for(Continent continent : this.continents) {
 			boolean controls = true;
-			
+
 			for(Territory territory : continent.getTerritories()) {
 				if(territory.getPlayerID() != id) {
 					controls = false;
 					break;
 				}
 			}
-			
+
 			if(controls) {
 				result+=continent.value;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * @return list of unclaimed territories
 	 */
 	public ArrayList<Territory> getUnclaimedTerrritories() {
 		ArrayList<Territory> unclaimed = new ArrayList<Territory>();
-		
+
 		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
 				if(territory.getPlayerID() == 0) {
@@ -582,7 +583,7 @@ public class Game implements Serializable {
 		}
 		return unclaimed;
 	}
-	
+
 	/**
 	 * 
 	 * @param id player id
@@ -590,7 +591,7 @@ public class Game implements Serializable {
 	 */
 	public ArrayList<Territory> getClaimedTerritories(int id) {
 		ArrayList<Territory> claimed = new ArrayList<Territory>();
-		
+
 		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
 				if(territory.getPlayerID() == id) {
@@ -617,7 +618,7 @@ public class Game implements Serializable {
 
 		return null;
 	}
-	
+
 	/**
 	 * changes the turn to the next player
 	 */
@@ -629,7 +630,7 @@ public class Game implements Serializable {
 			this.turn++;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param id player id
@@ -637,7 +638,7 @@ public class Game implements Serializable {
 	 */
 	private boolean playerLost(int id) {
 		boolean lost = true;
-		
+
 		loop:{
 			for (Continent continent : this.continents) {
 				for (Territory territory : continent.getTerritories()) {
@@ -651,7 +652,7 @@ public class Game implements Serializable {
 
 		return lost;
 	}
-	
+
 	/**
 	 * Method that checks if the game setup is finished
 	 * @return true if it is finished and false otherwise
@@ -662,7 +663,7 @@ public class Game implements Serializable {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -672,13 +673,13 @@ public class Game implements Serializable {
 	private void shuffleCards() {
 		Collections.shuffle(this.cards);
 	}
-	
+
 	/**
 	 * Creates players
 	 */
 	private void loadPlayers(ArrayList<AID> players) {
 		int units = Utils.startingUnits.get(players.size());
-		
+
 		for(int i = 0; i < players.size(); i++) {
 			this.players.add(new Player(i+1, units, players.get(i)));
 		}
@@ -919,16 +920,16 @@ public class Game implements Serializable {
 		if(attacker < 1 || attacker > 3) {
 			return null;
 		}
-		
+
 		if(defender < 1 || defender > 2) {
 			return null;
 		}
-		
+
 		boolean[] results = new boolean[Math.min(attacker, defender)];
-		
+
 		int[] attackerDice = Utils.rollDice(attacker);
 		int[] defenderDice = Utils.rollDice(defender);
-		
+
 		int index = 0;
 		while(index < attackerDice.length && index < defenderDice.length) {
 			if(attackerDice[index] > defenderDice[index]){ 
@@ -941,10 +942,10 @@ public class Game implements Serializable {
 			}
 			index++;
 		}
-		
+
 		return results;
 	}
-	
+
 	/**
 	 * Checks if all territories are controlled by the same player (condition to win)
 	 * @return the id of the winning player or zero if game isn't finished
@@ -959,7 +960,7 @@ public class Game implements Serializable {
 				} else {
 					if(territory.getPlayerID() != firstPlayerID) return 0;
 				}
-				
+
 			}
 		}
 		return firstPlayerID;
@@ -973,7 +974,7 @@ public class Game implements Serializable {
 	{
 		this.stage = stage;
 	}
-	
+
 	public GameStage getStage()
 	{
 		return this.stage;
@@ -983,5 +984,5 @@ public class Game implements Serializable {
 		return players.get(turn).getAid();
 	}
 
-	
+
 }

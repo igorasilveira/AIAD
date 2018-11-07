@@ -48,7 +48,7 @@ public class PlayerSetupBehaviour extends Behaviour {
 				ACLMessage response = request.createReply();
 				response.setPerformative(ACLMessage.PROPOSE);
 
-				int territoryID;
+				ArrayList<Integer> territories = new ArrayList<Integer>();
 
 				ArrayList<Territory> unclaimed = lastGameState.getUnclaimedTerrritories();
 
@@ -56,18 +56,18 @@ public class PlayerSetupBehaviour extends Behaviour {
 					//TODO agent chooses territory
 					Collections.shuffle(unclaimed);
 
-					territoryID = unclaimed.get(0).territoryID;
+					territories.add(unclaimed.get(0).territoryID);
 
 				} else {
 					//TODO agent chooses territory
 					ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
 					Collections.shuffle(claimed);
 
-					territoryID = claimed.get(0).territoryID;
+					territories.add(claimed.get(0).territoryID);
 
 				}
 
-				PlayerAction action = new ProposePlayerSetup(Actions.Setup, territoryID);
+				PlayerAction action = new ProposePlayerSetup(territories);
 				response.setContentObject(action);
 				myAgent.send(response);
 			}

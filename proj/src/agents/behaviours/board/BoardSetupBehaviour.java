@@ -64,9 +64,7 @@ public class BoardSetupBehaviour extends Behaviour {
 
             if (action.getAction() == Actions.Setup) {
 
-                int territoryID = action.getTerritory();
-
-                Territory t = game.getTerritory(territoryID);
+                Territory t = game.getTerritory(action.getTerritories().get(0));
 
                 t.setPlayerID(game.getCurrentPlayer().getID());
                 t.increaseUnits(1);

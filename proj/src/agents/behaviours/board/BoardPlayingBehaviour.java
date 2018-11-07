@@ -1,24 +1,30 @@
 package agents.behaviours.board;
 
 import java.io.IOException;
+import java.security.acl.LastOwnerException;
 
 import agents.BoardAgent;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
+import agents.messages.player.ProposePlayerSetup;
+import agents.messages.player.ProposePlayerTradeCards;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import logic.Game;
+import logic.Territory;
 import logic.Game.GameStage;
 
 public class BoardPlayingBehaviour extends Behaviour {
 
 	private Game game;
 
-	private boolean setupMade = false; // TODO after receiving a 'done' set back to false
+	private boolean setupMade = false; 
+
+	private boolean cardsTraded = false;
 	public BoardPlayingBehaviour(Agent a) {
 		super(a);
 		this.game = ((BoardAgent) a).getGame();
@@ -32,27 +38,30 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 	@Override
 	public void action() {
-		/*//Get current AID
+		//Get current AID
 		AID currentPlayer = this.game.getCurrentAID();
 
 		PlayerAction request;
 
 		// Send message to aid
-		if(this.game.getStage() == GameStage.Setup)
+
+		if(!cardsTraded)
 		{
-			request = new RequestPlayerAction(Actions.Setup, this.game);
-		} else if(this.game.getStage() == GameStage.Playing)
-		{
+			//Change player units in game
+			game.getCurrentPlayer().setUnits(game.getNewUnits(game.getCurrentPlayer().getID()));
+			
+			request = new RequestPlayerAction(Actions.TradeCards, this.game);
+		} else{
 			if(!setupMade)
+
 			{
 				request = new RequestPlayerAction(Actions.Setup, this.game);
 			} else {
 				request = new RequestPlayerAction(Actions.Play, this.game);
 			}
-
-		} else {
-			return;
 		}
+
+
 		ACLMessage response;
 		ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
 		try {
@@ -76,35 +85,42 @@ public class BoardPlayingBehaviour extends Behaviour {
 			switch (action.getAction()) {
 			case Setup:
 
-				if(this.game.getStage() == GameStage.Setup)
-				{
-					//apply changes and change turn
-
-				} 
-
 				if (!setupMade) {
 					//apply changes and continue
 					//Send requestAction
+
+					for (int territory : ((ProposePlayerSetup)action).getTerritories()) {
+						game.getTerritory(territory).increaseUnits(1);
+						game.getCurrentPlayer().decreaseUnits(1);
+					}
+					setupMade = true;
+					cardsTraded = true;
 				}
+				break;
+			case TradeCards:
+				if(!cardsTraded)
+				{
+					game.getCurrentPlayer().increaseUnits(game.turnInCardSet(((ProposePlayerTradeCards) action).getCardSet(), game.getCurrentPlayer().getCards()));
+					cardsTraded= true;
+				}
+
 				break;
 			case Attack:
-				if(this.game.getStage() == GameStage.Playing)
-				{
-					//Request defender to choose dice amount
-					//Apply attack or break if not valid	
-				}
+
+				//Request defender to choose dice amount
+				//Apply attack or break if not valid	
+
 				break;
 			case Fortify:	
-				if(this.game.getStage() == GameStage.Playing)
-				{
-					//apply changes or break if not valid
-				}
-				
+
+				//apply changes or break if not valid
+
 				break;
 			case Done:
 				if (setupMade)
 				{
 					//apply changes and change turn
+					setupMade = false;
 				} 
 
 
@@ -114,7 +130,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-		}*/
+		}
 
 	}
 

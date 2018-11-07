@@ -12,6 +12,6 @@ package agents.messages;
  * 
  */
 public enum Actions {
-	Setup, Play, Attack, Fortify, Done, Defend, Treaty
+	Setup, Play, Attack, Fortify, Done, Defend, Treaty, TradeCards
 }
 

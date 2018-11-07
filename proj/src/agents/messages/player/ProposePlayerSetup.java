@@ -1,23 +1,29 @@
 package agents.messages.player;
 
+import java.util.ArrayList;
+
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
-import logic.Territory;
 
 public class ProposePlayerSetup extends PlayerAction {
 
-    int territory;
+	ArrayList<Integer> territory;
 
-    public ProposePlayerSetup(Actions action, int chosenID) {
-        super(action);
-        this.territory = chosenID;
-    }
 
-    public int getTerritory() {
-        return territory;
-    }
 
-    public void setTerritory(int territory) {
-        this.territory = territory;
-    }
+	public ProposePlayerSetup(ArrayList<Integer> chosenID) {
+		super(Actions.Setup);
+		this.territory = chosenID;
+
+	}
+
+	public ArrayList<Integer> getTerritories() {
+		return territory;
+	}
+
+	public void setTerritories(ArrayList<Integer> territory) {
+		this.territory = territory;
+	}
+
+
 }
