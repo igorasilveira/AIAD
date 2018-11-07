@@ -26,7 +26,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 	@Override
 	public void onStart(){
-		System.out.println("start");
+		System.out.println("STARTED -------------------");
 		game.start(((BoardAgent) myAgent).getPlayers());
 	}
 

@@ -4,12 +4,15 @@ import agents.BoardAgent;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
+import agents.messages.player.ProposePlayerAction;
+import agents.messages.player.ProposePlayerSetup;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import logic.Game;
+import logic.Territory;
 
 import java.io.IOException;
 
@@ -44,7 +47,6 @@ public class BoardSetupBehaviour extends Behaviour {
             message.setContentObject(request);
             message.addReceiver(currentPlayer);
             myAgent.send(message);
-            System.out.println("Board: Setup message sent to " + currentPlayer);
 
             //Get answer from aid
             MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE), MessageTemplate.MatchSender(currentPlayer));
@@ -58,10 +60,19 @@ public class BoardSetupBehaviour extends Behaviour {
 
         //Check valid response and make changes
         try {
-            PlayerAction action = (PlayerAction) response.getContentObject();
+            ProposePlayerSetup action = (ProposePlayerSetup) response.getContentObject();
 
             if (action.getAction() == Actions.Setup) {
-                System.out.println("Received Setup from " + response.getSender());
+
+                int territoryID = action.getTerritory();
+
+                Territory t = game.getTerritory(territoryID);
+
+                t.setPlayerID(game.getCurrentPlayer().getID());
+                t.increaseUnits(1);
+
+                game.getCurrentPlayer().decreaseUnits(1);
+
             }
 
         } catch (Exception e) {
