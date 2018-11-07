@@ -17,6 +17,8 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
 	private TimerTask task = new TimerSchedule(this);
 	private Timer timer = new Timer(true);
+
+	private final int WAITING_TIME = 15 * 1000; // 15 seconds
 	
 	public BoardWaitingBehaviour(Agent agent, DFAgentDescription dfad) {
 		super(agent, DFService.createSubscriptionMessage(agent, agent.getDefaultDF(), dfad, null));
@@ -40,17 +42,19 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 					((BoardAgent) myAgent).togglePlayer(agent);
 				}
 
+				// reset timer always
+				timer.cancel();
+				timer.purge();
+				timer = new Timer(true);
+				task = new TimerSchedule(this);
+
 				if(((BoardAgent) myAgent).getPlayerAmount()  > 2)
 				{
-					timer.schedule(task, 1000);
+					timer.schedule(task, WAITING_TIME);
 					System.out.println("Scheduled timer");
 				} else
 				{
 					System.out.println("Unscheduled timer");
-					timer.cancel();
-					timer.purge();
-					timer = new Timer(true);
-					task = new TimerSchedule(this);
 				}
 
 
