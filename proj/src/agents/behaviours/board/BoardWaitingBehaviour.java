@@ -18,7 +18,7 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 	private TimerTask task = new TimerSchedule(this);
 	private Timer timer = new Timer(true);
 
-	private final int WAITING_TIME = 15 * 1000; // 15 seconds
+	private final int WAITING_TIME = 2 * 1000; // 15 seconds
 	
 	public BoardWaitingBehaviour(Agent agent, DFAgentDescription dfad) {
 		super(agent, DFService.createSubscriptionMessage(agent, agent.getDefaultDF(), dfad, null));
