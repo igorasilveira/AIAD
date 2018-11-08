@@ -104,8 +104,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 					// TODO decide to battle or not
 					Random ran = new Random();
-					int n = 0;
-//					int n = ran.nextInt(2);
+					int n = ran.nextInt(2);
 
 					if (n == 0) {  // attack
 

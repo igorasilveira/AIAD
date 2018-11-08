@@ -1,5 +1,6 @@
 package agents.behaviours.board;
 
+import java.awt.*;
 import java.io.IOException;
 import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
@@ -234,6 +235,8 @@ public class BoardPlayingBehaviour extends Behaviour {
 	public boolean done() {
 		if (game.isGameFinished() != 0) {
 			System.out.println(game.getPlayers().get(0).getAid().getLocalName() + " HAS OWN THE GAME!");
+
+			Toolkit.getDefaultToolkit().beep();
 			System.out.println("Board PLAYING BEHAVIOUR ENDED");
 		}
 		return game.isGameFinished() != 0;

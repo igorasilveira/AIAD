@@ -1,5 +1,6 @@
 package agents;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 import agents.behaviours.board.BoardPlayingBehaviour;
@@ -20,7 +21,7 @@ public class BoardAgent extends Agent {
 	private ArrayList<AID> players = new ArrayList<AID>();
 
 	public void setup() {
-		
+
 		this.game = new Game();
 
 		DFAgentDescription template = new DFAgentDescription();
