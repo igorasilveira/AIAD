@@ -26,50 +26,67 @@ import java.util.Collections;
 public class PlayerSetupBehaviour extends Behaviour {
 
 	Game lastGameState;
+	private boolean setupFinished = false;
 
 	public PlayerSetupBehaviour(Agent a) {
 		super(a);
 	}
 
 	@Override
+	public void onStart() {
+		System.out.println(myAgent.getLocalName() + " - Player SETUP BEHAVIOUR STARTED");
+	}
+
+	@Override
 	public void action() {
 		MessageTemplate messageTemplate = MessageTemplate.and(
 				MessageTemplate.MatchSender(((PlayerAgent) myAgent).getBoardAID()),
-				MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+				MessageTemplate.or(
+						MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+						MessageTemplate.MatchPerformative(ACLMessage.INFORM)));
 
 		ACLMessage request = myAgent.blockingReceive(messageTemplate);
 
 		try {
 			// set class current game to received from Board
-			lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
+			switch (request.getPerformative()) {
+				case ACLMessage.REQUEST:
+					lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
+					if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
 
-			if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
+						ACLMessage response = request.createReply();
+						response.setPerformative(ACLMessage.PROPOSE);
 
-				ACLMessage response = request.createReply();
-				response.setPerformative(ACLMessage.PROPOSE);
+						ArrayList<Integer> territories = new ArrayList<Integer>();
 
-				ArrayList<Integer> territories = new ArrayList<Integer>();
+						ArrayList<Territory> unclaimed = lastGameState.getUnclaimedTerrritories();
 
-				ArrayList<Territory> unclaimed = lastGameState.getUnclaimedTerrritories();
+						if(unclaimed.size() > 0) {
+							//TODO agent chooses territory
+							Collections.shuffle(unclaimed);
 
-				if(unclaimed.size() > 0) {
-					//TODO agent chooses territory
-					Collections.shuffle(unclaimed);
+							territories.add(unclaimed.get(0).territoryID);
 
-					territories.add(unclaimed.get(0).territoryID);
+						} else {
+							//TODO agent chooses territory
+							ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
+							Collections.shuffle(claimed);
 
-				} else {
-					//TODO agent chooses territory
-					ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
-					Collections.shuffle(claimed);
+							territories.add(claimed.get(0).territoryID);
 
-					territories.add(claimed.get(0).territoryID);
+						}
 
-				}
-
-				PlayerAction action = new ProposePlayerSetup(territories);
-				response.setContentObject(action);
-				myAgent.send(response);
+						PlayerAction action = new ProposePlayerSetup(territories);
+						response.setContentObject(action);
+						myAgent.send(response);
+					}
+					break;
+					case ACLMessage.INFORM:
+						if (((PlayerAction) request.getContentObject()).getAction() == Actions.EndSetup) {
+							setupFinished = true;
+						}
+						break;
+					default: break;
 			}
 		} catch (UnreadableException e) {
 			e.printStackTrace();
@@ -82,7 +99,9 @@ public class PlayerSetupBehaviour extends Behaviour {
 
 	@Override
 	public boolean done() {
-		return lastGameState.setupFinished();
+		if (setupFinished)
+			System.out.println(myAgent.getLocalName() + " - Player SETUP BEHAVIOUR ENDED");
+		return setupFinished;
 	}
 
 }

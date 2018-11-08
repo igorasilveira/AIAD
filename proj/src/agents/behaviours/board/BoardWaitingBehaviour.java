@@ -77,6 +77,7 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 			((BoardAgent) behaviour.getAgent()).getGame().setStage(GameStage.Setup);
 			System.out.println("Timer Complete");
 			((BoardAgent) behaviour.getAgent()).getSequentialBehaviour().removeSubBehaviour(behaviour);
+			System.out.println("Board WAITING BEHAVIOUR ENDED");
 			((BoardAgent) behaviour.getAgent()).getSequentialBehaviour().reset();
 		}
 		

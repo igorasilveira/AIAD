@@ -3,14 +3,26 @@ package logic;
 import java.io.Serializable;
 
 public class Attack implements Serializable {
-	public final Territory attacker;
-	public final Territory defender;
-	
-	public final int diceAmount;
+	private final Territory attacker;
+	private final Territory defender;
+
+	private final int diceAmount;
 	
 	public Attack(Territory attacker, Territory defender, int diceAmount) {
 		this.attacker = attacker;
 		this.defender= defender;
 		this.diceAmount = diceAmount;
+	}
+
+	public Territory getAttacker() {
+		return attacker;
+	}
+
+	public Territory getDefender() {
+		return defender;
+	}
+
+	public int getDiceAmount() {
+		return diceAmount;
 	}
 }

@@ -82,8 +82,6 @@ public class Game implements Serializable {
 
 	public void setup(ArrayList<AID> numberOfPlayers) {
 
-		System.out.println("Running game setup");
-
 		loadContinents();
 		loadTerritories();
 		loadCards();
@@ -197,6 +195,15 @@ public class Game implements Serializable {
 		return players.get(turn);
 	}
 
+	public Player findPlayerByID(int id) {
+		for (Player player:
+			 players) {
+			if (player.getID() == id)
+				return player;
+		}
+		return null;
+	}
+
 	//TODO remove this functions
 	public int findByAID(AID aid) {
 		for (Player player :
@@ -265,32 +272,32 @@ public class Game implements Serializable {
 			//TODO decide number of dice
 			int defDice = r.nextInt(2)+1;
 
-			boolean[] result = diceRollWinner(a.diceAmount, defDice);
+			boolean[] result = diceRollWinner(a.getDiceAmount(), defDice);
 
 			int i = 0;
-			while(i < result.length && a.attacker.getUnits() >= 2 && a.defender.getUnits() >= 1) {
+			while(i < result.length && a.getAttacker().getUnits() >= 2 && a.getDefender().getUnits() >= 1) {
 				if(result[i]) {
-					a.defender.decreaseUnits(1);
+					a.getDefender().decreaseUnits(1);
 				}
 				else {
-					a.attacker.decreaseUnits(1);
+					a.getAttacker().decreaseUnits(1);
 				}
 
 				i++;
 			}
 
-			if(a.defender.getUnits() == 0) {
-				int defenderID = a.defender.getPlayerID();
+			if(a.getDefender().getUnits() == 0) {
+				int defenderID = a.getDefender().getPlayerID();
 
-				a.defender.setPlayerID(currentPlayer.getID());
-				a.defender.increaseUnits(1);
+				a.getDefender().setPlayerID(currentPlayer.getID());
+				a.getDefender().increaseUnits(1);
 
-				a.attacker.decreaseUnits(1);
+				a.getAttacker().decreaseUnits(1);
 
 				//TODO move units from the attacking territory if you want
-				int amount = r.nextInt(a.attacker.getUnits());
-				a.attacker.decreaseUnits(amount);
-				a.defender.increaseUnits(amount);
+				int amount = r.nextInt(a.getAttacker().getUnits());
+				a.getAttacker().decreaseUnits(amount);
+				a.getDefender().increaseUnits(amount);
 
 				//check if player was eliminated
 				//remove player from list
@@ -335,7 +342,7 @@ public class Game implements Serializable {
 	 * removes a player when he loses
 	 * @param id
 	 */
-	private void removePlayer(int id) {
+	public void removePlayer(int id) {
 		int turnID = this.players.get(this.turn).getID();
 
 		for(int i = 0; i < this.players.size(); i++) {
@@ -515,7 +522,7 @@ public class Game implements Serializable {
 	 * @param id attacking player id
 	 * @return attack options for that player
 	 */
-	private ArrayList<Attack> getAttackOptions(int id) {
+	public ArrayList<Attack> getAttackOptions(int id) {
 		ArrayList<Attack> attacks = new ArrayList<Attack>();
 		Random r  = new Random();
 		for(Continent continent : this.continents) {
@@ -623,12 +630,7 @@ public class Game implements Serializable {
 	 * changes the turn to the next player
 	 */
 	public void nextTurn() {
-		if(this.turn == this.players.size() - 1) {
-			this.turn = 0;
-		}
-		else {
-			this.turn++;
-		}
+		turn = (turn + 1) % players.size();
 	}
 
 	/**
@@ -636,7 +638,7 @@ public class Game implements Serializable {
 	 * @param id player id
 	 * @return true if the player lost, false otherwise
 	 */
-	private boolean playerLost(int id) {
+	public boolean playerLost(int id) {
 		boolean lost = true;
 
 		loop:{
@@ -984,5 +986,16 @@ public class Game implements Serializable {
 		return players.get(turn).getAid();
 	}
 
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+
+	public ArrayList<Continent> getContinents() {
+		return continents;
+	}
+
+	public int getTurn() {
+		return turn;
+	}
 
 }

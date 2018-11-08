@@ -1,46 +1,20 @@
 package agents.messages.player;
 
 import agents.messages.Actions;
+import logic.Attack;
 import logic.Territory;
 
 public class ProposePlayerAttack extends ProposePlayerAction {
 
-	private Territory attackerTerritory;
-	private Territory defenderTerritory;
-	private int amountOfDice;
+	private Attack attack;
 
-	public ProposePlayerAttack(Territory attackerTerritory, Territory defenderTerritory, int amountOfDice) {
+	public ProposePlayerAttack(Attack attack) {
 		super(Actions.Attack);
-		this.attackerTerritory = attackerTerritory;
-		this.defenderTerritory= defenderTerritory;
-		this.amountOfDice = amountOfDice;
+		this.attack = attack;
 		// player proposes an attack to the board
 	}
 
-
-	public Territory getAttackerTerritoryID() {
-		return attackerTerritory;
-	}
-
-	public void setAttackerTerritoryID(Territory attackerTerritoryID) {
-		this.attackerTerritory = attackerTerritoryID;
-	}
-
-	public Territory getDefenderTerritoryID() {
-		return defenderTerritory;
-	}
-
-	public void setDefenderTerritoryID(Territory defenderTerritoryID) {
-		this.defenderTerritory = defenderTerritoryID;
-	}
-
-
-	public int getAmountOfDice() {
-		return amountOfDice;
-	}
-
-
-	public void setAmountOfDice(int amountOfDice) {
-		this.amountOfDice = amountOfDice;
+	public Attack getAttack() {
+		return attack;
 	}
 }
