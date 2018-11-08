@@ -4,7 +4,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import agents.BoardAgent;
 import agents.messages.Actions;
@@ -32,6 +34,8 @@ public class BoardPlayingBehaviour extends Behaviour {
 	private boolean cardsTraded = false;
 
 	private boolean attackerWonTerritory = false;
+    long lStartTime, lEndTime;
+
 
 	public BoardPlayingBehaviour(Agent a) {
 		super(a);
@@ -42,6 +46,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 	public void onStart(){
 		System.out.println("Board PLAYING BEHAVIOUR STARTED");
 //		game.start(((BoardAgent) myAgent).getPlayers());
+        lStartTime = new Date().getTime();
 	}
 
 	@Override
@@ -237,7 +242,17 @@ public class BoardPlayingBehaviour extends Behaviour {
 			System.out.println(game.getPlayers().get(0).getAid().getLocalName() + " HAS OWN THE GAME!");
 
 			Toolkit.getDefaultToolkit().beep();
-			System.out.println("Board PLAYING BEHAVIOUR ENDED");
+
+			lEndTime = new Date().getTime();
+            long output = lEndTime - lStartTime;
+
+            System.out.println(String.format("Elapsed time: %d min, %d sec",
+                    TimeUnit.MILLISECONDS.toMinutes(output),
+                    TimeUnit.MILLISECONDS.toSeconds(output) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(output))
+            ));
+
+            //TODO disconnect players?
 		}
 		return game.isGameFinished() != 0;
 	}

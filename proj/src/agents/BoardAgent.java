@@ -24,6 +24,8 @@ public class BoardAgent extends Agent {
 
 		this.game = new Game();
 
+
+
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("player");
