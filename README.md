@@ -6,7 +6,7 @@
 
 * implementar tabuleiro como agente que:
   * controla a vez do jogador (tabuleiro toma iniciativa de mandar estado do jogo ao agente jogador)
-  * responde a jogador depois de cada jogada se esta é válida ou não
+  * a cada reposta do jogador atualiza o estado do jogo e efetua qualquer que seja o passo seguinte na lógica de jogo
 * implementar jogadores como agentes
   1. começar com jogadas aleatorias
   2. passar para agentes puramente competitivos
