@@ -43,8 +43,15 @@
 	* Critérios: 
 		1. ?
 - [ ] Decidir melhor ataque
-	* Critérios:
-		1. ?
+	* Melhor território a atacar
+		* Critérios:
+			1. ?
+	* Melhor território de origem das peças
+		* Critérios:
+			1. ?
+	* Melhor quantidade de dados
+		* Critérios:
+			1. ?
 - [ ] Decidir melhor fortificação
 	* Critérios:
 		1. ?
