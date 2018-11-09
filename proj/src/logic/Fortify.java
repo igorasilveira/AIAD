@@ -6,12 +6,20 @@ public class Fortify implements Serializable {
 	public final Territory from;
 	public final Territory to;
 	
-	public final int maxAmount;
+	private int amount;
 	
-	public Fortify(Territory from, Territory to, int maxAmount) {
+	public Fortify(Territory from, Territory to, int amount) {
 		this.from = from;
 		this.to = to; 
-		this.maxAmount = maxAmount;
+		this.amount = amount;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 	
 }

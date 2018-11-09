@@ -1,44 +1,25 @@
 package agents.messages.player;
 
 import agents.messages.Actions;
-import logic.Territory;
+import logic.Fortify;
 
 public class ProposePlayerFortify  extends ProposePlayerAction {
 
-	private Territory originTerritory;
-	private Territory destinationTerritory;
+	private Fortify fortify;
 
-	private int maxAmount;
 
-	public ProposePlayerFortify(Territory originTerritory, Territory destinationTerritory, int maxAmount) {
+	public ProposePlayerFortify(Fortify fortify) {
 		super(Actions.Fortify);
-		this.originTerritory = originTerritory;
-		this.destinationTerritory= destinationTerritory;
-		this.maxAmount = maxAmount;
+		this.fortify = fortify;
 	}
 
-	public Territory getOriginTerritoryID() {
-		return originTerritory;
+	public Fortify getFortify() {
+		return fortify;
 	}
 
-	public void setOriginTerritoryID(Territory originTerritoryID) {
-		this.originTerritory = originTerritoryID;
-	}
 
-	public Territory getDestinationTerritoryID() {
-		return destinationTerritory;
-	}
-
-	public void setDestinationTerritoryID(Territory destinationTerritoryID) {
-		this.destinationTerritory = destinationTerritoryID;
-	}
-
-	public int getMaxAmount() {
-		return maxAmount;
-	}
-
-	public void setMaxAmount(int maxAmount) {
-		this.maxAmount = maxAmount;
+	public void setFortify(Fortify fortify) {
+		this.fortify = fortify;
 	}
 
 }

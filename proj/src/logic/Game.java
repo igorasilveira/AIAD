@@ -497,7 +497,7 @@ public class Game implements Serializable {
 	 * @param id player id
 	 * @return returns fortify options
 	 */
-	private ArrayList<Fortify> getFortifyOptions(int id){
+	public ArrayList<Fortify> getFortifyOptions(int id){
 		ArrayList<Fortify> fortify = new ArrayList<Fortify>();
 
 		for(Continent continent : this.continents) {

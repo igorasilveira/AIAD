@@ -15,6 +15,7 @@ import agents.messages.board.RequestPlayerAction;
 import agents.messages.board.RequestPlayerDefend;
 import agents.messages.player.ProposePlayerAttack;
 import agents.messages.player.ProposePlayerDefend;
+import agents.messages.player.ProposePlayerFortify;
 import agents.messages.player.ProposePlayerSetup;
 import agents.messages.player.ProposePlayerTradeCards;
 import jade.core.AID;
@@ -200,10 +201,27 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 					break;
 				case Fortify:
+					System.out.println(myAgent.getLocalName() + " Received FORTIFY from " + currentPlayer.getLocalName());
 
-					//apply changes or break if not valid
-
-					break;
+					Fortify fortification = ((ProposePlayerFortify) response.getContentObject()).getFortify();
+					Territory originTerritory = game.getTerritory(fortification.from.territoryID);
+					Territory destinationTerritory = game.getTerritory(fortification.to.territoryID);
+					
+					System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+					System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
+					
+					if(originTerritory.getUnits() <= fortification.getAmount()) { return; }
+					
+					if(game.getCurrentPlayer().getID() != originTerritory.getPlayerID() ||
+							game.getCurrentPlayer().getID() != destinationTerritory.getPlayerID()) 
+					{
+						break;
+					}
+					
+					originTerritory.decreaseUnits(fortification.getAmount());
+					destinationTerritory.increaseUnits(fortification.getAmount());
+					System.out.println("\nTerritory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+					System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 				case Done:
 					if (setupMade)
 					{

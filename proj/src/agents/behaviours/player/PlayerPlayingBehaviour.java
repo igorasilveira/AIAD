@@ -99,6 +99,8 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				System.out.println(myAgent.getLocalName() + " Received PLAY");
 				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+				
+				action = new ProposePlayerAction(Actions.Done);
 
 				if (attacks.size() > 0) {
 
@@ -115,16 +117,13 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 						action = new ProposePlayerAttack(attack);
 					} else { //dont attack
-						// TODO decide if fortify or done
-						action = new ProposePlayerAction(Actions.Done);
+						action = fortify();
 					}
 
 				} else {
-					// TODO add fortify option
-					action = new ProposePlayerAction(Actions.Done);
+					action = fortify();
 				}
 
-//				action = new ProposePlayerAction(Actions.Fortify);
 			}
 
 			response.setContentObject(action);
@@ -137,6 +136,21 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			e.printStackTrace();
 			return;
 		}
+	}
+	
+	public PlayerAction fortify() {
+		PlayerAction action = new ProposePlayerAction(Actions.Done);
+		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
+		
+		Random ran = new Random();
+		int n = ran.nextInt(2);
+		
+		if(fortifications.size() > 0 && (n == 0))
+		{
+			action = new ProposePlayerFortify(fortifications.get(0));
+		}
+		
+		return action;
 	}
 
 	public PlayerAction setup() {
