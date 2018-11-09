@@ -72,9 +72,11 @@
 	* Melhor posicionamento quando não há territórios vazios
 		* Critérios:
 			1. ?
-- [ ] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes)
+- [X] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
 	* Critérios:
-		1. ?
+		1. Agentes agressivos e defensivos entregam cartas mal puderem.
+		2. Agentes smart tentam nao entregar cartas o maximo tempo possível, de modo a receberem mais unidades quando entregarem o seu set.
+		3. Agentes aleatórios decidem à sorte. 
 
 ## Links  
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
