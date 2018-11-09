@@ -72,7 +72,7 @@
 	* Melhor posicionamento quando não há territórios vazios
 		* Critérios:
 			1. ?
-- [ ] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
+- [ ] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes)
 	* Critérios:
 		1. ?
 
