@@ -33,6 +33,29 @@
 		* ACCEPT-PROPOSAL
 		* REJECT-PROPOSAL
 
+### Estratégias
+* Decidir se atacar, fortificar ou nada
+	* Critérios: 
+		1. ?
+* Decidir melhor ataque
+	* Critérios:
+		1.?
+* Decidir melhor fortificação
+	* Critérios:
+		1.?
+* Decidir melhor defesa (Ricardo)
+	* Critérios:
+		1. ?
+* Decidir melhor setup (Igor)
+	* Melhor posicionamento quando há territórios vazios
+		* Critérios:
+			1. ?
+	* Melhor posicionamento quando não há territórios vazios
+		* Critérios:
+			1. ?
+* Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
+	* Critérios:
+		1. ?
 
 ## Links  
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
