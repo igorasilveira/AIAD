@@ -1,5 +1,10 @@
 # AIAD1819
 
+## Running
+* Eclipse running arguments:
+
+`-gui -agents Board:agents.BoardAgent;Player1:agents.PlayerAgent(aggressive);Player2:agents.PlayerAgent(defensive);Player3:agents.PlayerAgent(smart);Player4:agents.PlayerAgent`
+
 ## TODO
 * implementar regras do jogo
 	  - [ ] Cards Functionality (Earning, trading) (if there's time)
