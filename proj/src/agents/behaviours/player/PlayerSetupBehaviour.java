@@ -64,7 +64,7 @@ public class PlayerSetupBehaviour extends Behaviour {
 						if(unclaimed.size() > 0) {
 							//TODO agent chooses territory
 							Collections.shuffle(unclaimed);
-
+							
 							territories.add(unclaimed.get(0).territoryID);
 
 						} else {

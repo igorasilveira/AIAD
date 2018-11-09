@@ -19,9 +19,31 @@ public class PlayerAgent extends Agent {
 	}
 
 	private AID boardAID;
-	
+
+	private PlayerMindset mindset = PlayerMindset.Random;
+
 	public void setup() {
-		
+
+		Object[] args = getArguments();
+		if(args != null)
+		{
+			String arg1 = args[0].toString();
+			switch (arg1) {
+			case "aggressive":
+				this.mindset = PlayerMindset.Aggressive;
+				break;
+
+			case "defensive":
+				this.mindset = PlayerMindset.Defensive;
+				break;
+			case "smart":
+				this.mindset = PlayerMindset.Smart;
+				break;
+			default:
+				break;
+			}
+		}
+
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -37,7 +59,7 @@ public class PlayerAgent extends Agent {
 		ACLMessage msg = blockingReceive();
 		System.out.println("Player: Received Board initial message with AID");
 		this.boardAID = msg.getSender();
-		
+
 		System.out.println(this.boardAID.toString());
 
 		SequentialBehaviour sequentialBehaviour = new SequentialBehaviour();
@@ -56,5 +78,9 @@ public class PlayerAgent extends Agent {
 			e.printStackTrace();
 		}
 		System.out.println(getLocalName() + ": done working.");
+	}
+
+	public PlayerMindset getMindset() {
+		return mindset;
 	}
 }
