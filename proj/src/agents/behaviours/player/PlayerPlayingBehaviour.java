@@ -65,28 +65,23 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				if (playerCards.size() >= 5)
 				{
 					sets = lastGameState.getCardSets(playerCards);
-					// TODO choose set
+					CardSet set = chooseCardSet(sets);
 
-					Collections.shuffle(sets);
-					action = new ProposePlayerTradeCards(sets.get(0));
+					action = new ProposePlayerTradeCards(set);
 				}
-
-				//TODO turning in a set is optional if you have 4 cards or fewer
-				sets = lastGameState.getCardSets(playerCards);
-
-				if(sets.size() > 0) {
+				else {
+					//TODO turning in a set is optional if you have 4 cards or fewer
 					sets = lastGameState.getCardSets(playerCards);
-					Random ran = new Random();
-					int n = ran.nextInt(2);
 
-					// TODO choose set and if wants to trade
-					if (n == 0) { // trade cards
-						Collections.shuffle(sets);
-						action = new ProposePlayerTradeCards(sets.get(0));
-					} else {  //dont
-						action = setup();
+					if(sets.size() > 0) {
+						sets = lastGameState.getCardSets(playerCards);
+						boolean trade = chooseToTrade();
+
+						if (trade) { // trade cards
+							CardSet set = chooseCardSet(sets);
+							action = new ProposePlayerTradeCards(set);
+						}
 					}
-
 				}
 
 			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
@@ -141,6 +136,46 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			return;
 		}
 	}
+
+	private boolean chooseToTrade() {
+		switch(((PlayerAgent)myAgent).getMindset()) {
+		case Aggressive:
+		case Defensive:
+			return true;
+		case Random:
+			Random r = new Random();
+			return r.nextBoolean();
+		case Smart:
+			return false;
+		default:
+			break;
+		}
+		
+		return false;
+	}
+
+
+	private CardSet chooseCardSet(ArrayList<CardSet> sets) {
+		if(sets.size() > 1) {
+			for(CardSet set : sets) {
+				ArrayList<Card> cards = set.getCards();
+				boolean foundWildCard = false;
+				
+				for(Card card : cards) {
+					if(card.army == null) {
+						foundWildCard = true;
+					}
+				}
+				
+				if(!foundWildCard) {
+					return set;
+				}
+			}
+		}
+		
+		return sets.get(0);
+	}
+
 
 	private int chooseDefenseDiceAmount(Attack attack) {
 		int defDice;
