@@ -53,8 +53,15 @@
 		* Critérios:
 			1. ?
 - [ ] Decidir melhor fortificação
-	* Critérios:
-		1. ?
+	* Melhor território a fortificar
+		* Critérios:
+			1. ?
+	* Melhor território de origem das peças
+		* Critérios:
+			1. ?
+	* Melhor quantidade de peças
+		* Critérios:
+			1. ?
 - [X] Decidir melhor defesa (Ricardo)
 	* Critérios:
 		1. ver [excel](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/dice_roll_odds.xlsx) com probabilidades de lançamentos calculadas simulando 1000 ataques para cada combinação de quantidades de dados lançados
