@@ -9,6 +9,7 @@ import agents.PlayerAgent;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
+import agents.messages.board.RequestPlayerDefend;
 import agents.messages.player.*;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -90,8 +91,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
 				System.out.println(myAgent.getLocalName() + " Received DEFEND");
-				int defDice = new Random().nextInt(2) + 1;
 
+				Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
+
+				int defDice = chooseDefenseDiceAmount(attack);
+				
 				action = new ProposePlayerDefend(defDice);
 
 
@@ -99,7 +103,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				System.out.println(myAgent.getLocalName() + " Received PLAY");
 				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
-				
+
 				action = new ProposePlayerAction(Actions.Done);
 
 				if (attacks.size() > 0) {
@@ -137,19 +141,58 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			return;
 		}
 	}
-	
+
+	private int chooseDefenseDiceAmount(Attack attack) {
+		int defDice;
+		Territory defender = attack.getDefender();
+		int attackerDice = attack.getDiceAmount();
+		
+		switch(((PlayerAgent)myAgent).getMindset()) {
+		case Aggressive: 
+			// Chooses highest probability of winning (without caring for the amount of pieces at stake)
+			defDice = 2;
+			break;
+		case Defensive:
+			// Chooses smallest amount of pieces at stake
+			if(attackerDice == 1){
+				defDice = 2;
+			} else {
+				defDice = 1;
+			}
+			break;
+		case Smart:
+			//Chooses based on the amount of units at stake and the probability of winning
+			if(attackerDice == 1){
+				defDice = 2;
+			} else {
+				if(defender.getUnits() == 2)
+				{
+					defDice = 1;
+				} else {
+					defDice = 2;					
+				}
+
+			}
+			break;
+		default:
+			defDice = new Random().nextInt(2) + 1;
+		}
+		return defDice;
+	}
+
+
 	public PlayerAction fortify() {
 		PlayerAction action = new ProposePlayerAction(Actions.Done);
 		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
-		
+
 		Random ran = new Random();
 		int n = ran.nextInt(2);
-		
+
 		if(fortifications.size() > 0 && (n == 0))
 		{
 			action = new ProposePlayerFortify(fortifications.get(0));
 		}
-		
+
 		return action;
 	}
 
