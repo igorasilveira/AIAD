@@ -39,26 +39,26 @@
 		* REJECT-PROPOSAL
 
 ### Estratégias
-* Decidir se atacar, fortificar ou nada
+- [ ] Decidir se atacar, fortificar ou nada
 	* Critérios: 
 		1. ?
-* Decidir melhor ataque
+- [ ] Decidir melhor ataque
 	* Critérios:
 		1.?
-* Decidir melhor fortificação
+- [ ] Decidir melhor fortificação
 	* Critérios:
 		1.?
-* Decidir melhor defesa (Ricardo)
+- [X] Decidir melhor defesa (Ricardo)
 	* Critérios:
-		1. ?
-* Decidir melhor setup (Igor)
+		1. ver [excel](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/dice_roll_odds.xlsx) com probabilidades de lançamentos calculadas simulando 1000 ataques para cada combinação de quantidades de dados lançados
+- [ ] Decidir melhor setup (Igor)
 	* Melhor posicionamento quando há territórios vazios
 		* Critérios:
 			1. ?
 	* Melhor posicionamento quando não há territórios vazios
 		* Critérios:
 			1. ?
-* Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
+- [ ] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
 	* Critérios:
 		1. ?
 
