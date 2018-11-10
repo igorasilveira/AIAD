@@ -11,20 +11,20 @@ import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
 import agents.messages.board.RequestPlayerDefend;
 import agents.messages.player.*;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import logic.*;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 
 public class PlayerPlayingBehaviour extends Behaviour {
 
-	Game lastGameState;
+	private Game lastGameState;
 
 	public PlayerPlayingBehaviour(Agent a) {
 		super(a);
-		// TODO Auto-generated constructor stub
+		lastGameState = new Game();
 	}
 
 
@@ -41,100 +41,104 @@ public class PlayerPlayingBehaviour extends Behaviour {
 						MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 						MessageTemplate.MatchPerformative(ACLMessage.INFORM)));
 
-		ACLMessage request = myAgent.blockingReceive(messageTemplate);
-		PlayerAction action;
-		try {
-			// set class current game to received from Board
-			lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
-			ACLMessage response = request.createReply();
-			response.setPerformative(ACLMessage.PROPOSE);
+		ACLMessage request = myAgent.receive(messageTemplate);
 
-			if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
-				System.out.println(myAgent.getLocalName() + " Received SETUP");
+		if (request != null) {
 
-				action = setup();
+			PlayerAction action;
+			try {
+				// set class current game to received from Board
+				lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
+				ACLMessage response = request.createReply();
+				response.setPerformative(ACLMessage.PROPOSE);
 
-			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.TradeCards) {
-				System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
+				if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
+					System.out.println(myAgent.getLocalName() + " Received SETUP");
 
-				action = setup();
+					action = setup();
 
-				ArrayList<Card> playerCards = lastGameState.getCurrentPlayer().getCards();
-				ArrayList<CardSet> sets;
+				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.TradeCards) {
+					System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
 
-				if (playerCards.size() >= 5)
-				{
-					sets = lastGameState.getCardSets(playerCards);
-					CardSet set = chooseCardSet(sets);
+					action = setup();
 
-					action = new ProposePlayerTradeCards(set);
-				}
-				else {
-					//TODO turning in a set is optional if you have 4 cards or fewer
-					sets = lastGameState.getCardSets(playerCards);
+					ArrayList<Card> playerCards = lastGameState.getCurrentPlayer().getCards();
+					ArrayList<CardSet> sets;
 
-					if(sets.size() > 0) {
+					if (playerCards.size() >= 5)
+					{
 						sets = lastGameState.getCardSets(playerCards);
-						boolean trade = chooseToTrade();
+						CardSet set = chooseCardSet(sets);
 
-						if (trade) { // trade cards
-							CardSet set = chooseCardSet(sets);
-							action = new ProposePlayerTradeCards(set);
+						action = new ProposePlayerTradeCards(set);
+					}
+					else {
+						//TODO turning in a set is optional if you have 4 cards or fewer
+						sets = lastGameState.getCardSets(playerCards);
+
+						if(sets.size() > 0) {
+							sets = lastGameState.getCardSets(playerCards);
+							boolean trade = chooseToTrade();
+
+							if (trade) { // trade cards
+								CardSet set = chooseCardSet(sets);
+								action = new ProposePlayerTradeCards(set);
+							}
 						}
 					}
-				}
 
-			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
-				System.out.println(myAgent.getLocalName() + " Received DEFEND");
+				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
+					System.out.println(myAgent.getLocalName() + " Received DEFEND");
 
-				Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
+					Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
 
-				int defDice = chooseDefenseDiceAmount(attack);
-				
-				action = new ProposePlayerDefend(defDice);
+					int defDice = chooseDefenseDiceAmount(attack);
+
+					action = new ProposePlayerDefend(defDice);
 
 
-			} else { // Play
+				} else { // Play
 
-				System.out.println(myAgent.getLocalName() + " Received PLAY");
-				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+					System.out.println(myAgent.getLocalName() + " Received PLAY");
+					ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
 
-				action = new ProposePlayerAction(Actions.Done);
+					action = new ProposePlayerAction(Actions.Done);
 
-				if (attacks.size() > 0) {
+					if (attacks.size() > 0) {
 
-					// TODO decide to battle or not
-					Random ran = new Random();
-					int n = ran.nextInt(2);
+						// TODO decide to battle or not
+						Random ran = new Random();
+						int n = ran.nextInt(2);
 
-					if (n == 0) {  // attack
+						if (true) {  // attack
+	//					if (n == 0) {  // attack
 
-						// TODO choose good attack
-						Collections.shuffle(attacks);
+							// TODO choose good attack
+							Collections.shuffle(attacks);
 
-						Attack attack = attacks.get(0);
+							Attack attack = attacks.get(0);
 
-						action = new ProposePlayerAttack(attack);
-					} else { //dont attack
+							action = new ProposePlayerAttack(attack);
+						} else { //dont attack
+							action = fortify();
+						}
+
+					} else {
 						action = fortify();
 					}
 
-				} else {
-					action = fortify();
 				}
 
+				response.setContentObject(action);
+				myAgent.send(response);
+				System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			response.setContentObject(action);
-			myAgent.send(response);
-			System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
 		}
+
 	}
 
 	private boolean chooseToTrade() {
@@ -216,7 +220,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 	}
 
 
-	public PlayerAction fortify() {
+	private PlayerAction fortify() {
 		PlayerAction action = new ProposePlayerAction(Actions.Done);
 		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
@@ -233,7 +237,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 	public PlayerAction setup() {
 
-		ArrayList<Integer> territories = new ArrayList<Integer>();
+		ArrayList<Integer> territories = new ArrayList<>();
 		ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
 
 		int units = lastGameState.getCurrentPlayer().getUnitsLeft();

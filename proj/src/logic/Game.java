@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import jade.core.AID;
 import logic.Card.Army;
+import jade.core.AID;
 
 public class Game implements Serializable {
 	public enum GameStage {
@@ -71,9 +71,9 @@ public class Game implements Serializable {
 	 * Constructs a game class with no territories
 	 */
 	public Game() {
-		this.continents = new ArrayList<Continent>();
-		this.cards = new ArrayList<Card>();
-		this.players = new ArrayList<Player>();
+		this.continents = new ArrayList<>();
+		this.cards = new ArrayList<>();
+		this.players = new ArrayList<>();
 		this.stage = GameStage.Waiting;
 		this.turn = 0;
 		this.setsTurnedIn = 0;
@@ -124,20 +124,6 @@ public class Game implements Serializable {
 				}
 				break;
 			case Playing:
-				if (x) {
-
-					/**************/
-					System.out.println("Turn: Player " + getCurrentPlayer().getID());
-
-					for(Player pl : this.players) {
-						ArrayList<Territory> c = getClaimedTerritories(pl.getID());
-
-						System.out.println("Player " + pl.getID() + " has " + c.size() + " territories!");
-					}
-					System.out.println("");
-					/**************/
-					x = false;
-				}
 				this.playingTurn();			
 				nextTurn();
 
@@ -147,23 +133,10 @@ public class Game implements Serializable {
 				break;
 			}
 		}
-
-		System.out.println("Done!\n");
-
-		for(Player p : this.players) {
-			ArrayList<Territory> claimed = getClaimedTerritories(p.getID());
-
-			System.out.println("Player " + p.getID() + " has " + claimed.size() + " territories!");
-			for(Territory t : claimed) {
-				System.out.println("Territory " + t.territoryID + " has " + t.getUnits() + " units");
-			}
-			System.out.println("");
-		}
-
 	}
 
 
-	public void setupTurn() {
+	private void setupTurn() {
 		Player currentPlayer = this.players.get(this.turn);
 		ArrayList<Territory> unclaimed = getUnclaimedTerrritories();
 
@@ -214,7 +187,7 @@ public class Game implements Serializable {
 		return -1;
 	}
 
-	public void playingTurn()
+	private void playingTurn()
 	{
 		Player currentPlayer = this.players.get(this.turn);
 		currentPlayer.setUnits(0);
@@ -340,7 +313,7 @@ public class Game implements Serializable {
 
 	/**
 	 * removes a player when he loses
-	 * @param id
+	 * @param id id of the player to remove
 	 */
 	public void removePlayer(int id) {
 		int turnID = this.players.get(this.turn).getID();
@@ -362,7 +335,7 @@ public class Game implements Serializable {
 
 	/**
 	 * turns in card set
-	 * @param playerCards
+	 * @param playerCards array list with the player's cards
 	 */
 	public int turnInCardSet(CardSet set, ArrayList<Card> playerCards) {
 		this.setsTurnedIn++;
@@ -384,8 +357,8 @@ public class Game implements Serializable {
 	}
 
 	public ArrayList<CardSet> getCardSets(ArrayList<Card> cards){
-		ArrayList<CardSet> sets = new ArrayList<CardSet>();
-		ArrayList<Card> buffer = new ArrayList<Card>();
+		ArrayList<CardSet> sets = new ArrayList<>();
+		ArrayList<Card> buffer = new ArrayList<>();
 
 		//check 3 infantry
 		buffer.clear();
@@ -498,7 +471,7 @@ public class Game implements Serializable {
 	 * @return returns fortify options
 	 */
 	public ArrayList<Fortify> getFortifyOptions(int id){
-		ArrayList<Fortify> fortify = new ArrayList<Fortify>();
+		ArrayList<Fortify> fortify = new ArrayList<>();
 
 		for(Continent continent : this.continents) {
 			for(Territory from : continent.getTerritories()) {
@@ -523,7 +496,7 @@ public class Game implements Serializable {
 	 * @return attack options for that player
 	 */
 	public ArrayList<Attack> getAttackOptions(int id) {
-		ArrayList<Attack> attacks = new ArrayList<Attack>();
+		ArrayList<Attack> attacks = new ArrayList<>();
 		Random r  = new Random();
 		for(Continent continent : this.continents) {
 			for(Territory territory : continent.getTerritories()) {
@@ -548,7 +521,7 @@ public class Game implements Serializable {
 	 * @return number of units player receives on the beggining of the turn
 	 */
 	public int getNewUnits(int id) {
-		int result = 0;
+		int result;
 
 		ArrayList<Territory> claimed = getClaimedTerritories(id);
 		result = claimed.size()/3;
@@ -579,7 +552,7 @@ public class Game implements Serializable {
 	 * @return list of unclaimed territories
 	 */
 	public ArrayList<Territory> getUnclaimedTerrritories() {
-		ArrayList<Territory> unclaimed = new ArrayList<Territory>();
+		ArrayList<Territory> unclaimed = new ArrayList<>();
 
 		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
@@ -597,7 +570,7 @@ public class Game implements Serializable {
 	 * @return territories claimed by that player
 	 */
 	public ArrayList<Territory> getClaimedTerritories(int id) {
-		ArrayList<Territory> claimed = new ArrayList<Territory>();
+		ArrayList<Territory> claimed = new ArrayList<>();
 
 		for (Continent continent : this.continents) {
 			for (Territory territory : continent.getTerritories()) {
@@ -660,10 +633,10 @@ public class Game implements Serializable {
 	 * @return true if it is finished and false otherwise
 	 */
 	public boolean setupFinished() {
-		for(int i = 0; i < this.players.size(); i++) {
-			if(this.players.get(i).getUnitsLeft() > 0) {
+		for (Player player :
+				players) {
+			if (player.getUnitsLeft() > 0)
 				return false;
-			}
 		}
 
 		return true;
@@ -692,7 +665,7 @@ public class Game implements Serializable {
 	 * @return true if successful, false otherwise
 	 */
 	private boolean loadTerritories(){
-		ArrayList<Territory> territories = new ArrayList<Territory>();
+		ArrayList<Territory> territories = new ArrayList<>();
 		try{
 
 			File file = new File("src/assets/" + Game.territoriesFileName);
