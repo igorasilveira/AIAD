@@ -113,23 +113,21 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				action = new ProposePlayerAction(Actions.Done);
 
-				if (attacks.size() > 0) {
 
-					// TODO decide to battle or not
-					Random ran = new Random();
-					int n = ran.nextInt(2);
+				Attack attack = chooseAttack();
+				Fortify fortify = chooseFortify();
 
-					if (n == 0) {  // attack
+				Actions act = chooseIfAttackOrFortify(attack, fortify);
 
-						Attack attack = chooseAttack();
 
-						action = new ProposePlayerAttack(attack);
-					} else if(fortifications.size() > 0) { //dont attack
-						action = fortify();
-					}
+				if(act == Actions.Attack && attack != null)
+				{
+					action = new ProposePlayerAttack(attack);
+				}
 
-				} else if(fortifications.size() > 0) {
-					action = fortify();
+				if (act == Actions.Fortify && fortify != null)
+				{
+					action = new ProposePlayerFortify(fortify);
 				}
 
 			}
@@ -146,9 +144,103 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		}
 	}
 
+	private Actions chooseIfAttackOrFortify(Attack attack, Fortify fortify)
+	{
+		boolean willAttack = false, willFortify = false; 
+
+
+		Random rand = new Random(); int n;
+
+		switch (((PlayerAgent)myAgent).getMindset()) {
+		case Random:
+			n = rand.nextInt(3);
+			if(n == 0 && attack != null)
+			{ //Attack
+				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+				Collections.shuffle(attacks);
+				attack = attacks.get(0);
+				willAttack = true;
+			} else if (n == 1 && fortify != null) 
+			{ //Fortify
+				ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
+				Collections.shuffle(fortifications);
+				fortify = fortifications.get(0);
+				willFortify = true;
+			}
+			break;
+		case Aggressive:
+			if(attack == null && fortify != null)
+			{
+				n = rand.nextInt(4);
+				if(n == 0)
+					willFortify = true;
+			} else if(attack != null)
+			{
+				willAttack = true;
+			}
+			break;
+		case Defensive:
+			if(fortify == null && attack != null)
+			{
+				n = rand.nextInt(4);
+				if(n == 0)
+					willAttack = true;
+			} else if(fortify != null)
+			{
+				willFortify = true;
+			}
+			break;
+		case Smart:
+			if (fortify != null)
+			{
+				int originDisadvantage = calculateDefenderDisadvantage(fortify.from);
+				int destinationDisadvantage = calculateDefenderDisadvantage(fortify.to);
+				if((originDisadvantage < 0) && 
+						(originDisadvantage * destinationDisadvantage <= 0))
+				{
+					willFortify = true;
+				}
+			}
+			if(attack != null)
+			{
+
+				willAttack = true;
+			}
+			if(willAttack && willFortify)
+			{
+				// If attacking is viable, fortification can be delayed
+				willFortify = false;
+			}
+			break;
+		default:
+			break;
+		}
+
+		if(willFortify)
+		{
+			attack = null;
+			return Actions.Fortify;
+		}
+
+		if(willAttack)
+		{
+			fortify = null;
+			return Actions.Attack;
+		}
+
+
+
+		return Actions.Done;
+	}
+
 	private Attack chooseAttack() {
 		ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
 		Attack attack;
+
+		if(attacks.size() <= 0)
+		{
+			return null;
+		}
 
 		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random)
 		{
@@ -383,9 +475,13 @@ public class PlayerPlayingBehaviour extends Behaviour {
 	}
 
 
-	public PlayerAction fortify() {
-		PlayerAction action;
+	public Fortify chooseFortify() {
 		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
+
+		if(fortifications.size() <= 0)
+		{
+			return null;
+		}
 
 		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random)
 		{
@@ -394,12 +490,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			int maxUnitsAmount = fort.getAmount();
 			int unitsAmount = new Random().nextInt(maxUnitsAmount) + 1;
 			fort.setAmount(unitsAmount);
-			action = new ProposePlayerFortify(fort);
-		}else {
-			action = new ProposePlayerFortify(chooseStrategicFortification());
+			return fort;
 		}
 
-		return action;
+		return chooseStrategicFortification();
+
 	}
 
 	private Fortify chooseStrategicFortification() {
@@ -453,19 +548,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		}
 
 		//choose amount of pieces
-		int chosenOriginDisadvantage = territoriesDisadvantage.get(chosenFortification.from.territoryID);
-		int chosenDestinationDisadvantage  = territoriesDisadvantage.get(chosenFortification.to.territoryID);
 		int maxAmount = chosenFortification.getAmount();
 
-		if(chosenOriginDisadvantage * chosenDestinationDisadvantage > 0)
-		{
-			int average = (chosenFortification.from.getUnits() + chosenFortification.to.getUnits())/2;
-			int units = Math.abs(chosenFortification.from.getUnits() - average);
-			chosenFortification.setAmount(Math.min(maxAmount, units));
-		} else
-		{
-			chosenFortification.setAmount(Math.min(maxAmount, chosenDestinationDisadvantage));
-		}
+		int average = (chosenFortification.from.getUnits() + chosenFortification.to.getUnits())/2;
+		int units = Math.abs(chosenFortification.from.getUnits() - average);
+		chosenFortification.setAmount(Math.min(maxAmount, units));
 
 		return chosenFortification;
 
