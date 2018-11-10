@@ -48,7 +48,7 @@ public class MyLauncher extends Repast3Launcher {
 	private MyLauncher() {
 		random = new Random();
 		this.numberOfAgents = 100;
-		this.spaceSize = 90;
+		this.spaceSize = 150;
 		this.numberOfPlayers = 3;
 	}
 
@@ -145,15 +145,19 @@ public class MyLauncher extends Repast3Launcher {
 		mapAgent = new ArrayList<>();
 		space = new Object2DTorus(spaceSize, spaceSize);
 		Random random = new Random();
-		for (int i = 0; i<1; i++) {
-			int x, y;
-			x = 10;
-			y = 10;
-			Color color =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-			Unit agent = new Unit(x, y, color, space);
-			space.putObjectAt(x, y, agent);
-			agentList.add(agent);
-		}
+//		for (int i = 0; i<1; i++) {
+//			int x, y;
+//			x = 10;
+//			y = 10;
+//			Color color =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+//			Unit agent = new Unit(x, y, color, space);
+//			space.putObjectAt(x, y, agent);
+//			agentList.add(agent);
+//		}
+
+		Unit a = new Unit(37, 45, Color.BLACK, space);
+		space.putObjectAt(37, 45, a);
+		agentList.add(a);
 
 		background = new Object2DTorus(spaceSize, spaceSize);
 		try {
@@ -163,6 +167,7 @@ public class MyLauncher extends Repast3Launcher {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	private void buildDisplay() {
@@ -179,7 +184,7 @@ public class MyLauncher extends Repast3Launcher {
 		//Text display
 		textDisplay = new TextDisplay(20, 20, Color.BLUE);
 		textDisplay.setFontSize(30);
-		dsurf.addDisplayableProbeable(textDisplay, "textDisplay");
+		dsurf.addDisplayableProbeable(textDisplay, "Text Display");
 
 		dsurf.display();
 
@@ -209,7 +214,7 @@ public class MyLauncher extends Repast3Launcher {
 	}
 
 	private void buildSchedule() {
-		//getSchedule().scheduleActionBeginning(0, new MainAction());
+		getSchedule().scheduleActionBeginning(0, new MainAction());
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
 //        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
@@ -234,13 +239,6 @@ public class MyLauncher extends Repast3Launcher {
 				textDisplay.clearLines();
 				textDisplay.addLine("#Agents: " + getAgentList().size());
 			}
-			int x, y;
-			x = random.nextInt(space.getSizeX() - 1);
-			y = random.nextInt(space.getSizeY() - 1);
-			Color color =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-			Unit agent = new Unit(x, y, color, space);
-			space.putObjectAt(x, y, agent);
-			agentList.add(agent);
 		}
 	}
 
