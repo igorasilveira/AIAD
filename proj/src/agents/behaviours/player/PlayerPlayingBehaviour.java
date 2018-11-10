@@ -111,6 +111,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				System.out.println(myAgent.getLocalName() + " Received PLAY");
 				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+				ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
 				action = new ProposePlayerAction(Actions.Done);
 
@@ -125,11 +126,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 						Attack attack = chooseAttack();
 
 						action = new ProposePlayerAttack(attack);
-					} else { //dont attack
+					} else if(fortifications.size() > 0) { //dont attack
 						action = fortify();
 					}
 
-				} else {
+				} else if(fortifications.size() > 0) {
 					action = fortify();
 				}
 
@@ -207,7 +208,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		int maxAdvantage = calculateAttackerAdvantage(orderedOptions.get(0));
 		System.out.println("MAX ADVANTAGE: " + maxAdvantage);
 		for (int i = 1; i < orderedOptions.size(); i++) {
-			
+
 			if(calculateAttackerAdvantage(orderedOptions.get(i)) < maxAdvantage)
 			{
 				Collections.sort(orderedOptions.get(i), compareAttackerUnits);
@@ -241,6 +242,34 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			valueList += attack.getAttacker().getUnits();
 		}
 		return valueList;
+	}
+
+	private int calculateDefenderDisadvantage(Territory territory) {
+
+		ArrayList<Attack> potencialRisksList = lastGameState.getDefenseOptions(territory);
+
+		// Defender disadvantage is 
+		// (max(total units of same player surrounding territory)) - (its units in a territory)
+		int defenderUnits = potencialRisksList.get(0).getDefender().getUnits();
+		Hashtable<Integer, Integer> surroundingUnits = new Hashtable<>();
+
+		for (Attack attack : potencialRisksList) {
+			if(surroundingUnits.containsKey(attack.getAttacker().getPlayerID()))
+			{
+				int units =  surroundingUnits.get(attack.getAttacker().getPlayerID());
+				units += attack.getAttacker().getUnits();
+				surroundingUnits.remove(attack.getAttacker().getPlayerID());
+				surroundingUnits.put(attack.getAttacker().getPlayerID(), units);
+			} else {
+				surroundingUnits.put(attack.getAttacker().getPlayerID(), attack.getAttacker().getUnits());
+			}
+		}
+
+
+		ArrayList<Integer> values = (ArrayList<Integer>) surroundingUnits.values();
+		Collections.sort(values);
+		Collections.reverse(values);
+		return  values.get(0) - defenderUnits;
 	}
 
 	private boolean chooseToTrade() {
@@ -354,17 +383,69 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 	public PlayerAction fortify() {
 		PlayerAction action = new ProposePlayerAction(Actions.Done);
-		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
 		Random ran = new Random();
 		int n = ran.nextInt(2);
 
-		if(fortifications.size() > 0 && (n == 0))
-		{
-			action = new ProposePlayerFortify(fortifications.get(0));
-		}
+		action = new ProposePlayerFortify(chooseStrategicFortification());
+
 
 		return action;
+	}
+
+	private Fortify chooseStrategicFortification() {
+		Fortify chosenFortification;
+		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
+
+		Hashtable<Integer, Integer> territoriesDisadvantage =  new Hashtable<>();
+
+		for (Fortify fortify : fortifications) {
+			if(! territoriesDisadvantage.containsKey(fortify.from.territoryID))
+			{
+				territoriesDisadvantage.put(fortify.from.territoryID, calculateDefenderDisadvantage(fortify.from));
+			}
+			if(! territoriesDisadvantage.containsKey(fortify.to.territoryID))
+			{
+				territoriesDisadvantage.put(fortify.to.territoryID, calculateDefenderDisadvantage(fortify.to));
+			}
+		}
+		chosenFortification = fortifications.get(0);
+		for (int i = 1; i < fortifications.size(); i++) {
+
+			int chosenOriginDisadvantage = territoriesDisadvantage.get(chosenFortification.from.territoryID);
+			int chosenDestinationDisadvantage  = territoriesDisadvantage.get(chosenFortification.to.territoryID);
+			int newOriginDisadvantage  = territoriesDisadvantage.get(fortifications.get(i).from.territoryID);
+			int newDestinationDisadvantage  = territoriesDisadvantage.get(fortifications.get(i).to.territoryID);
+
+			if(chosenDestinationDisadvantage == 0 || newDestinationDisadvantage == 0)
+			{
+				if(newOriginDisadvantage < chosenOriginDisadvantage)
+				{
+					chosenFortification = fortifications.get(i);
+					continue;
+				}
+			}
+
+			float chosenRatio = chosenOriginDisadvantage / ((float) chosenDestinationDisadvantage);
+
+			float newRatio = newOriginDisadvantage / ((float) newDestinationDisadvantage);
+
+			if(chosenRatio * newRatio > 0) {
+				if(Math.abs(chosenRatio) < Math.abs(newRatio))
+				{
+					chosenFortification = fortifications.get(i);
+				}
+			} else {
+				if(chosenRatio > newRatio)
+				{
+					chosenFortification = fortifications.get(i);
+				}
+			}
+
+		}
+
+		return chosenFortification;
+
 	}
 
 	public PlayerAction setup() {

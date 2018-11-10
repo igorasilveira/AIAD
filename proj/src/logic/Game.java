@@ -196,8 +196,7 @@ public class Game implements Serializable {
 	}
 
 	public Player findPlayerByID(int id) {
-		for (Player player:
-			 players) {
+		for (Player player: players) {
 			if (player.getID() == id)
 				return player;
 		}
@@ -524,7 +523,7 @@ public class Game implements Serializable {
 	 */
 	public ArrayList<Attack> getAttackOptions(int id) {
 		ArrayList<Attack> attacks = new ArrayList<Attack>();
-		Random r  = new Random();
+
 		for(Continent continent : this.continents) {
 			for(Territory territory : continent.getTerritories()) {
 
@@ -536,6 +535,19 @@ public class Game implements Serializable {
 						}
 					}
 				}
+			}
+		}
+
+		return attacks;
+	}
+
+	public ArrayList<Attack> getDefenseOptions(Territory defender) {
+		ArrayList<Attack> attacks = new ArrayList<Attack>();
+
+		for (Territory attacker : defender.getNeighbours()) {
+			if(attacker.getPlayerID() != defender.getPlayerID())
+			{
+				attacks.add(new Attack(attacker, defender, 1));
 			}
 		}
 
