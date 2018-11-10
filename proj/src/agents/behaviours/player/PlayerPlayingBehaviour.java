@@ -120,7 +120,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 					Random ran = new Random();
 					int n = ran.nextInt(2);
 
-					if (true) {  // attack
+					if (n == 0) {  // attack
 
 						Attack attack = chooseAttack();
 
@@ -157,7 +157,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			attack = attacks.get(0);
 		} else
 		{
-			attack = chooseStretegicAttack();
+			attack = chooseStrategicAttack();
 		}
 
 		//Choose dice amount
@@ -166,7 +166,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		return attack;
 	}
 
-	private Attack chooseStretegicAttack() {
+	private Attack chooseStrategicAttack() {
 		ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
 
 		//Choose best target
@@ -191,7 +191,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		// Best atacks will be at front
 		Collections.sort(orderedOptions, new Comparator<ArrayList<Attack>>() {
 			public int compare(ArrayList<Attack> list1, ArrayList<Attack> list2) {
-				return calculateAdvantage(list2)-calculateAdvantage(list1);
+				return calculateAttackerAdvantage(list2)-calculateAttackerAdvantage(list1);
 			}
 		});
 
@@ -204,11 +204,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		// Order the top options' attacks to choose the best attacker
 		int maxIndex = 0;
-		int maxAdvantage = calculateAdvantage(orderedOptions.get(0));
+		int maxAdvantage = calculateAttackerAdvantage(orderedOptions.get(0));
 		System.out.println("MAX ADVANTAGE: " + maxAdvantage);
 		for (int i = 1; i < orderedOptions.size(); i++) {
 			
-			if(calculateAdvantage(orderedOptions.get(i)) < maxAdvantage)
+			if(calculateAttackerAdvantage(orderedOptions.get(i)) < maxAdvantage)
 			{
 				Collections.sort(orderedOptions.get(i), compareAttackerUnits);
 				break;
@@ -232,7 +232,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 	}
 
 
-	private int calculateAdvantage(ArrayList<Attack> list) {
+	private int calculateAttackerAdvantage(ArrayList<Attack> list) {
 		// Attacker advantage is 
 		// (its total amount of units surrounding the target) - (target territory's units)
 		int valueList = - list.get(0).getDefender().getUnits();
