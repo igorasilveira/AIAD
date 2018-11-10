@@ -5,17 +5,23 @@ import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.space.Object2DTorus;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-public class Unit extends Agent implements Drawable {
+public class Map extends Agent implements Drawable {
 
-    private Color color;
+    private BufferedImage image;
     private int x, y;
     private Territory territory;
     private Object2DTorus space;
 
-    public Unit(int x, int y, Color color, Object2DTorus space) {
-        this.color = color;
+    private final String filename = "map.jpg";
+
+    public Map(int x, int y, Object2DTorus space) throws IOException {
+        this.image = ImageIO.read(new File("src/assets/" + filename));
         this.x = x;
         this.y = y;
         this.space = space;
@@ -23,7 +29,7 @@ public class Unit extends Agent implements Drawable {
 
     @Override
     public void draw(SimGraphics simGraphics) {
-        simGraphics.drawFastCircle(color);
+        simGraphics.drawImage(image);
     }
 
     @Override
@@ -44,7 +50,7 @@ public class Unit extends Agent implements Drawable {
         this.y = y;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 }

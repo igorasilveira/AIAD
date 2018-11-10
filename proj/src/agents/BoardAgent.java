@@ -12,6 +12,7 @@ import logic.Game;
 import jade.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
+import uchicago.src.sim.engine.Stepable;
 
 public class BoardAgent extends Agent {
 

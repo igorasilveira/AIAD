@@ -1,5 +1,6 @@
 package logic;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -680,7 +681,7 @@ public class Game implements Serializable {
 				while(line != null)
 				{
 					String[] territoryInfo = line.split(";");
-					if(!processTerritoryLine(territories, lineCount, territoryInfo[0],  territoryInfo[1].split(",")))
+					if(!processTerritoryLine(territories, lineCount, territoryInfo[0],  territoryInfo[1].split(","), territoryInfo[2].split("-")))
 					{
 						System.out.println("Line format for territories.dat asset should be integers separated by commas");
 						reader.close();
@@ -761,9 +762,10 @@ public class Game implements Serializable {
 	 * Function that processes lines from the board asset
 	 * @param currentTerritoryID line number that corresponds to current territory id
 	 * @param neighbours line content (array with neighbours' id's)
+	 * @param area
 	 * @return true if successfull, false otherwise
 	 */
-	private boolean processTerritoryLine(ArrayList<Territory> territories, int currentTerritoryID, String continent, String[] neighbours) {
+	private boolean processTerritoryLine(ArrayList<Territory> territories, int currentTerritoryID, String continent, String[] neighbours, String[] area) {
 		int continentID;
 
 		try {
@@ -791,6 +793,16 @@ public class Game implements Serializable {
 			}
 			Territory neighbour = territories.get(currentNeighbourID-1);
 			current.addNeighbour(neighbour);
+		}
+		for (String pair :
+				area) {
+			Polygon polygon = new Polygon();
+			String[] coordinates = pair.split(",");
+			polygon.addPoint(
+					Integer.parseInt(coordinates[0]),
+					Integer.parseInt(coordinates[1]));
+
+			current.setArea(polygon);
 		}
 		this.continents.get(continentID - 1).addTerritory(current);
 		return true;

@@ -12,6 +12,7 @@ import logic.Game.GameStage;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import sajas.proto.SubscriptionInitiator;
+import uchicago.src.sim.engine.Stepable;
 
 public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
@@ -65,7 +66,6 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
 	}
 
-	
 	public class TimerSchedule extends TimerTask {
 		BoardWaitingBehaviour behaviour;
 		private TimerSchedule(BoardWaitingBehaviour behaviour) {

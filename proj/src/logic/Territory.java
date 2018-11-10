@@ -1,9 +1,12 @@
 package logic;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Territory implements Serializable{
+
+	private Polygon area;
 
 	/**
 	 * List of all adjacent or connected territories
@@ -134,6 +137,13 @@ public class Territory implements Serializable{
 		}
 		System.out.print("\n");
 	}
-	
 
+
+	public Polygon getArea() {
+		return area;
+	}
+
+	public void setArea(Polygon area) {
+		this.area = area;
+	}
 }
