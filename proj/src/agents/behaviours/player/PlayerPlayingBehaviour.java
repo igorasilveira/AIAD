@@ -37,7 +37,6 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 	public PlayerPlayingBehaviour(Agent a) {
 		super(a);
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -83,7 +82,6 @@ public class PlayerPlayingBehaviour extends Behaviour {
 					action = new ProposePlayerTradeCards(set);
 				}
 				else {
-					//TODO turning in a set is optional if you have 4 cards or fewer
 					sets = lastGameState.getCardSets(playerCards);
 
 					if(sets.size() > 0) {
@@ -206,7 +204,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		// Order the top options' attacks to choose the best attacker
 		int maxIndex = 0;
 		int maxAdvantage = calculateAttackerAdvantage(orderedOptions.get(0));
-		System.out.println("MAX ADVANTAGE: " + maxAdvantage);
+
 		for (int i = 1; i < orderedOptions.size(); i++) {
 
 			if(calculateAttackerAdvantage(orderedOptions.get(i)) < maxAdvantage)
@@ -217,18 +215,18 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				maxIndex++;
 			}
 		}
-		System.out.println("MAX INDEX: " + maxIndex);
+
 		Attack chosenAttack = orderedOptions.get(0).get(0);
 
 		// if more than one territory has the maximum advantage, the attacker chosen will be the one with more units
 		for (int i = 1; i <= maxIndex; i++) {
-			System.out.println("CHOSEN ATTACKER UNITS: " + chosenAttack.getAttacker().getUnits());
+
 			if(orderedOptions.get(i).get(0).getAttacker().getUnits() > chosenAttack.getAttacker().getUnits())
 			{
 				chosenAttack = orderedOptions.get(i).get(0);
 			}
 		}
-		System.out.println("CHOSEN ATTACKER UNITS: " + chosenAttack.getAttacker().getUnits());
+
 		return chosenAttack;
 	}
 
@@ -250,7 +248,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		// Defender disadvantage is 
 		// (max(total units of same player surrounding territory)) - (its units in a territory)
-		int defenderUnits = potencialRisksList.get(0).getDefender().getUnits();
+		int defenderUnits = territory.getUnits();
+		if(potencialRisksList.isEmpty())
+		{
+			return defenderUnits;
+		}
 		Hashtable<Integer, Integer> surroundingUnits = new Hashtable<>();
 
 		for (Attack attack : potencialRisksList) {
@@ -266,7 +268,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		}
 
 
-		ArrayList<Integer> values = (ArrayList<Integer>) surroundingUnits.values();
+		ArrayList<Integer> values = new ArrayList<Integer>(surroundingUnits.values());
 		Collections.sort(values);
 		Collections.reverse(values);
 		return  values.get(0) - defenderUnits;
@@ -388,7 +390,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random)
 		{
 			Collections.shuffle(fortifications);
-			action = new ProposePlayerFortify(fortifications.get(0));
+			Fortify fort = fortifications.get(0);
+			int maxUnitsAmount = fort.getAmount();
+			int unitsAmount = new Random().nextInt(maxUnitsAmount) + 1;
+			fort.setAmount(unitsAmount);
+			action = new ProposePlayerFortify(fort);
 		}else {
 			action = new ProposePlayerFortify(chooseStrategicFortification());
 		}
@@ -444,7 +450,21 @@ public class PlayerPlayingBehaviour extends Behaviour {
 					chosenFortification = fortifications.get(i);
 				}
 			}
+		}
 
+		//choose amount of pieces
+		int chosenOriginDisadvantage = territoriesDisadvantage.get(chosenFortification.from.territoryID);
+		int chosenDestinationDisadvantage  = territoriesDisadvantage.get(chosenFortification.to.territoryID);
+		int maxAmount = chosenFortification.getAmount();
+
+		if(chosenOriginDisadvantage * chosenDestinationDisadvantage > 0)
+		{
+			int average = (chosenFortification.from.getUnits() + chosenFortification.to.getUnits())/2;
+			int units = Math.abs(chosenFortification.from.getUnits() - average);
+			chosenFortification.setAmount(Math.min(maxAmount, units));
+		} else
+		{
+			chosenFortification.setAmount(Math.min(maxAmount, chosenDestinationDisadvantage));
 		}
 
 		return chosenFortification;
