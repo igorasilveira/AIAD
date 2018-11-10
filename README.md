@@ -57,7 +57,7 @@
 			* Aggressive lança o maximo de dados possivel (3)
 			* Defensive lança o minimo de dados possivel (1)
 			* Random é aleatório
-- [ ] Decidir melhor fortificação
+- [ ] Decidir melhor fortificação (Ricardo)
 	* Melhor território a fortificar
 		* Critérios:
 			1. ?
