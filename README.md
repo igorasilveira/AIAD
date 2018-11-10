@@ -39,7 +39,7 @@
 		* REJECT-PROPOSAL
 
 ### Estratégias
-- [ ] Decidir se atacar, fortificar ou nada
+- [ ] Decidir se atacar, fortificar ou nada (Ricardo)
 	* Critérios: 
 		1. ?
 - [X] Decidir melhor ataque (Mindset Random é sempre aleatório)
@@ -57,7 +57,7 @@
 			* Aggressive lança o maximo de dados possivel (3)
 			* Defensive lança o minimo de dados possivel (1)
 			* Random é aleatório
-- [ ] Decidir melhor fortificação
+- [X] Decidir melhor fortificação
 	* Melhor território a fortificar e de origem das peças
 		* Critérios:
 			1. Calcular para cada território a desvantagem em que se encontra (quanto maior o valor maior a desvantagem):
