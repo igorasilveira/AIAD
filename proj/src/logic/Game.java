@@ -532,8 +532,7 @@ public class Game implements Serializable {
 
 					for(Territory neighbour : territory.getNeighbours()) {
 						if(neighbour.getPlayerID() != id) {
-							int dice = r.nextInt(3)+1;
-							attacks.add(new Attack(territory, neighbour, dice));
+							attacks.add(new Attack(territory, neighbour, 1));
 						}
 					}
 				}

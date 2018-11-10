@@ -3,20 +3,33 @@ package agents.behaviours.player;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Random;
 
 import agents.PlayerAgent;
+import agents.PlayerMindset;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
 import agents.messages.board.RequestPlayerDefend;
-import agents.messages.player.*;
+import agents.messages.player.ProposePlayerAction;
+import agents.messages.player.ProposePlayerAttack;
+import agents.messages.player.ProposePlayerDefend;
+import agents.messages.player.ProposePlayerFortify;
+import agents.messages.player.ProposePlayerSetup;
+import agents.messages.player.ProposePlayerTradeCards;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import logic.*;
+import logic.Attack;
+import logic.Card;
+import logic.CardSet;
+import logic.Fortify;
+import logic.Game;
+import logic.Territory;
 
 public class PlayerPlayingBehaviour extends Behaviour {
 
@@ -90,7 +103,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
 
 				int defDice = chooseDefenseDiceAmount(attack);
-				
+
 				action = new ProposePlayerDefend(defDice);
 
 
@@ -107,12 +120,9 @@ public class PlayerPlayingBehaviour extends Behaviour {
 					Random ran = new Random();
 					int n = ran.nextInt(2);
 
-					if (n == 0) {  // attack
+					if (true) {  // attack
 
-						// TODO choose good attack
-						Collections.shuffle(attacks);
-
-						Attack attack = attacks.get(0);
+						Attack attack = chooseAttack();
 
 						action = new ProposePlayerAttack(attack);
 					} else { //dont attack
@@ -137,6 +147,102 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		}
 	}
 
+	private Attack chooseAttack() {
+		ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+		Attack attack;
+
+		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random)
+		{
+			Collections.shuffle(attacks);
+			attack = attacks.get(0);
+		} else
+		{
+			attack = chooseStretegicAttack();
+		}
+
+		//Choose dice amount
+		chooseAttackerDiceAmount(attack);
+
+		return attack;
+	}
+
+	private Attack chooseStretegicAttack() {
+		ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+
+		//Choose best target
+		//Group attacks by defender
+
+		Hashtable<Integer, ArrayList<Attack>> viableOptions = new Hashtable<>();
+
+		for (Attack attack : attacks) {
+			if(viableOptions.containsKey(attack.getDefender().territoryID))
+			{
+				viableOptions.get(attack.getDefender().territoryID).add(attack);
+			} else {
+				ArrayList<Attack> list = new ArrayList<>();
+				list.add(attack);
+				viableOptions.put(attack.getDefender().territoryID, list);
+			}
+		}
+
+		ArrayList<ArrayList<Attack>> orderedOptions = new ArrayList<>(viableOptions.values());
+
+		// Sort defenders by calculating the advantage of the attacker in each attack
+		// Best atacks will be at front
+		Collections.sort(orderedOptions, new Comparator<ArrayList<Attack>>() {
+			public int compare(ArrayList<Attack> list1, ArrayList<Attack> list2) {
+				return calculateAdvantage(list2)-calculateAdvantage(list1);
+			}
+		});
+
+		//Choose best attacking territory
+		Comparator<Attack> compareAttackerUnits = new Comparator<Attack>() {
+			public int compare(Attack attack1, Attack attack2) {
+				return attack2.getAttacker().getUnits() - attack1.getAttacker().getUnits();
+			}
+		};
+
+		// Order the top options' attacks to choose the best attacker
+		int maxIndex = 0;
+		int maxAdvantage = calculateAdvantage(orderedOptions.get(0));
+		System.out.println("MAX ADVANTAGE: " + maxAdvantage);
+		for (int i = 1; i < orderedOptions.size(); i++) {
+			
+			if(calculateAdvantage(orderedOptions.get(i)) < maxAdvantage)
+			{
+				Collections.sort(orderedOptions.get(i), compareAttackerUnits);
+				break;
+			} else {
+				maxIndex++;
+			}
+		}
+		System.out.println("MAX INDEX: " + maxIndex);
+		Attack chosenAttack = orderedOptions.get(0).get(0);
+
+		// if more than one territory has the maximum advantage, the attacker chosen will be the one with more units
+		for (int i = 1; i <= maxIndex; i++) {
+			System.out.println("CHOSEN ATTACKER UNITS: " + chosenAttack.getAttacker().getUnits());
+			if(orderedOptions.get(i).get(0).getAttacker().getUnits() > chosenAttack.getAttacker().getUnits())
+			{
+				chosenAttack = orderedOptions.get(i).get(0);
+			}
+		}
+		System.out.println("CHOSEN ATTACKER UNITS: " + chosenAttack.getAttacker().getUnits());
+		return chosenAttack;
+	}
+
+
+	private int calculateAdvantage(ArrayList<Attack> list) {
+		// Attacker advantage is 
+		// (its total amount of units surrounding the target) - (target territory's units)
+		int valueList = - list.get(0).getDefender().getUnits();
+
+		for (Attack attack : list) {
+			valueList += attack.getAttacker().getUnits();
+		}
+		return valueList;
+	}
+
 	private boolean chooseToTrade() {
 		switch(((PlayerAgent)myAgent).getMindset()) {
 		case Aggressive:
@@ -150,7 +256,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		default:
 			break;
 		}
-		
+
 		return false;
 	}
 
@@ -160,19 +266,19 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			for(CardSet set : sets) {
 				ArrayList<Card> cards = set.getCards();
 				boolean foundWildCard = false;
-				
+
 				for(Card card : cards) {
 					if(card.army == null) {
 						foundWildCard = true;
 					}
 				}
-				
+
 				if(!foundWildCard) {
 					return set;
 				}
 			}
 		}
-		
+
 		return sets.get(0);
 	}
 
@@ -181,7 +287,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		int defDice;
 		Territory defender = attack.getDefender();
 		int attackerDice = attack.getDiceAmount();
-		
+
 		switch(((PlayerAgent)myAgent).getMindset()) {
 		case Aggressive: 
 			// Chooses highest probability of winning (without caring for the amount of pieces at stake)
@@ -213,6 +319,36 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			defDice = new Random().nextInt(2) + 1;
 		}
 		return defDice;
+	}
+
+	private void chooseAttackerDiceAmount(Attack attack) {
+		int defDice;
+
+		switch(((PlayerAgent)myAgent).getMindset()) {
+		case Aggressive: 
+			// Chooses highest probability of winning (without caring for the amount of pieces at stake)
+			defDice = 3;
+			break;
+		case Defensive:
+			// Chooses smallest amount of pieces at stake
+			defDice = 1;
+			break;
+		case Smart:
+			//Chooses based on the amount of units at stake and the probability of winning
+			if(attack.getAttacker().getUnits() == 2){
+				defDice = 1;
+			} else if(attack.getDefender().getUnits() == 2) {
+				defDice = 2;
+
+			} else{
+				defDice = 3;
+			}
+			break;
+		default:
+			defDice = new Random().nextInt(2) + 1;
+		}
+
+		attack.setDiceAmount(defDice);
 	}
 
 
