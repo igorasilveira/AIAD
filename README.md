@@ -42,7 +42,7 @@
 - [ ] Decidir se atacar, fortificar ou nada
 	* Critérios: 
 		1. ?
-- [ ] Decidir melhor ataque
+- [ ] Decidir melhor ataque (Ricardo)
 	* Melhor território a atacar
 		* Critérios:
 			1. ?
