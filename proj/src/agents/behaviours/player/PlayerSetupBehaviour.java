@@ -86,6 +86,8 @@ public class PlayerSetupBehaviour extends Behaviour {
 				}
 			} catch (UnreadableException e) {
 				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
