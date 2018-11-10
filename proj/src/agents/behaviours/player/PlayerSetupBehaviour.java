@@ -98,20 +98,20 @@ public class PlayerSetupBehaviour extends Behaviour {
 	}
 
 	private int chooseClaimedTerritories(ArrayList<Territory> claimed) {
-		switch(((PlayerAgent)myAgent).getMindset()) {
-		case Aggressive:
-			break;
-		case Defensive:
-			break;
-		case Random:
-			break;
-		case Smart:
-			break;
-		default:
-			break;
+		Collections.shuffle(claimed);
+		
+		int id = lastGameState.getCurrentPlayer().getID();
+		
+		for(Territory t : claimed) {
+			ArrayList<Territory> neighbours = t.getNeighbours();
+			
+			for(Territory n : neighbours) {
+				if(n.getPlayerID() != id) {
+					return t.territoryID;
+				}
+			}
 		}
 		
-		Collections.shuffle(claimed);
 		return claimed.get(0).territoryID;
 	}
 
