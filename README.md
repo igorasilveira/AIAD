@@ -42,16 +42,21 @@
 - [ ] Decidir se atacar, fortificar ou nada
 	* Critérios: 
 		1. ?
-- [ ] Decidir melhor ataque (Ricardo)
+- [X] Decidir melhor ataque (Mindset Random é sempre aleatório) (Ricardo)
 	* Melhor território a atacar
 		* Critérios:
-			1. ?
+			1. Calcular para cada alvo a vantagem do atacante:
+				* (total de peças do atacante em territórios vizinhos) - (peças do atacante no território alvo)
+			2. Escolher os alvos com vantagem máxima.
 	* Melhor território de origem das peças
 		* Critérios:
-			1. ?
+			1. Escolhidos potenciais alvos, escolher o território de origem com mais peças.
 	* Melhor quantidade de dados
 		* Critérios:
-			1. ?
+			* Smart escolhe baseado nas probabilidades [aqui](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/dice_roll_odds.xlsx) registadas
+			* Aggressive lança o maximo de dados possivel (3)
+			* Defensive lança o minimo de dados possivel (1)
+			* Random é aleatório
 - [ ] Decidir melhor fortificação
 	* Melhor território a fortificar
 		* Critérios:
