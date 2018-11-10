@@ -116,6 +116,8 @@ public class PlayerSetupBehaviour extends Behaviour {
 	}
 
 	private int chooseUnclaimedTerritories(ArrayList<Territory> unclaimed) {
+		Collections.shuffle(unclaimed);
+		
 		switch(((PlayerAgent)myAgent).getMindset()) {
 		case Smart:
 			Collections.sort(unclaimed, new Comparator<Territory>() {
@@ -261,7 +263,6 @@ public class PlayerSetupBehaviour extends Behaviour {
 			
 			return unclaimed.get(0).territoryID;
 		case Random:
-			Collections.shuffle(unclaimed);
 			return unclaimed.get(0).territoryID;
 		default:
 			break;
