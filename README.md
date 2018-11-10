@@ -39,10 +39,10 @@
 		* REJECT-PROPOSAL
 
 ### Estratégias
-- [ ] Decidir se atacar, fortificar ou nada
+- [ ] Decidir se atacar, fortificar ou nada (Ricardo)
 	* Critérios: 
 		1. ?
-- [X] Decidir melhor ataque (Mindset Random é sempre aleatório) (Ricardo)
+- [X] Decidir melhor ataque (Mindset Random é sempre aleatório)
 	* Melhor território a atacar
 		* Critérios:
 			1. Calcular para cada alvo a vantagem do atacante:
@@ -57,17 +57,14 @@
 			* Aggressive lança o maximo de dados possivel (3)
 			* Defensive lança o minimo de dados possivel (1)
 			* Random é aleatório
-- [ ] Decidir melhor fortificação (Ricardo)
-	* Melhor território a fortificar
+- [X] Decidir melhor fortificação
+	* Melhor território a fortificar e de origem das peças
 		* Critérios:
-			1. ?
-	* Melhor território de origem das peças
-		* Critérios:
-			1. ?
-	* Melhor quantidade de peças
-		* Critérios:
-			1. ?
-- [X] Decidir melhor defesa (Ricardo)
+			1. Calcular para cada território a desvantagem em que se encontra (quanto maior o valor maior a desvantagem):
+				* (maximo entre total de unidades de cada adversario vizinho)) - (unidades do território)
+			2. Escolher par 'de' e 'para' com base na divisão da desvantagem da origem pela desvantagem do destino, sendo que valores mais afastados de 0 são mais vantajosos (particularmente valores negativos que implicam que um dos territórios tenha mais unidades que o vizinho adversário com mais unidades).
+			3. Escolher as unidades com base na desvantagem de cada território (origem e destino) de forma a equilibrar os valores
+- [X] Decidir melhor defesa
 	* Critérios:
 		1. ver [excel](https://github.com/rmcarvalho/AIAD1819/blob/master/docs/dice_roll_odds.xlsx) com probabilidades de lançamentos calculadas simulando 1000 ataques para cada combinação de quantidades de dados lançados
 - [ ] Decidir melhor setup (Igor)
@@ -77,7 +74,7 @@
 	* Melhor posicionamento quando não há territórios vazios
 		* Critérios:
 			1. ?
-- [X] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes) (Leo)
+- [X] Decidir quando trocar cartas e que cartas trocar (iguais ou diferentes)
 	* Critérios:
 		1. Agentes agressivos e defensivos entregam cartas mal puderem.
 		2. Agentes smart tentam nao entregar cartas o maximo tempo possível, de modo a receberem mais unidades quando entregarem o seu set.
