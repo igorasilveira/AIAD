@@ -2,6 +2,7 @@ package agents.behaviours.player;
 
 import agents.BoardAgent;
 import agents.PlayerAgent;
+import agents.PlayerMindset;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
@@ -99,6 +100,11 @@ public class PlayerSetupBehaviour extends Behaviour {
 
 	private int chooseClaimedTerritories(ArrayList<Territory> claimed) {
 		Collections.shuffle(claimed);
+		
+		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random) {
+			return claimed.get(0).territoryID;
+		}
+		
 		
 		int id = lastGameState.getCurrentPlayer().getID();
 		
