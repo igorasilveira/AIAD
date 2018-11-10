@@ -382,13 +382,16 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 
 	public PlayerAction fortify() {
-		PlayerAction action = new ProposePlayerAction(Actions.Done);
+		PlayerAction action;
+		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
-		Random ran = new Random();
-		int n = ran.nextInt(2);
-
-		action = new ProposePlayerFortify(chooseStrategicFortification());
-
+		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random)
+		{
+			Collections.shuffle(fortifications);
+			action = new ProposePlayerFortify(fortifications.get(0));
+		}else {
+			action = new ProposePlayerFortify(chooseStrategicFortification());
+		}
 
 		return action;
 	}
