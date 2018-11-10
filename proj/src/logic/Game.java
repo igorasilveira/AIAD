@@ -411,6 +411,21 @@ public class Game implements Serializable {
 
 		return null;
 	}
+	
+	/**
+	 *
+	 * @param id continent id
+	 * @return continent corresponding to the searched id
+	 */
+	public Continent getContinent(int id) {
+		for (Continent continent : this.continents) {
+			if(continent.continentID == id) {
+				return continent;
+			}
+		}
+
+		return null;
+	}
 
 	/**
 	 * changes the turn to the next player
