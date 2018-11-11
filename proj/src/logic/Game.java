@@ -115,23 +115,23 @@ public class Game implements Serializable {
 
 
 			switch(this.stage) {
-			case Setup:
-				this.setupTurn();				
-				nextTurn();
+				case Setup:
+					this.setupTurn();
+					nextTurn();
 
-				if(setupFinished()) {
-					this.stage = GameStage.Playing;
-					this.turn = startingPlayer;
-				}
-				break;
-			case Playing:
-				this.playingTurn();			
-				nextTurn();
+					if(setupFinished()) {
+						this.stage = GameStage.Playing;
+						this.turn = startingPlayer;
+					}
+					break;
+				case Playing:
+					this.playingTurn();
+					nextTurn();
 
-				if(isGameFinished() != 0) {
-					this.stage = GameStage.Finished;
-				}
-				break;
+					if(isGameFinished() != 0) {
+						this.stage = GameStage.Finished;
+					}
+					break;
 			}
 		}
 	}
@@ -171,7 +171,7 @@ public class Game implements Serializable {
 
 	public Player findPlayerByID(int id) {
 		for (Player player:
-			 players) {
+				players) {
 			if (player.getID() == id)
 				return player;
 		}
@@ -181,7 +181,7 @@ public class Game implements Serializable {
 	//TODO remove this functions
 	public int findByAID(AID aid) {
 		for (Player player :
-			players) {
+				players) {
 			if (player.getAid() == aid)
 				return player.getID();
 		}
@@ -467,7 +467,7 @@ public class Game implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id player id
 	 * @return returns fortify options
 	 */
@@ -492,7 +492,7 @@ public class Game implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id attacking player id
 	 * @return attack options for that player
 	 */
@@ -566,7 +566,7 @@ public class Game implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id player id
 	 * @return territories claimed by that player
 	 */
@@ -608,7 +608,7 @@ public class Game implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id player id
 	 * @return true if the player lost, false otherwise
 	 */
@@ -730,7 +730,7 @@ public class Game implements Serializable {
 					try {
 
 						int currentContinentVal = Integer.parseInt(line);
-						this.continents.add(new Continent(lineCount, currentContinentVal));	
+						this.continents.add(new Continent(lineCount, currentContinentVal));
 					} catch (Exception e) {
 						System.out.println("Line format for continents.dat asset should be an integer");
 						reader.close();
@@ -769,7 +769,7 @@ public class Game implements Serializable {
 		int continentID;
 
 		try {
-			continentID = Integer.parseInt(continent);	
+			continentID = Integer.parseInt(continent);
 		} catch (NumberFormatException e) { //not an integer program should shut down
 			return false;
 		}
@@ -782,7 +782,7 @@ public class Game implements Serializable {
 		for (int i = 0; i < neighbours.length; i++) {
 			int currentNeighbourID;
 			try {
-				currentNeighbourID = Integer.parseInt(neighbours[i]);	
+				currentNeighbourID = Integer.parseInt(neighbours[i]);
 			} catch (NumberFormatException e) { //not an integer program should shut down
 				return false;
 			}
@@ -794,16 +794,15 @@ public class Game implements Serializable {
 			Territory neighbour = territories.get(currentNeighbourID-1);
 			current.addNeighbour(neighbour);
 		}
+		Polygon polygon = new Polygon();
 		for (String pair :
 				area) {
-			Polygon polygon = new Polygon();
 			String[] coordinates = pair.split(",");
 			polygon.addPoint(
 					Integer.parseInt(coordinates[0]),
 					Integer.parseInt(coordinates[1]));
-
-			current.setArea(polygon);
 		}
+		current.setArea(polygon);
 		this.continents.get(continentID - 1).addTerritory(current);
 		return true;
 	}
@@ -877,20 +876,20 @@ public class Game implements Serializable {
 	 */
 	private boolean processCardLine(int territoryID, String line) {
 		switch(line) {
-		case "i":
-			this.cards.add(new Card(territoryID, Army.Infantry));
-			break;
-		case "c":
-			this.cards.add(new Card(territoryID, Army.Cavalry));
-			break;
-		case "a":
-			this.cards.add(new Card(territoryID, Army.Artillery));
-			break;
-		case "w":
-			this.cards.add(new Card(-1, null));
-			break;
-		default:
-			return false;
+			case "i":
+				this.cards.add(new Card(territoryID, Army.Infantry));
+				break;
+			case "c":
+				this.cards.add(new Card(territoryID, Army.Cavalry));
+				break;
+			case "a":
+				this.cards.add(new Card(territoryID, Army.Artillery));
+				break;
+			case "w":
+				this.cards.add(new Card(-1, null));
+				break;
+			default:
+				return false;
 		}
 
 		return true;
@@ -919,11 +918,11 @@ public class Game implements Serializable {
 
 		int index = 0;
 		while(index < attackerDice.length && index < defenderDice.length) {
-			if(attackerDice[index] > defenderDice[index]){ 
+			if(attackerDice[index] > defenderDice[index]){
 				//attacker wins
 				results[index] = true;
-			} 
-			else{ 
+			}
+			else{
 				//defender wins (including in case of a tie)
 				results[index] = false;
 			}

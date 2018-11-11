@@ -4,8 +4,7 @@ import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
 
-import logic.Map;
-import logic.Unit;
+import logic.*;
 import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
@@ -27,7 +26,11 @@ import java.util.Vector;
 
 public class MyLauncher extends Repast3Launcher {
 
+	private static int[] PIECES = {35, 30, 25, 20};
+
 	private static boolean BATCH_MODE = false;
+
+	private BoardAgent boardAgent;
 
 	private ArrayList<Unit> agentList;
 	private ArrayList<Map> mapAgent;
@@ -47,27 +50,19 @@ public class MyLauncher extends Repast3Launcher {
 
 	private MyLauncher() {
 		random = new Random();
-		this.numberOfAgents = 100;
 		this.spaceSize = 150;
 		this.numberOfPlayers = 3;
 	}
 
 	@Override
 	public String[] getInitParam() {
-		return new String[] {"numberOfAgents", "spaceSize", "numberOfPlayers"};
+		return new String[] {"numberOfPlayers"};
 	}
 
 //	public Schedule getSchedule() {
 //		return schedule;
 //	}
 
-	public int getNumberOfAgents() {
-		return numberOfAgents;
-	}
-
-	public void setNumberOfAgents(int numberOfAgents) {
-		this.numberOfAgents = numberOfAgents;
-	}
 
 	public int getNumberOfPlayers() {
 		return numberOfPlayers;
@@ -75,14 +70,6 @@ public class MyLauncher extends Repast3Launcher {
 
 	public void setNumberOfPlayers(int numberOfPlayers) {
 		this.numberOfPlayers = numberOfPlayers;
-	}
-
-	public int getSpaceSize() {
-		return spaceSize;
-	}
-
-	public void setSpaceSize(int spaceSize) {
-		this.spaceSize = spaceSize;
 	}
 
 	@Override
@@ -96,6 +83,7 @@ public class MyLauncher extends Repast3Launcher {
 		Runtime rt = Runtime.instance();
 		Profile p1 = new ProfileImpl();
 		mainContainer = rt.createMainContainer(p1);
+		boardAgent = new BoardAgent();
 
 		launchAgents();
 	}
@@ -104,10 +92,11 @@ public class MyLauncher extends Repast3Launcher {
 
 		try {
 
-			mainContainer.acceptNewAgent("MyAgent", new BoardAgent()).start();
-			mainContainer.acceptNewAgent("MyAgent1", new PlayerAgent()).start();
-			mainContainer.acceptNewAgent("MyAgent2", new PlayerAgent()).start();
-			mainContainer.acceptNewAgent("MyAgent3", new PlayerAgent()).start();
+			mainContainer.acceptNewAgent("MyAgent", boardAgent).start();
+
+			for (int i = 0; i < numberOfPlayers; i++) {
+				mainContainer.acceptNewAgent("Player" + i, new PlayerAgent()).start();
+			}
 
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
@@ -144,7 +133,7 @@ public class MyLauncher extends Repast3Launcher {
 		agentList = new ArrayList<>();
 		mapAgent = new ArrayList<>();
 		space = new Object2DTorus(spaceSize, spaceSize);
-		Random random = new Random();
+
 //		for (int i = 0; i<1; i++) {
 //			int x, y;
 //			x = 10;
@@ -154,10 +143,6 @@ public class MyLauncher extends Repast3Launcher {
 //			space.putObjectAt(x, y, agent);
 //			agentList.add(agent);
 //		}
-
-		Unit a = new Unit(37, 45, Color.BLACK, space);
-		space.putObjectAt(37, 45, a);
-		agentList.add(a);
 
 		background = new Object2DTorus(spaceSize, spaceSize);
 		try {
@@ -238,6 +223,25 @@ public class MyLauncher extends Repast3Launcher {
 
 				textDisplay.clearLines();
 				textDisplay.addLine("#Agents: " + getAgentList().size());
+
+				Game currentGame = boardAgent.getGame();
+
+				for (Unit unit : agentList) {
+					space.putObjectAt(unit.getX(), unit.getY(), null);
+				}
+
+				agentList.clear();
+
+				if (currentGame != null) {
+					for (Continent continent : currentGame.getContinents()) {
+						for (Territory territory : continent.getTerritories()) {
+							for (Unit unit : territory.getUnitsList()) {
+								space.putObjectAt(unit.getX(), unit.getY(), unit);
+								agentList.add(unit);
+							}
+						}
+					}
+				}
 			}
 		}
 	}

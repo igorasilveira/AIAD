@@ -11,14 +11,11 @@ public class Unit extends Agent implements Drawable {
 
     private Color color;
     private int x, y;
-    private Territory territory;
-    private Object2DTorus space;
 
-    public Unit(int x, int y, Color color, Object2DTorus space) {
+    public Unit(int x, int y, Color color) {
         this.color = color;
         this.x = x;
         this.y = y;
-        this.space = space;
     }
 
     @Override
