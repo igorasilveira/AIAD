@@ -1,11 +1,11 @@
 import agents.BoardAgent;
 import agents.PlayerAgent;
+import agents.PlayerMindset;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
 
 import logic.*;
-import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
@@ -18,7 +18,6 @@ import uchicago.src.sim.engine.SimInit;
 import uchicago.src.sim.gui.*;
 import uchicago.src.sim.space.Object2DTorus;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,11 +25,16 @@ import java.util.Vector;
 
 public class MyLauncher extends Repast3Launcher {
 
-	private static int[] PIECES = {35, 30, 25, 20};
-
 	private static boolean BATCH_MODE = false;
 
 	private BoardAgent boardAgent;
+
+	private PlayerMindset playerOneMindset;
+	private PlayerMindset playerTwoMindset;
+	private PlayerMindset playerThreeMindset;
+	private PlayerMindset playerFourMindset;
+	private PlayerMindset playerFiveMindset;
+	private PlayerMindset playerSixMindset;
 
 	private ArrayList<Unit> agentList;
 	private ArrayList<Map> mapAgent;
@@ -38,13 +42,15 @@ public class MyLauncher extends Repast3Launcher {
 	private DisplaySurface dsurf;
 	private Object2DTorus space;
 	private Object2DTorus background;
-	private TextDisplay textDisplay;
+	private ArrayList<TextDisplay> infoDisplays;
 	private OpenSequenceGraph plot;
 
 	private Random random;
 
+	private ArrayList<PlayerMindset> mindsets;
 
-	private int numberOfAgents, spaceSize, numberOfPlayers;
+	private int spaceSize;
+	private int numberOfPlayers;
 
 	private ContainerController mainContainer;
 
@@ -52,25 +58,23 @@ public class MyLauncher extends Repast3Launcher {
 		random = new Random();
 		this.spaceSize = 150;
 		this.numberOfPlayers = 3;
+		this.playerOneMindset = PlayerMindset.Smart;
+		this.playerTwoMindset = PlayerMindset.Defensive;
+		this.playerThreeMindset = PlayerMindset.Aggressive;
+		this.playerFourMindset = PlayerMindset.Defensive;
+		this.playerFiveMindset = PlayerMindset.Random;
+		this.playerSixMindset = PlayerMindset.Random;
 	}
 
 	@Override
 	public String[] getInitParam() {
-		return new String[] {"numberOfPlayers"};
+		return new String[] {"numberOfPlayers", "playerOneMindset", "playerTwoMindset", "playerThreeMindset", "playerFourMindset", "playerFiveMindset", "playerSixMindset", };
 	}
 
 //	public Schedule getSchedule() {
 //		return schedule;
 //	}
 
-
-	public int getNumberOfPlayers() {
-		return numberOfPlayers;
-	}
-
-	public void setNumberOfPlayers(int numberOfPlayers) {
-		this.numberOfPlayers = numberOfPlayers;
-	}
 
 	@Override
 	public String getName() {
@@ -94,8 +98,18 @@ public class MyLauncher extends Repast3Launcher {
 
 			mainContainer.acceptNewAgent("MyAgent", boardAgent).start();
 
+			mindsets = new ArrayList<>();
+			mindsets.add(playerOneMindset);
+			mindsets.add(playerTwoMindset);
+			mindsets.add(playerThreeMindset);
+			mindsets.add(playerFourMindset);
+			mindsets.add(playerFiveMindset);
+			mindsets.add(playerSixMindset);
+
 			for (int i = 0; i < numberOfPlayers; i++) {
-				mainContainer.acceptNewAgent("Player" + i, new PlayerAgent()).start();
+				PlayerAgent playerAgent = new PlayerAgent();
+				playerAgent.setMindset(mindsets.get(i));
+				mainContainer.acceptNewAgent("Player" + (i + 1), playerAgent).start();
 			}
 
 		} catch (StaleProxyException e) {
@@ -107,6 +121,7 @@ public class MyLauncher extends Repast3Launcher {
 	@Override
 	public void setup() {
 		super.setup();
+		infoDisplays = new ArrayList<>();
 		schedule = new Schedule();
 		if (dsurf != null) dsurf.dispose();
 		dsurf = new DisplaySurface(this, "Risk Display");
@@ -118,6 +133,42 @@ public class MyLauncher extends Repast3Launcher {
 			vMM.add(i);
 		}
 		descriptors.put("NumberOfPlayers", new ListPropertyDescriptor("NumberOfPlayers", vMM));
+
+		Vector<PlayerMindset> pm1 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm1.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerOneMindset", new ListPropertyDescriptor("PlayerOneMindset", pm1));
+
+		Vector<PlayerMindset> pm2 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm2.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerTwoMindset", new ListPropertyDescriptor("PlayerTwoMindset", pm2));
+
+		Vector<PlayerMindset> pm3 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm3.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerThreeMindset", new ListPropertyDescriptor("PlayerThreeMindset", pm3));
+
+		Vector<PlayerMindset> pm4 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm4.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerFourMindset", new ListPropertyDescriptor("PlayerFourMindset", pm4));
+
+		Vector<PlayerMindset> pm5 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm5.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerFiveMindset", new ListPropertyDescriptor("PlayerFiveMindset", pm5));
+
+		Vector<PlayerMindset> pm6 = new Vector<>();
+		for(int i = 0; i < PlayerMindset.values().length; i++) {
+			pm6.add(PlayerMindset.values()[i]);
+		}
+		descriptors.put("PlayerSixMindset", new ListPropertyDescriptor("PlayerSixMindset", pm6));
 	}
 
 	@Override
@@ -133,19 +184,6 @@ public class MyLauncher extends Repast3Launcher {
 		agentList = new ArrayList<>();
 		mapAgent = new ArrayList<>();
 		space = new Object2DTorus(spaceSize, spaceSize);
-
-		Unit a = new Unit(100, 25, Color.BLUE);
-		space.putObjectAt(a.getX(), a.getY(), a);
-		agentList.add(a);
-//		for (int i = 0; i<1; i++) {
-//			int x, y;
-//			x = 10;
-//			y = 10;
-//			Color color =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-//			Unit agent = new Unit(x, y, color, space);
-//			space.putObjectAt(x, y, agent);
-//			agentList.add(agent);
-//		}
 
 		background = new Object2DTorus(spaceSize, spaceSize);
 		try {
@@ -169,11 +207,19 @@ public class MyLauncher extends Repast3Launcher {
 		display.setObjectList(agentList);
 		dsurf.addDisplayableProbeable(display, "Agents Space");
 
-		//Text display
-		textDisplay = new TextDisplay(20, 20, Color.BLUE);
-		textDisplay.setFontSize(30);
-		dsurf.addDisplayableProbeable(textDisplay, "Text Display");
+		//Text displays
+		int fontSize = 16;
+		int numLines = 3;
+		for (int i = 1; i < numberOfPlayers + 1; i++) {
+			TextDisplay textDisplay = new TextDisplay(5, 20 + ((numLines  + 2) * fontSize * i), Utils.COLORS[i - 1]);
+			textDisplay.setHeader("Player " + i + " - " + mindsets.get(i - 1));
+			textDisplay.setFontSize(fontSize);
+			textDisplay.addLine("#Territories ", 0);
+			textDisplay.addLine("#Troups ", 1);
+			dsurf.addDisplayableProbeable(textDisplay, "Text Display P" + i);
 
+			infoDisplays.add(textDisplay);
+		}
 		dsurf.display();
 
 //        // graph
@@ -202,7 +248,7 @@ public class MyLauncher extends Repast3Launcher {
 	}
 
 	private void buildSchedule() {
-//		getSchedule().scheduleActionBeginning(0, new MainAction());
+		getSchedule().scheduleActionBeginning(0, new MainAction());
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
 //        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
@@ -224,9 +270,8 @@ public class MyLauncher extends Repast3Launcher {
 		public void execute() {
 			if (!BATCH_MODE) {
 
-				textDisplay.clearLines();
-				textDisplay.addLine("#Agents: " + getAgentList().size());
-
+				int[] counts = {0, 0, 0, 0, 0, 0, 0};
+				int[] troups = {0, 0, 0, 0, 0, 0, 0};
 				Game currentGame = boardAgent.getGame();
 
 				for (Unit unit : agentList) {
@@ -238,12 +283,25 @@ public class MyLauncher extends Repast3Launcher {
 				if (currentGame != null) {
 					for (Continent continent : currentGame.getContinents()) {
 						for (Territory territory : continent.getTerritories()) {
+							counts[territory.getPlayerID()] = counts[territory.getPlayerID()] + 1;
+							troups[territory.getPlayerID()] = troups[territory.getPlayerID()] + territory.getUnits();
 							for (Unit unit : territory.getUnitsList()) {
 								space.putObjectAt(unit.getX(), unit.getY(), unit);
 								agentList.add(unit);
 							}
 						}
 					}
+
+					for (int i = 0; i < numberOfPlayers; i++) {
+						infoDisplays.get(i).clearLine(0);
+						infoDisplays.get(i).addLine("#Territories: " + counts[i + 1], 0);
+						infoDisplays.get(i).clearLine(1);
+						infoDisplays.get(i).addLine("#Troups: " + troups[i + 1], 1);
+					}
+
+					if (BATCH_MODE)
+						if (currentGame.isGameFinished() != 0)
+							fireEndSim();
 				}
 			}
 		}
@@ -251,5 +309,63 @@ public class MyLauncher extends Repast3Launcher {
 
 	public ArrayList<Unit> getAgentList() {
 		return agentList;
+	}
+
+
+
+	public int getNumberOfPlayers() {
+		return numberOfPlayers;
+	}
+
+	public void setNumberOfPlayers(int numberOfPlayers) {
+		this.numberOfPlayers = numberOfPlayers;
+	}
+
+	public PlayerMindset getPlayerOneMindset() {
+		return playerOneMindset;
+	}
+
+	public void setPlayerOneMindset(PlayerMindset playerOneMindset) {
+		this.playerOneMindset = playerOneMindset;
+	}
+
+	public PlayerMindset getPlayerTwoMindset() {
+		return playerTwoMindset;
+	}
+
+	public void setPlayerTwoMindset(PlayerMindset playerTwoMindset) {
+		this.playerTwoMindset = playerTwoMindset;
+	}
+
+	public PlayerMindset getPlayerThreeMindset() {
+		return playerThreeMindset;
+	}
+
+	public void setPlayerThreeMindset(PlayerMindset playerThreeMindset) {
+		this.playerThreeMindset = playerThreeMindset;
+	}
+
+	public PlayerMindset getPlayerFourMindset() {
+		return playerFourMindset;
+	}
+
+	public void setPlayerFourMindset(PlayerMindset playerFourMindset) {
+		this.playerFourMindset = playerFourMindset;
+	}
+
+	public PlayerMindset getPlayerFiveMindset() {
+		return playerFiveMindset;
+	}
+
+	public void setPlayerFiveMindset(PlayerMindset playerFiveMindset) {
+		this.playerFiveMindset = playerFiveMindset;
+	}
+
+	public PlayerMindset getPlayerSixMindset() {
+		return playerSixMindset;
+	}
+
+	public void setPlayerSixMindset(PlayerMindset playerSixMindset) {
+		this.playerSixMindset = playerSixMindset;
 	}
 }

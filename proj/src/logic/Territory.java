@@ -52,6 +52,10 @@ public class Territory implements Serializable{
 	}
 
 	public void setPlayerID(int playerID) {
+		for (Unit unit :
+				unitsList) {
+			unit.setColor(Utils.COLORS[playerID - 1]);
+		}
 		this.playerID = playerID;
 	}
 	
@@ -67,7 +71,7 @@ public class Territory implements Serializable{
 	 * Adds a neighbour to the current territory's array list neighbours
 	 * @param neighbour territory to be added as neighbour
 	 */
-	public void addNeighbour(Territory neighbour) {
+	void addNeighbour(Territory neighbour) {
 		this.neighbours.add(neighbour);
 	}
 	
@@ -77,8 +81,9 @@ public class Territory implements Serializable{
 	 * @return true if the territory is neighbours with current territory and false otherwise
 	 */
 	public boolean isNeighbour(Territory territory) {
-		for (int i = 0; i < this.neighbours.size(); i++) {
-			if(this.neighbours.get(i).territoryID == territory.territoryID)
+		for (Territory neighbour :
+				neighbours) {
+			if(neighbour.territoryID == territory.territoryID)
 			{
 				return true;
 			}
@@ -96,9 +101,9 @@ public class Territory implements Serializable{
 	
 	/**
 	 * setter for the number of units
-	 * @param units
+	 * @param units amount to set to
 	 */
-	public void setUnits(int units) {
+	void setUnits(int units) {
 		unitsList.clear();
 		createUnit(units);
 		this.units = units;
@@ -143,22 +148,18 @@ public class Territory implements Serializable{
 		return continentID;
 	}
 
-	public void setContinentID(int continentID) {
+	void setContinentID(int continentID) {
 		this.continentID = continentID;
 	}
 
 	/**
 	 * Method used to print in the console the data in this territory
 	 */
-	public void dump()
+	void dump()
 	{
 		System.out.print("I am: " + (this.territoryID));
 		System.out.print("\tNeighbour of:");
-		
-		for (int i = 0; i < this.neighbours.size(); i++) {
-			System.out.print(" " + (this.neighbours.get(i).territoryID));
-		}
-		System.out.print("\n");
+
 	}
 
 
@@ -166,7 +167,7 @@ public class Territory implements Serializable{
 		return area;
 	}
 
-	public void setArea(Polygon area) {
+	void setArea(Polygon area) {
 		this.area = area;
 	}
 

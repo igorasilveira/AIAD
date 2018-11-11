@@ -8,16 +8,16 @@ import java.util.Random;
 public class Utils {
 
 
-	public static Color[] COLORS = {Color.RED, Color.GREEN, Color.MAGENTA, Color.BLUE, Color.YELLOW, Color.ORANGE};
+	public static Color[] COLORS = {Color.MAGENTA, Color.GREEN, Color.RED, Color.YELLOW, Color.BLUE, Color.ORANGE};
 
-	public static final HashMap<Integer, Integer> startingUnits = Utils.initUnits();
+	static final HashMap<Integer, Integer> startingUnits = Utils.initUnits();
 
 	/**
 	 * Method that rolls the given amount of dice
 	 * @param diceAmount amount of dice to be rolled
 	 * @return array of length diceAmount with the values gotten from the dice rolls in decreasing order
 	 */
-	public static int[] rollDice(int diceAmount)
+	static int[] rollDice(int diceAmount)
 	{
 		int[] results = new int[diceAmount];
 
@@ -39,7 +39,7 @@ public class Utils {
 	}
 
 	private static HashMap<Integer, Integer> initUnits() {
-		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> map = new HashMap<>();
 		
 		map.put(3, 35);
 		map.put(4, 30);

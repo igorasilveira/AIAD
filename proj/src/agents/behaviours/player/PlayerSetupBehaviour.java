@@ -121,145 +121,133 @@ public class PlayerSetupBehaviour extends Behaviour {
 
 		switch(((PlayerAgent)myAgent).getMindset()) {
 		case Smart:
-			Collections.sort(unclaimed, new Comparator<Territory>() {
+			Collections.sort(unclaimed, (t1, t2) -> {
+				ArrayList<Territory> t1Neighbours = t1.getNeighbours();
+				ArrayList<Territory> t2Neighbours = t2.getNeighbours();
 
-				@Override
-				public int compare(Territory t1, Territory t2) {
-					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
-					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
+				int id = lastGameState.getCurrentPlayer().getID();
 
-					int id = lastGameState.getCurrentPlayer().getID();
+				int t1C = 0;
+				int t2C = 0;
 
-					int t1C = 0;
-					int t2C = 0;
-
-					for(Territory t : t1Neighbours) {
-						if(t.getPlayerID() == id) {
-							t1C++;
-						}
+				for(Territory t : t1Neighbours) {
+					if(t.getPlayerID() == id) {
+						t1C++;
 					}
+				}
 
-					for(Territory t : t2Neighbours) {
-						if(t.getPlayerID() == id) {
-							t2C++;
-						}
+				for(Territory t : t2Neighbours) {
+					if(t.getPlayerID() == id) {
+						t2C++;
 					}
+				}
 
-					if(t1C < t2C) {
-						return 1;
-					}
+				if(t1C < t2C) {
+					return 1;
+				}
 
-					if(t1C > t2C) {
-						return -1;
-					}
+				if(t1C > t2C) {
+					return -1;
+				}
 
-					if(t1.getContinentID() == t2.getContinentID()) {
-						return 0;
-					}
-
-					Continent t1Continent = lastGameState.getContinent(t1.getContinentID());
-					Continent t2Continent = lastGameState.getContinent(t2.getContinentID());
-
-					t1C = 0;
-					t2C = 0;
-
-					for(Territory t : t1Continent.getTerritories()) {
-						if(t.getPlayerID() == id) {
-							t1C++;
-						}
-					}
-
-					for(Territory t : t2Continent.getTerritories()) {
-						if(t.getPlayerID() == id) {
-							t2C++;
-						}
-					}
-
-					if(t1C < t2C) {
-						return 1;
-					}
-
-					if(t1C > t2C) {
-						return -1;
-					}
-
+				if(t1.getContinentID() == t2.getContinentID()) {
 					return 0;
 				}
+
+				Continent t1Continent = lastGameState.getContinent(t1.getContinentID());
+				Continent t2Continent = lastGameState.getContinent(t2.getContinentID());
+
+				t1C = 0;
+				t2C = 0;
+
+				for(Territory t : t1Continent.getTerritories()) {
+					if(t.getPlayerID() == id) {
+						t1C++;
+					}
+				}
+
+				for(Territory t : t2Continent.getTerritories()) {
+					if(t.getPlayerID() == id) {
+						t2C++;
+					}
+				}
+
+				if(t1C < t2C) {
+					return 1;
+				}
+
+				if(t1C > t2C) {
+					return -1;
+				}
+
+				return 0;
 			});
 			return unclaimed.get(0).territoryID;
 		case Aggressive:
-			Collections.sort(unclaimed, new Comparator<Territory>() {
+			Collections.sort(unclaimed, (t1, t2) -> {
+				ArrayList<Territory> t1Neighbours = t1.getNeighbours();
+				ArrayList<Territory> t2Neighbours = t2.getNeighbours();
 
-				@Override
-				public int compare(Territory t1, Territory t2) {
-					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
-					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
+				int id = lastGameState.getCurrentPlayer().getID();
 
-					int id = lastGameState.getCurrentPlayer().getID();
+				int t1C = 0;
+				int t2C = 0;
 
-					int t1C = 0;
-					int t2C = 0;
-
-					for(Territory t : t1Neighbours) {
-						if(t.getPlayerID() != id) {
-							t1C++;
-						}
+				for(Territory t : t1Neighbours) {
+					if(t.getPlayerID() != id) {
+						t1C++;
 					}
-
-					for(Territory t : t2Neighbours) {
-						if(t.getPlayerID() != id) {
-							t2C++;
-						}
-					}
-
-					if(t1C < t2C) {
-						return 1;
-					}
-
-					if(t1C > t2C) {
-						return -1;
-					}
-
-					return 0;
 				}
+
+				for(Territory t : t2Neighbours) {
+					if(t.getPlayerID() != id) {
+						t2C++;
+					}
+				}
+
+				if(t1C < t2C) {
+					return 1;
+				}
+
+				if(t1C > t2C) {
+					return -1;
+				}
+
+				return 0;
 			});
 
 			return unclaimed.get(0).territoryID;
 		case Defensive:
-			Collections.sort(unclaimed, new Comparator<Territory>() {
+			Collections.sort(unclaimed, (t1, t2) -> {
+				ArrayList<Territory> t1Neighbours = t1.getNeighbours();
+				ArrayList<Territory> t2Neighbours = t2.getNeighbours();
 
-				@Override
-				public int compare(Territory t1, Territory t2) {
-					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
-					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
+				int id = lastGameState.getCurrentPlayer().getID();
 
-					int id = lastGameState.getCurrentPlayer().getID();
+				int t1C = 0;
+				int t2C = 0;
 
-					int t1C = 0;
-					int t2C = 0;
-
-					for(Territory t : t1Neighbours) {
-						if(t.getPlayerID() == id) {
-							t1C++;
-						}
+				for(Territory t : t1Neighbours) {
+					if(t.getPlayerID() == id) {
+						t1C++;
 					}
-
-					for(Territory t : t2Neighbours) {
-						if(t.getPlayerID() == id) {
-							t2C++;
-						}
-					}
-
-					if(t1C < t2C) {
-						return 1;
-					}
-
-					if(t1C > t2C) {
-						return -1;
-					}
-
-					return 0;
 				}
+
+				for(Territory t : t2Neighbours) {
+					if(t.getPlayerID() == id) {
+						t2C++;
+					}
+				}
+
+				if(t1C < t2C) {
+					return 1;
+				}
+
+				if(t1C > t2C) {
+					return -1;
+				}
+
+				return 0;
 			});
 
 			return unclaimed.get(0).territoryID;

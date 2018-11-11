@@ -8,7 +8,7 @@ public class Attack implements Serializable {
 
 	private int diceAmount;
 	
-	public Attack(Territory attacker, Territory defender, int diceAmount) {
+	Attack(Territory attacker, Territory defender, int diceAmount) {
 		this.attacker = attacker;
 		this.defender= defender;
 		this.diceAmount = diceAmount;

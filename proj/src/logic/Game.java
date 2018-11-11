@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import logic.Card.Army;
+import jade.core.AID;
 
 public class Game implements Serializable {
 	public enum GameStage {
@@ -186,7 +187,7 @@ public class Game implements Serializable {
 		return -1;
 	}
 
-	public void playingTurn()
+	private void playingTurn()
 	{
 		Player currentPlayer = this.players.get(this.turn);
 		currentPlayer.setUnits(0);
@@ -515,7 +516,7 @@ public class Game implements Serializable {
 	}
 
 	public ArrayList<Attack> getDefenseOptions(Territory defender) {
-		ArrayList<Attack> attacks = new ArrayList<Attack>();
+		ArrayList<Attack> attacks = new ArrayList<>();
 
 		for (Territory attacker : defender.getNeighbours()) {
 			if(attacker.getPlayerID() != defender.getPlayerID())

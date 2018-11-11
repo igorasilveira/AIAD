@@ -1,8 +1,9 @@
 package logic;
 
+import jade.core.AID;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import jade.core.AID;
 
 public class Player implements Serializable {
 	/**
@@ -21,11 +22,11 @@ public class Player implements Serializable {
 	private ArrayList<Card> cards;
 	private final AID aid;
 	
-	public Player(int id, int units, AID aid) {
+	Player(int id, int units, AID aid) {
 		this.id = id;
 		this.unitsLeft = units;
 		this.aid = aid;
-		this.cards = new ArrayList<Card>();
+		this.cards = new ArrayList<>();
 	}
 	
 	public int getID() {
@@ -57,7 +58,7 @@ public class Player implements Serializable {
 	
 	/**
 	 * set the units to the given amount
-	 * @param units 
+	 * @param units amount of units to set
 	 */
 	public void setUnits(int units) {
 		this.unitsLeft = units;
