@@ -1,9 +1,15 @@
 # AIAD1819
 
 ## Running
+* Add JADE, Repast and SaJaS dependencias to classpath. *
+### JADE
 * Eclipse running arguments:
 
 `-gui -agents Board:agents.BoardAgent;Player1:agents.PlayerAgent(aggressive);Player2:agents.PlayerAgent(defensive);Player3:agents.PlayerAgent(smart);Player4:agents.PlayerAgent`
+
+### SaJaS+Repast3
+
+Run class `MyLauncher.java`
 
 ## TODO
 * implementar regras do jogo
