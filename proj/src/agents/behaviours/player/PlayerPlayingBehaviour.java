@@ -552,16 +552,64 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
 
 		int units = lastGameState.getCurrentPlayer().getUnitsLeft();
+		int id = lastGameState.getCurrentPlayer().getID();
+
+		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random) {
+			while (units > 0) {
+				Collections.shuffle(claimed);
+				territories.add(claimed.get(0).territoryID);
+				units--;
+			}
+			
+			return new ProposePlayerSetup(territories);
+		}
+
+		ArrayList<Territory> enemyNeighbours = new ArrayList<Territory>();
+
+		for(Territory t : claimed) {
+			ArrayList<Territory> neighbours = t.getNeighbours();
+
+			for(Territory n : neighbours) {
+				if(n.getPlayerID() != id) {
+					enemyNeighbours.add(t);
+					break;
+				}
+			}
+		}
 
 		while (units > 0) {
-			//TODO agent chooses territory
-
-			Collections.shuffle(claimed);
-			territories.add(claimed.get(0).territoryID);
+			Territory t = chooseEnemyNeighboursTerritory(enemyNeighbours);
+			t.increaseUnits(1);
+			
+			territories.add(t.territoryID);
 			units--;
 		}
 
 		return new ProposePlayerSetup(territories);
+	}
+	
+	
+	private Territory chooseEnemyNeighboursTerritory(ArrayList<Territory> enemyNeighbours) {
+		Collections.shuffle(enemyNeighbours);
+
+		Collections.sort(enemyNeighbours, (t1, t2) -> {
+			if(t1.getUnits() < t2.getUnits()) {
+				return -1;
+			}
+			
+			if(t1.getUnits() > t2.getUnits()) {
+				return 1;
+			}
+			
+			return 0;
+		});
+		
+		
+		if(enemyNeighbours.size() > 0) {
+			return enemyNeighbours.get(0);
+		}
+		
+		return null;
 	}
 
 	@Override

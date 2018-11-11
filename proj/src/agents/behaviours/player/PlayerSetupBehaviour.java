@@ -102,15 +102,35 @@ public class PlayerSetupBehaviour extends Behaviour {
 
 
 		int id = lastGameState.getCurrentPlayer().getID();
+		
+		ArrayList<Territory> enemyNeighbours = new ArrayList<Territory>();
 
 		for(Territory t : claimed) {
 			ArrayList<Territory> neighbours = t.getNeighbours();
 
 			for(Territory n : neighbours) {
 				if(n.getPlayerID() != id) {
-					return t.territoryID;
+					enemyNeighbours.add(t);
+					break;
 				}
 			}
+		}
+
+		Collections.sort(enemyNeighbours, (t1, t2) -> {
+			if(t1.getUnits() < t2.getUnits()) {
+				return -1;
+			}
+			
+			if(t1.getUnits() > t2.getUnits()) {
+				return 1;
+			}
+			
+			return 0;
+		});
+		
+		
+		if(enemyNeighbours.size() > 0) {
+			return enemyNeighbours.get(0).territoryID;
 		}
 
 		return claimed.get(0).territoryID;
