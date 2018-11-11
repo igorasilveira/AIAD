@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import agents.PlayerAgent;
+import agents.PlayerMindset;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
@@ -18,18 +19,17 @@ import agents.messages.player.ProposePlayerDefend;
 import agents.messages.player.ProposePlayerFortify;
 import agents.messages.player.ProposePlayerSetup;
 import agents.messages.player.ProposePlayerTradeCards;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import logic.*;
 import logic.Attack;
 import logic.Card;
 import logic.CardSet;
 import logic.Fortify;
 import logic.Game;
 import logic.Territory;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 
 public class PlayerPlayingBehaviour extends Behaviour {
 
@@ -66,12 +66,12 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				response.setPerformative(ACLMessage.PROPOSE);
 
 				if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
-					System.out.println(myAgent.getLocalName() + " Received SETUP");
+//					System.out.println(myAgent.getLocalName() + " Received SETUP");
 
 					action = setup();
 
 				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.TradeCards) {
-					System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
+//					System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
 
 					action = setup();
 
@@ -99,7 +99,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
                         }
 
 				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
-					System.out.println(myAgent.getLocalName() + " Received DEFEND");
+//					System.out.println(myAgent.getLocalName() + " Received DEFEND");
 
 					Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
 
@@ -109,7 +109,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				} else { // Play
 
-                    System.out.println(myAgent.getLocalName() + " Received PLAY");
+//                    System.out.println(myAgent.getLocalName() + " Received PLAY");
                     ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
                     ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
@@ -131,7 +131,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 				response.setContentObject(action);
 				myAgent.send(response);
-				System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
+//				System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -277,18 +277,10 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		// Sort defenders by calculating the advantage of the attacker in each attack
 		// Best atacks will be at front
-		Collections.sort(orderedOptions, new Comparator<ArrayList<Attack>>() {
-			public int compare(ArrayList<Attack> list1, ArrayList<Attack> list2) {
-				return calculateAttackerAdvantage(list2)-calculateAttackerAdvantage(list1);
-			}
-		});
+		Collections.sort(orderedOptions, (list1, list2) -> calculateAttackerAdvantage(list2)-calculateAttackerAdvantage(list1));
 
 		//Choose best attacking territory
-		Comparator<Attack> compareAttackerUnits = new Comparator<Attack>() {
-			public int compare(Attack attack1, Attack attack2) {
-				return attack2.getAttacker().getUnits() - attack1.getAttacker().getUnits();
-			}
-		};
+		Comparator<Attack> compareAttackerUnits = (attack1, attack2) -> attack2.getAttacker().getUnits() - attack1.getAttacker().getUnits();
 
 		// Order the top options' attacks to choose the best attacker
 		int maxIndex = 0;
@@ -357,7 +349,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		}
 
 
-		ArrayList<Integer> values = new ArrayList<Integer>(surroundingUnits.values());
+		ArrayList<Integer> values = new ArrayList<>(surroundingUnits.values());
 		Collections.sort(values);
 		Collections.reverse(values);
 		return  values.get(0) - defenderUnits;
@@ -471,7 +463,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		attack.setDiceAmount(defDice);
 	}
 
-	public Fortify chooseFortify() {
+	private Fortify chooseFortify() {
 		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 
 		if(fortifications.size() <= 0)

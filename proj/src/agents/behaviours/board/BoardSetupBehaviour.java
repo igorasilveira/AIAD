@@ -52,7 +52,7 @@ public class BoardSetupBehaviour extends Behaviour {
             message.addReceiver(currentPlayer);
             myAgent.send(message);
             if (test) {
-                System.out.println("Message Sent to : " + currentPlayer);
+//                System.out.println("Message Sent to : " + currentPlayer);
                 test = false;
             }
 

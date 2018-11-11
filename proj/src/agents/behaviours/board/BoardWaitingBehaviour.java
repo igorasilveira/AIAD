@@ -4,6 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import agents.BoardAgent;
+import agents.PlayerAgent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
@@ -12,7 +13,6 @@ import logic.Game.GameStage;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import sajas.proto.SubscriptionInitiator;
-import uchicago.src.sim.engine.Stepable;
 
 public class BoardWaitingBehaviour extends SubscriptionInitiator {
 

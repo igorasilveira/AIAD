@@ -6,9 +6,9 @@ import agents.behaviours.player.PlayerWaitingBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
 import sajas.domain.DFService;
@@ -63,7 +63,7 @@ public class PlayerAgent extends Agent {
 
 		addBehaviour(sequentialBehaviour);
 
-		System.out.println(getLocalName() + ": starting to work!");
+		System.out.println(getLocalName() + ": starting to work with a mindset of " + mindset.toString() + "!");
 	}
 	public void takeDown() {
 		try {
@@ -80,6 +80,10 @@ public class PlayerAgent extends Agent {
 
 	public void setBoardAID(AID boardAID) {
 		this.boardAID = boardAID;
+	}
+
+	public void setMindset(PlayerMindset mindset) {
+		this.mindset = mindset;
 	}
 
 	public AID getBoardAID() {

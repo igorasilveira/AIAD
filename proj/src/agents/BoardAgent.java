@@ -1,6 +1,5 @@
 package agents;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 import agents.behaviours.board.BoardPlayingBehaviour;
@@ -12,7 +11,6 @@ import logic.Game;
 import jade.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
-import uchicago.src.sim.engine.Stepable;
 
 public class BoardAgent extends Agent {
 

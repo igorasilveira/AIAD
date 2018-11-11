@@ -95,7 +95,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 			MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE), MessageTemplate.MatchSender(currentPlayer));
 
 			response = this.getAgent().receive(mt);
-			System.out.println(myAgent.getLocalName() + " Sent REQUEST to " + currentPlayer.getLocalName() + " with request for " + request.getAction().toString());
+//			System.out.println(myAgent.getLocalName() + " Sent REQUEST to " + currentPlayer.getLocalName() + " with request for " + request.getAction().toString());
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,7 +132,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 						break;
 					case Attack:
 
-						System.out.println(myAgent.getLocalName() + " Received ATTACK from " + currentPlayer.getLocalName());
+//						System.out.println(myAgent.getLocalName() + " Received ATTACK from " + currentPlayer.getLocalName());
 
 						Attack attack = ((ProposePlayerAttack) response.getContentObject()).getAttack();
 
@@ -149,7 +149,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 							defendMessage.setContentObject(requestPlayerDefend);
 							myAgent.send(defendMessage);
 						}
-						System.out.println(myAgent.getLocalName() + " Sent DEFEND to Player " + defenderAID.getLocalName());
+//						System.out.println(myAgent.getLocalName() + " Sent DEFEND to Player " + defenderAID.getLocalName());
 
 						MessageTemplate messageTemplate = MessageTemplate.and(
 								MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
@@ -160,7 +160,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 						if (defenderResponse != null) {
 							messageSent = false;
 
-							System.out.println(myAgent.getLocalName() + " Received DEFEND from Player " + defenderAID.getLocalName());
+//							System.out.println(myAgent.getLocalName() + " Received DEFEND from Player " + defenderAID.getLocalName());
 							// resolve attack
 							int defenderDiceAmount = ((ProposePlayerDefend) defenderResponse.getContentObject()).getDiceAmount();
 							boolean[] result = game.diceRollWinner(attack.getDiceAmount(), defenderDiceAmount);
@@ -180,7 +180,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 								i++;
 							}
 
-							System.out.println(myAgent.getLocalName() + " Player " + currentPlayer.getLocalName() + " attacked " + defenderAID.getLocalName());
+//							System.out.println(myAgent.getLocalName() + " Player " + currentPlayer.getLocalName() + " attacked " + defenderAID.getLocalName());
 
 							// Attacker won
 							if (defenderTerritory.getUnits() == 0) {
@@ -206,29 +206,28 @@ public class BoardPlayingBehaviour extends Behaviour {
 									// TODO send defender LOST message?
 									game.removePlayer(defenderID);
 								}
-								System.out.println("Turn: " + currentPlayer.getLocalName() + "  changed territory " + defenderTerritory.territoryID);
+//								System.out.println("Turn: " + currentPlayer.getLocalName() + "  changed territory " + defenderTerritory.territoryID);
 
 								for(Player pl : game.getPlayers()) {
 									ArrayList<Territory> c = game.getClaimedTerritories(pl.getID());
 
-									System.out.println(pl.getAid().getLocalName() + " has " + c.size() + " territories!");
+//									System.out.println(pl.getAid().getLocalName() + " has " + c.size() + " territories!");
 								}
 
-								System.out.println();
 							}
 						}
 
 
 						break;
 					case Fortify:
-						System.out.println(myAgent.getLocalName() + " Received FORTIFY from " + currentPlayer.getLocalName());
+//						System.out.println(myAgent.getLocalName() + " Received FORTIFY from " + currentPlayer.getLocalName());
 
 						Fortify fortification = ((ProposePlayerFortify) response.getContentObject()).getFortify();
 						Territory originTerritory = game.getTerritory(fortification.from.territoryID);
 						Territory destinationTerritory = game.getTerritory(fortification.to.territoryID);
 
-						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
-						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
+//						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+//						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 
 						if(originTerritory.getUnits() <= fortification.getAmount()) { return; }
 
@@ -240,8 +239,8 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 						originTerritory.decreaseUnits(fortification.getAmount());
 						destinationTerritory.increaseUnits(fortification.getAmount());
-						System.out.println("\nTerritory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
-						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
+//						System.out.println("\nTerritory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+//						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 					case Done:
 						if (setupMade)
 						{
@@ -250,7 +249,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 							if (attackerWonTerritory) {
 
 								if (game.getCards().size() > 0) {
-									System.out.println(myAgent.getLocalName() + " Attacker won territory and is awarded a card");
+//									System.out.println(myAgent.getLocalName() + " Attacker won territory and is awarded a card");
 									game.getCurrentPlayer().addCard(game.getCards().remove(0));
 								}
 
