@@ -4,12 +4,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import agents.BoardAgent;
-import agents.PlayerAgent;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
 import jade.core.AID;
-import logic.Game.GameStage;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.lang.acl.ACLMessage;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import sajas.proto.SubscriptionInitiator;
@@ -74,7 +72,6 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 		}
 		@Override
 		public void run() {
-			((BoardAgent) behaviour.getAgent()).getGame().setStage(GameStage.Setup);
 			System.out.println("Timer Complete");
 			((BoardAgent) behaviour.getAgent()).getSequentialBehaviour().removeSubBehaviour(behaviour);
 			System.out.println("Board WAITING BEHAVIOUR ENDED");

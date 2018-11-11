@@ -3,14 +3,18 @@ package logic;
 import java.io.Serializable;
 
 public class Attack implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Territory attacker;
 	private final Territory defender;
 
 	private int diceAmount;
-	
+
 	Attack(Territory attacker, Territory defender, int diceAmount) {
 		this.attacker = attacker;
-		this.defender= defender;
+		this.defender = defender;
 		this.diceAmount = diceAmount;
 	}
 
@@ -25,7 +29,7 @@ public class Attack implements Serializable {
 	public int getDiceAmount() {
 		return diceAmount;
 	}
-	
+
 	public void setDiceAmount(int diceAmount) {
 		this.diceAmount = diceAmount;
 	}

@@ -1,8 +1,6 @@
 package agents.messages.player;
 
 import agents.messages.Actions;
-import logic.Attack;
-import logic.Territory;
 
 public class ProposePlayerDefend extends ProposePlayerAction {
 

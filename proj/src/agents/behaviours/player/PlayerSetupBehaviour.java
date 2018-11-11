@@ -1,5 +1,9 @@
 package agents.behaviours.player;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import agents.PlayerAgent;
 import agents.PlayerMindset;
 import agents.messages.Actions;
@@ -14,11 +18,6 @@ import logic.Game;
 import logic.Territory;
 import sajas.core.Agent;
 import sajas.core.behaviours.Behaviour;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class PlayerSetupBehaviour extends Behaviour {
 

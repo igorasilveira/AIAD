@@ -1,22 +1,21 @@
 package agents.behaviours.board;
 
+import java.io.IOException;
+import java.util.Iterator;
+
 import agents.BoardAgent;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
-import agents.messages.player.ProposePlayerAction;
 import agents.messages.player.ProposePlayerSetup;
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import logic.Game;
 import logic.Player;
 import logic.Territory;
-import jade.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.Behaviour;
-
-import java.io.IOException;
-import java.util.Iterator;
 
 public class BoardSetupBehaviour extends Behaviour {
 

@@ -20,15 +20,13 @@ import agents.messages.player.ProposePlayerTradeCards;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import logic.*;
-import logic.Game.GameStage;
-import sajas.core.Agent;
-import sajas.core.behaviours.Behaviour;
 import logic.Attack;
 import logic.Fortify;
 import logic.Game;
 import logic.Player;
 import logic.Territory;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 
 public class BoardPlayingBehaviour extends Behaviour {
 
@@ -55,7 +53,6 @@ public class BoardPlayingBehaviour extends Behaviour {
 	@Override
 	public void onStart(){
 		System.out.println("Board PLAYING BEHAVIOUR STARTED");
-//		game.start(((BoardAgent) myAgent).getPlayers());
         lStartTime = new Date().getTime();
 	}
 

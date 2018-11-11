@@ -4,39 +4,40 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Continent implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Territory> territories;
 	public final int continentID;
 	public final int value;
-	
+
 	public Continent(int id, int value) {
-		this.continentID = id;
+		continentID = id;
 		this.value = value;
-		this.territories =  new ArrayList<Territory>();
+		territories = new ArrayList<>();
 	}
-	
-	public void addTerritory(Territory territory)
-	{
-		territory.setContinentID(this.continentID);
-		this.territories.add(territory);
+
+	public void addTerritory(Territory territory) {
+		territory.setContinentID(continentID);
+		territories.add(territory);
 	}
-	
-	public ArrayList<Territory> getTerritories()
-	{
-		return this.territories;
+
+	public ArrayList<Territory> getTerritories() {
+		return territories;
 	}
-	
+
 	/**
 	 * Method used to print in the console the data in this continent
 	 */
-	public void dump()
-	{
-		System.out.print("I am: " + (this.continentID));
-		System.out.println("\n" + this.territories.size());
+	public void dump() {
+		System.out.print("I am: " + (continentID));
+		System.out.println("\n" + territories.size());
 		System.out.println("\tContainer of:");
-		
-		for (int i = 0; i < this.territories.size(); i++) {
+
+		for (int i = 0; i < territories.size(); i++) {
 			System.out.print("\t");
-			this.territories.get(i).dump();
+			territories.get(i).dump();
 		}
 		System.out.print("\n");
 	}

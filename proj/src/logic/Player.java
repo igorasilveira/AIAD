@@ -1,86 +1,99 @@
 package logic;
 
-import jade.core.AID;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import jade.core.AID;
+
 public class Player implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Units that are not on the board
 	 */
 	private int unitsLeft;
-	
+
 	/**
 	 * Player ID
 	 */
 	private final int id;
-	
+
 	/**
 	 * Cards that the player has
 	 */
 	private ArrayList<Card> cards;
 	private final AID aid;
-	
+
 	Player(int id, int units, AID aid) {
 		this.id = id;
-		this.unitsLeft = units;
+		unitsLeft = units;
 		this.aid = aid;
-		this.cards = new ArrayList<>();
+		cards = new ArrayList<>();
 	}
-	
+
 	public int getID() {
-		return this.id;
+		return id;
 	}
-	
+
 	/**
 	 * @return number of units that the player has not placed on the board
 	 */
 	public int getUnitsLeft() {
-		return this.unitsLeft;
+		return unitsLeft;
 	}
-	
+
 	/**
 	 * decreases the number of units
-	 * @param amount amount to decrease
+	 * 
+	 * @param amount
+	 *            amount to decrease
 	 */
 	public void decreaseUnits(int amount) {
-		this.unitsLeft -= amount;
+		unitsLeft -= amount;
 	}
-	
+
 	/**
 	 * increases the number of units
-	 * @param amount amount to increase
+	 * 
+	 * @param amount
+	 *            amount to increase
 	 */
 	public void increaseUnits(int amount) {
-		this.unitsLeft += amount;
+		unitsLeft += amount;
 	}
-	
+
 	/**
 	 * set the units to the given amount
-	 * @param units amount of units to set
+	 * 
+	 * @param units
+	 *            amount of units to set
 	 */
 	public void setUnits(int units) {
-		this.unitsLeft = units;
+		unitsLeft = units;
 	}
-	
+
 	/**
 	 * adds card to the list of cards
-	 * @param card card to add
+	 * 
+	 * @param card
+	 *            card to add
 	 */
 	public void addCard(Card card) {
-		this.cards.add(card);
+		cards.add(card);
 	}
-	
+
 	/**
 	 * @return Player card list
 	 */
 	public ArrayList<Card> getCards() {
-		return this.cards;
+		return cards;
 	}
 
 	public AID getAid() {
 		return aid;
 	}
-	
+
 }

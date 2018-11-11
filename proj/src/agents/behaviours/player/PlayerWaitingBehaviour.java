@@ -3,7 +3,6 @@ package agents.behaviours.player;
 import agents.PlayerAgent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import logic.Game;
 import sajas.core.Agent;
 import sajas.core.behaviours.Behaviour;
 

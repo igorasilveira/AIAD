@@ -1,27 +1,32 @@
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Vector;
+
 import agents.BoardAgent;
 import agents.PlayerAgent;
 import agents.PlayerMindset;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
-
-import logic.*;
+import logic.Continent;
+import logic.Game;
+import logic.Map;
+import logic.Territory;
+import logic.Unit;
+import logic.Utils;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
-
 import uchicago.src.reflector.ListPropertyDescriptor;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
-import uchicago.src.sim.gui.*;
+import uchicago.src.sim.gui.DisplaySurface;
+import uchicago.src.sim.gui.Object2DDisplay;
+import uchicago.src.sim.gui.TextDisplay;
 import uchicago.src.sim.space.Object2DTorus;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Vector;
 
 public class MyLauncher extends Repast3Launcher {
 

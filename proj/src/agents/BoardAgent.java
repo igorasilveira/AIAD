@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import agents.behaviours.board.BoardPlayingBehaviour;
 import agents.behaviours.board.BoardSetupBehaviour;
 import agents.behaviours.board.BoardWaitingBehaviour;
+import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import logic.Game;
-import jade.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
 
