@@ -6,21 +6,22 @@ import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
 import agents.messages.player.ProposePlayerAction;
 import agents.messages.player.ProposePlayerSetup;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.util.leap.Iterator;
 import logic.Game;
 import logic.Player;
 import logic.Territory;
+import jade.core.AID;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class BoardSetupBehaviour extends Behaviour {
 
-    Game game;
+    private Game game;
+    private boolean test = true;
 
     public BoardSetupBehaviour(Agent a) {
         super(a);
@@ -50,10 +51,14 @@ public class BoardSetupBehaviour extends Behaviour {
             message.setContentObject(request);
             message.addReceiver(currentPlayer);
             myAgent.send(message);
+            if (test) {
+                System.out.println("Message Sent to : " + currentPlayer);
+                test = false;
+            }
 
             //Get answer from aid
             MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE), MessageTemplate.MatchSender(currentPlayer));
-            response = this.getAgent().blockingReceive(mt);
+            response = this.getAgent().receive(mt);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,28 +66,32 @@ public class BoardSetupBehaviour extends Behaviour {
         }// TODO make more robust
 
 
-        //Check valid response and make changes
-        try {
-            ProposePlayerSetup action = (ProposePlayerSetup) response.getContentObject();
+        if (response != null) {
 
-            if (action.getAction() == Actions.Setup) {
+            try {
+                ProposePlayerSetup action = (ProposePlayerSetup) response.getContentObject();
 
-                Territory t = game.getTerritory(action.getTerritories().get(0));
+                if (action.getAction() == Actions.Setup) {
 
-                t.setPlayerID(game.getCurrentPlayer().getID());
-                t.increaseUnits(1);
+                    Territory t = game.getTerritory(action.getTerritories().get(0));
 
-                game.getCurrentPlayer().decreaseUnits(1);
+                    t.setPlayerID(game.getCurrentPlayer().getID());
+                    t.increaseUnits(1);
 
+                    game.getCurrentPlayer().decreaseUnits(1);
+
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+                // TODO: handle exception
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-            // TODO: handle exception
+            game.nextTurn();
         }
+        //Check valid response and make changes
 
-        game.nextTurn();
     }
 
     @Override
@@ -100,12 +109,6 @@ public class BoardSetupBehaviour extends Behaviour {
 
             Iterator iterator = endMessage.getAllReceiver();
 
-            while (iterator.hasNext())
-                playerList = playerList + iterator.next() + "\n";
-
-            playerList = playerList + " ]";
-
-            System.out.println(myAgent.getLocalName() + " Sent ENDSETUP to Players " + playerList);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,25 +1,19 @@
 package agents.behaviours.player;
 
-import agents.BoardAgent;
 import agents.PlayerAgent;
 import agents.PlayerMindset;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
-import agents.messages.player.ProposePlayerAction;
 import agents.messages.player.ProposePlayerSetup;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.domain.AMSService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.AMSAgentDescription;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import logic.Continent;
 import logic.Game;
 import logic.Territory;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +22,7 @@ import java.util.Comparator;
 
 public class PlayerSetupBehaviour extends Behaviour {
 
-	Game lastGameState;
+	private Game lastGameState;
 	private boolean setupFinished = false;
 
 	public PlayerSetupBehaviour(Agent a) {
@@ -48,82 +42,83 @@ public class PlayerSetupBehaviour extends Behaviour {
 						MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 						MessageTemplate.MatchPerformative(ACLMessage.INFORM)));
 
-		ACLMessage request = myAgent.blockingReceive(messageTemplate);
+		ACLMessage request = myAgent.receive(messageTemplate);
 
-		try {
-			// set class current game to received from Board
-			switch (request.getPerformative()) {
-				case ACLMessage.REQUEST:
-					lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
-					if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
+		if (request != null) {
 
-						ACLMessage response = request.createReply();
-						response.setPerformative(ACLMessage.PROPOSE);
+			try {
+				// set class current game to received from Board
+				switch (request.getPerformative()) {
+					case ACLMessage.REQUEST:
+						lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
+						if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
 
-						ArrayList<Integer> territories = new ArrayList<Integer>();
+							ACLMessage response = request.createReply();
+							response.setPerformative(ACLMessage.PROPOSE);
 
-						ArrayList<Territory> unclaimed = lastGameState.getUnclaimedTerrritories();
+							ArrayList<Integer> territories = new ArrayList<>();
 
-						if(unclaimed.size() > 0) {
-							
-							territories.add(chooseUnclaimedTerritories(unclaimed));
+							ArrayList<Territory> unclaimed = lastGameState.getUnclaimedTerrritories();
 
-						}
-						else {
-							//TODO agent chooses territory
-							ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
+                            if(unclaimed.size() > 0) {
 
-							territories.add(chooseClaimedTerritories(claimed));
+                                territories.add(chooseUnclaimedTerritories(unclaimed));
 
-						}
+                            }
+                            else {
+                                //TODO agent chooses territory
+                                ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
 
-						PlayerAction action = new ProposePlayerSetup(territories);
-						response.setContentObject(action);
-						myAgent.send(response);
-					}
-					break;
-					case ACLMessage.INFORM:
-						if (((PlayerAction) request.getContentObject()).getAction() == Actions.EndSetup) {
-							setupFinished = true;
+                                territories.add(chooseClaimedTerritories(claimed));
+
+							}
+
+							PlayerAction action = new ProposePlayerSetup(territories);
+							response.setContentObject(action);
+							myAgent.send(response);
 						}
 						break;
-					default: break;
+						case ACLMessage.INFORM:
+							if (((PlayerAction) request.getContentObject()).getAction() == Actions.EndSetup) {
+								setupFinished = true;
+							}
+							break;
+						default: break;
+				}
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
 		}
 	}
 
 	private int chooseClaimedTerritories(ArrayList<Territory> claimed) {
 		Collections.shuffle(claimed);
-		
+
 		if(((PlayerAgent)myAgent).getMindset() == PlayerMindset.Random) {
 			return claimed.get(0).territoryID;
 		}
-		
-		
+
+
 		int id = lastGameState.getCurrentPlayer().getID();
-		
+
 		for(Territory t : claimed) {
 			ArrayList<Territory> neighbours = t.getNeighbours();
-			
+
 			for(Territory n : neighbours) {
 				if(n.getPlayerID() != id) {
 					return t.territoryID;
 				}
 			}
 		}
-		
+
 		return claimed.get(0).territoryID;
 	}
 
 	private int chooseUnclaimedTerritories(ArrayList<Territory> unclaimed) {
 		Collections.shuffle(unclaimed);
-		
+
 		switch(((PlayerAgent)myAgent).getMindset()) {
 		case Smart:
 			Collections.sort(unclaimed, new Comparator<Territory>() {
@@ -132,62 +127,62 @@ public class PlayerSetupBehaviour extends Behaviour {
 				public int compare(Territory t1, Territory t2) {
 					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
 					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
-					
+
 					int id = lastGameState.getCurrentPlayer().getID();
-					
+
 					int t1C = 0;
 					int t2C = 0;
-					
+
 					for(Territory t : t1Neighbours) {
 						if(t.getPlayerID() == id) {
 							t1C++;
 						}
 					}
-					
+
 					for(Territory t : t2Neighbours) {
 						if(t.getPlayerID() == id) {
 							t2C++;
 						}
 					}
-					
+
 					if(t1C < t2C) {
 						return 1;
 					}
-					
+
 					if(t1C > t2C) {
 						return -1;
 					}
-					
+
 					if(t1.getContinentID() == t2.getContinentID()) {
 						return 0;
 					}
-					
+
 					Continent t1Continent = lastGameState.getContinent(t1.getContinentID());
 					Continent t2Continent = lastGameState.getContinent(t2.getContinentID());
-					
+
 					t1C = 0;
 					t2C = 0;
-					
+
 					for(Territory t : t1Continent.getTerritories()) {
 						if(t.getPlayerID() == id) {
 							t1C++;
 						}
 					}
-					
+
 					for(Territory t : t2Continent.getTerritories()) {
 						if(t.getPlayerID() == id) {
 							t2C++;
 						}
 					}
-					
+
 					if(t1C < t2C) {
 						return 1;
 					}
-					
+
 					if(t1C > t2C) {
 						return -1;
 					}
-					
+
 					return 0;
 				}
 			});
@@ -199,36 +194,36 @@ public class PlayerSetupBehaviour extends Behaviour {
 				public int compare(Territory t1, Territory t2) {
 					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
 					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
-					
+
 					int id = lastGameState.getCurrentPlayer().getID();
-					
+
 					int t1C = 0;
 					int t2C = 0;
-					
+
 					for(Territory t : t1Neighbours) {
 						if(t.getPlayerID() != id) {
 							t1C++;
 						}
 					}
-					
+
 					for(Territory t : t2Neighbours) {
 						if(t.getPlayerID() != id) {
 							t2C++;
 						}
 					}
-					
+
 					if(t1C < t2C) {
 						return 1;
 					}
-					
+
 					if(t1C > t2C) {
 						return -1;
 					}
-					
+
 					return 0;
 				}
 			});
-			
+
 			return unclaimed.get(0).territoryID;
 		case Defensive:
 			Collections.sort(unclaimed, new Comparator<Territory>() {
@@ -237,43 +232,43 @@ public class PlayerSetupBehaviour extends Behaviour {
 				public int compare(Territory t1, Territory t2) {
 					ArrayList<Territory> t1Neighbours = t1.getNeighbours();
 					ArrayList<Territory> t2Neighbours = t2.getNeighbours();
-					
+
 					int id = lastGameState.getCurrentPlayer().getID();
-					
+
 					int t1C = 0;
 					int t2C = 0;
-					
+
 					for(Territory t : t1Neighbours) {
 						if(t.getPlayerID() == id) {
 							t1C++;
 						}
 					}
-					
+
 					for(Territory t : t2Neighbours) {
 						if(t.getPlayerID() == id) {
 							t2C++;
 						}
 					}
-					
+
 					if(t1C < t2C) {
 						return 1;
 					}
-					
+
 					if(t1C > t2C) {
 						return -1;
 					}
-					
+
 					return 0;
 				}
 			});
-			
+
 			return unclaimed.get(0).territoryID;
 		case Random:
 			return unclaimed.get(0).territoryID;
 		default:
 			break;
 		}
-		
+
 		return -1;
 	}
 

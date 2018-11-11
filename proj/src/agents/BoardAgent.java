@@ -6,19 +6,20 @@ import java.util.ArrayList;
 import agents.behaviours.board.BoardPlayingBehaviour;
 import agents.behaviours.board.BoardSetupBehaviour;
 import agents.behaviours.board.BoardWaitingBehaviour;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import logic.Game;
+import jade.core.AID;
+import sajas.core.Agent;
+import sajas.core.behaviours.SequentialBehaviour;
+import uchicago.src.sim.engine.Stepable;
 
 public class BoardAgent extends Agent {
 
 	private Game game;
 	private SequentialBehaviour sequentialBehaviour;
 
-	private ArrayList<AID> players = new ArrayList<AID>();
+	private ArrayList<AID> players = new ArrayList<>();
 
 	public void setup() {
 

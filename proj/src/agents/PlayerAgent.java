@@ -2,21 +2,19 @@ package agents;
 
 import agents.behaviours.player.PlayerPlayingBehaviour;
 import agents.behaviours.player.PlayerSetupBehaviour;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.SequentialBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
+import agents.behaviours.player.PlayerWaitingBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import sajas.core.Agent;
+import sajas.core.behaviours.SequentialBehaviour;
+import sajas.domain.DFService;
 
 public class PlayerAgent extends Agent {
 
-	public AID getBoardAID() {
-		return boardAID;
-	}
 
 	private AID boardAID;
 
@@ -56,14 +54,10 @@ public class PlayerAgent extends Agent {
 			fe.printStackTrace();
 		}
 		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-		ACLMessage msg = blockingReceive();
-		System.out.println("Player: Received Board initial message with AID");
-		this.boardAID = msg.getSender();
-
-		System.out.println(this.boardAID.toString());
 
 		SequentialBehaviour sequentialBehaviour = new SequentialBehaviour();
 
+		sequentialBehaviour.addSubBehaviour(new PlayerWaitingBehaviour(this));
 		sequentialBehaviour.addSubBehaviour(new PlayerSetupBehaviour(this));
 		sequentialBehaviour.addSubBehaviour(new PlayerPlayingBehaviour(this));
 
@@ -73,7 +67,7 @@ public class PlayerAgent extends Agent {
 	}
 	public void takeDown() {
 		try {
-			DFService.deregister(this);  
+			DFService.deregister(this);
 		} catch(FIPAException e) {
 			e.printStackTrace();
 		}
@@ -82,5 +76,13 @@ public class PlayerAgent extends Agent {
 
 	public PlayerMindset getMindset() {
 		return mindset;
+	}
+
+	public void setBoardAID(AID boardAID) {
+		this.boardAID = boardAID;
+	}
+
+	public AID getBoardAID() {
+		return boardAID;
 	}
 }

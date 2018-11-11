@@ -1,11 +1,15 @@
 package logic;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class Utils {
-	
+
+
+	public static Color[] COLORS = {Color.RED, Color.GREEN, Color.MAGENTA, Color.BLUE, Color.YELLOW, Color.ORANGE};
+
 	public static final HashMap<Integer, Integer> startingUnits = Utils.initUnits();
 
 	/**

@@ -1,9 +1,12 @@
 package logic;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Territory implements Serializable{
+
+	private Polygon area;
 
 	/**
 	 * List of all adjacent or connected territories
@@ -29,7 +32,8 @@ public class Territory implements Serializable{
 	 * Id of the continent this territory belongs to
 	 */
 	private int continentID;
-	
+
+	private ArrayList<Unit> unitsList;
 	
 	/**
 	 * Creates a territory given its id
@@ -37,7 +41,8 @@ public class Territory implements Serializable{
 	 */
 	public Territory(int territoryID) {
 		this.territoryID = territoryID;
-		this.neighbours = new ArrayList<Territory>();
+		this.neighbours = new ArrayList<>();
+		this.unitsList = new ArrayList<>();
 		this.playerID = 0;
 		this.units = 0;
 	}
@@ -94,6 +99,8 @@ public class Territory implements Serializable{
 	 * @param units
 	 */
 	public void setUnits(int units) {
+		unitsList.clear();
+		createUnit(units);
 		this.units = units;
 	}
 	
@@ -102,14 +109,33 @@ public class Territory implements Serializable{
 	 * @param amount amount to increase
 	 */
 	public void increaseUnits(int amount) {
+		createUnit(amount);
 		this.units += amount;
 	}
-	
+
+	private void createUnit(int amount) {
+
+		Rectangle r = area.getBounds();
+		for (int i = 0; i < amount; i++) {
+			int x, y;
+			do {
+				x = (int) Math.floor(r.getX() + (int) r.getWidth() *Math.random());
+				y = (int) Math.floor(r.getY() + r.getHeight() * Math.random());
+			} while (!area.contains(x, y));
+			Unit unit = new Unit(x, y, Utils.COLORS[playerID - 1]);
+
+			unitsList.add(unit);
+		}
+	}
+
 	/**
 	 * decreases the number of units
 	 * @param amount amount to decrease
 	 */
 	public void decreaseUnits(int amount) {
+		for (int i = 0; i < amount; i++) {
+			unitsList.remove(unitsList.size() - 1);
+		}
 		this.units -= amount;
 	}
 	
@@ -134,6 +160,18 @@ public class Territory implements Serializable{
 		}
 		System.out.print("\n");
 	}
-	
+
+
+	public Polygon getArea() {
+		return area;
+	}
+
+	public void setArea(Polygon area) {
+		this.area = area;
+	}
+
+	public ArrayList<Unit> getUnitsList() {
+		return unitsList;
+	}
 
 }

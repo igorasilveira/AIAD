@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import agents.PlayerAgent;
-import agents.PlayerMindset;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
@@ -24,6 +23,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import logic.*;
 import logic.Attack;
 import logic.Card;
 import logic.CardSet;
@@ -33,10 +33,11 @@ import logic.Territory;
 
 public class PlayerPlayingBehaviour extends Behaviour {
 
-	Game lastGameState;
+	private Game lastGameState;
 
 	public PlayerPlayingBehaviour(Agent a) {
 		super(a);
+		lastGameState = new Game();
 	}
 
 
@@ -53,100 +54,96 @@ public class PlayerPlayingBehaviour extends Behaviour {
 						MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 						MessageTemplate.MatchPerformative(ACLMessage.INFORM)));
 
-		ACLMessage request = myAgent.blockingReceive(messageTemplate);
-		PlayerAction action;
-		try {
-			// set class current game to received from Board
-			lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
-			ACLMessage response = request.createReply();
-			response.setPerformative(ACLMessage.PROPOSE);
+		ACLMessage request = myAgent.receive(messageTemplate);
 
-			if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
-				System.out.println(myAgent.getLocalName() + " Received SETUP");
+		if (request != null) {
 
-				action = setup();
+			PlayerAction action;
+			try {
+				// set class current game to received from Board
+				lastGameState = ((RequestPlayerAction) request.getContentObject()).getGame();
+				ACLMessage response = request.createReply();
+				response.setPerformative(ACLMessage.PROPOSE);
 
-			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.TradeCards) {
-				System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
+				if (((PlayerAction) request.getContentObject()).getAction() == Actions.Setup) {
+					System.out.println(myAgent.getLocalName() + " Received SETUP");
 
-				action = setup();
+					action = setup();
 
-				ArrayList<Card> playerCards = lastGameState.getCurrentPlayer().getCards();
-				ArrayList<CardSet> sets;
+				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.TradeCards) {
+					System.out.println(myAgent.getLocalName() + " Received TRADECARDS");
 
-				if (playerCards.size() >= 5)
-				{
-					sets = lastGameState.getCardSets(playerCards);
-					CardSet set = chooseCardSet(sets);
+					action = setup();
 
-					action = new ProposePlayerTradeCards(set);
-				}
-				else {
-					sets = lastGameState.getCardSets(playerCards);
+					ArrayList<Card> playerCards = lastGameState.getCurrentPlayer().getCards();
+					ArrayList<CardSet> sets;
 
-					if(sets.size() > 0) {
+					if (playerCards.size() >= 5)
+					{
 						sets = lastGameState.getCardSets(playerCards);
-						boolean trade = chooseToTrade();
+						CardSet set = chooseCardSet(sets);
 
-						if (trade) { // trade cards
-							CardSet set = chooseCardSet(sets);
-							action = new ProposePlayerTradeCards(set);
-						}
-					}
+						action = new ProposePlayerTradeCards(set);
+					} else {
+                        sets = lastGameState.getCardSets(playerCards);
+
+                            if(sets.size() > 0) {
+                                sets = lastGameState.getCardSets(playerCards);
+                                boolean trade = chooseToTrade();
+
+                                if (trade) { // trade cards
+                                    CardSet set = chooseCardSet(sets);
+                                    action = new ProposePlayerTradeCards(set);
+                                }
+                            }
+                        }
+
+				} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
+					System.out.println(myAgent.getLocalName() + " Received DEFEND");
+
+					Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
+
+					int defDice = chooseDefenseDiceAmount(attack);
+
+					action = new ProposePlayerDefend(defDice);
+
+				} else { // Play
+
+                    System.out.println(myAgent.getLocalName() + " Received PLAY");
+                    ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
+                    ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
+
+                    action = new ProposePlayerAction(Actions.Done);
+
+                    Attack attack = chooseAttack();
+                    Fortify fortify = chooseFortify();
+				    Actions act = chooseIfAttackOrFortify(attack, fortify);
+                    if(act == Actions.Attack && attack != null)
+                    {
+                        action = new ProposePlayerAttack(attack);
+                    }
+                    if (act == Actions.Fortify && fortify != null)
+                    {
+                        action = new ProposePlayerFortify(fortify);
+                    }
+
 				}
 
-			} else if (((PlayerAction) request.getContentObject()).getAction() == Actions.Defend){
-				System.out.println(myAgent.getLocalName() + " Received DEFEND");
-
-				Attack attack = ((RequestPlayerDefend)request.getContentObject()).getAttack();
-
-				int defDice = chooseDefenseDiceAmount(attack);
-
-				action = new ProposePlayerDefend(defDice);
-
-
-			} else { // Play
-
-				System.out.println(myAgent.getLocalName() + " Received PLAY");
-				ArrayList<Attack> attacks = lastGameState.getAttackOptions(lastGameState.getCurrentPlayer().getID());
-				ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
-
-				action = new ProposePlayerAction(Actions.Done);
-
-
-				Attack attack = chooseAttack();
-				Fortify fortify = chooseFortify();
-
-				Actions act = chooseIfAttackOrFortify(attack, fortify);
-
-
-				if(act == Actions.Attack && attack != null)
-				{
-					action = new ProposePlayerAttack(attack);
-				}
-
-				if (act == Actions.Fortify && fortify != null)
-				{
-					action = new ProposePlayerFortify(fortify);
-				}
-
+				response.setContentObject(action);
+				myAgent.send(response);
+				System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			response.setContentObject(action);
-			myAgent.send(response);
-			System.out.println(myAgent.getLocalName() + " Send action with ACTION:" + action.getAction().toString());
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
 		}
+
 	}
 
 	private Actions chooseIfAttackOrFortify(Attack attack, Fortify fortify)
 	{
-		boolean willAttack = false, willFortify = false; 
+		boolean willAttack = false, willFortify = false;
 
 
 		Random rand = new Random(); int n;
@@ -160,7 +157,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				Collections.shuffle(attacks);
 				attack = attacks.get(0);
 				willAttack = true;
-			} else if (n == 1 && fortify != null) 
+			} else if (n == 1 && fortify != null)
 			{ //Fortify
 				ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
 				Collections.shuffle(fortifications);
@@ -195,7 +192,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 			{
 				int originDisadvantage = calculateDefenderDisadvantage(fortify.from);
 				int destinationDisadvantage = calculateDefenderDisadvantage(fortify.to);
-				if((originDisadvantage < 0) && 
+				if((originDisadvantage < 0) &&
 						(originDisadvantage * destinationDisadvantage <= 0))
 				{
 					willFortify = true;
@@ -324,7 +321,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 
 	private int calculateAttackerAdvantage(ArrayList<Attack> list) {
-		// Attacker advantage is 
+		// Attacker advantage is
 		// (its total amount of units surrounding the target) - (target territory's units)
 		int valueList = - list.get(0).getDefender().getUnits();
 
@@ -338,7 +335,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		ArrayList<Attack> potencialRisksList = lastGameState.getDefenseOptions(territory);
 
-		// Defender disadvantage is 
+		// Defender disadvantage is
 		// (max(total units of same player surrounding territory)) - (its units in a territory)
 		int defenderUnits = territory.getUnits();
 		if(potencialRisksList.isEmpty())
@@ -412,7 +409,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		int attackerDice = attack.getDiceAmount();
 
 		switch(((PlayerAgent)myAgent).getMindset()) {
-		case Aggressive: 
+		case Aggressive:
 			// Chooses highest probability of winning (without caring for the amount of pieces at stake)
 			defDice = 2;
 			break;
@@ -433,7 +430,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 				{
 					defDice = 1;
 				} else {
-					defDice = 2;					
+					defDice = 2;
 				}
 
 			}
@@ -448,7 +445,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		int defDice;
 
 		switch(((PlayerAgent)myAgent).getMindset()) {
-		case Aggressive: 
+		case Aggressive:
 			// Chooses highest probability of winning (without caring for the amount of pieces at stake)
 			defDice = 3;
 			break;
@@ -473,7 +470,6 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		attack.setDiceAmount(defDice);
 	}
-
 
 	public Fortify chooseFortify() {
 		ArrayList<Fortify> fortifications = lastGameState.getFortifyOptions(lastGameState.getCurrentPlayer().getID());
@@ -560,7 +556,7 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 	public PlayerAction setup() {
 
-		ArrayList<Integer> territories = new ArrayList<Integer>();
+		ArrayList<Integer> territories = new ArrayList<>();
 		ArrayList<Territory> claimed = lastGameState.getClaimedTerritories(lastGameState.getCurrentPlayer().getID());
 
 		int units = lastGameState.getCurrentPlayer().getUnitsLeft();

@@ -4,14 +4,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import agents.BoardAgent;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.proto.SubscriptionInitiator;
+import jade.core.AID;
 import logic.Game.GameStage;
+import sajas.core.Agent;
+import sajas.domain.DFService;
+import sajas.proto.SubscriptionInitiator;
+import uchicago.src.sim.engine.Stepable;
 
 public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
@@ -65,10 +66,9 @@ public class BoardWaitingBehaviour extends SubscriptionInitiator {
 
 	}
 
-	
 	public class TimerSchedule extends TimerTask {
 		BoardWaitingBehaviour behaviour;
-		public TimerSchedule(BoardWaitingBehaviour behaviour) {
+		private TimerSchedule(BoardWaitingBehaviour behaviour) {
 			super();
 			this.behaviour = behaviour;
 		}
