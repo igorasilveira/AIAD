@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 
-public class ProposePlayerSetup extends PlayerAction {
+public class ProposePlayerSetup extends ProposePlayerAction {
 
 	ArrayList<Integer> territory;
 
