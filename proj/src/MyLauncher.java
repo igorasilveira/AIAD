@@ -134,6 +134,9 @@ public class MyLauncher extends Repast3Launcher {
 		mapAgent = new ArrayList<>();
 		space = new Object2DTorus(spaceSize, spaceSize);
 
+		Unit a = new Unit(100, 25, Color.BLUE);
+		space.putObjectAt(a.getX(), a.getY(), a);
+		agentList.add(a);
 //		for (int i = 0; i<1; i++) {
 //			int x, y;
 //			x = 10;
@@ -199,7 +202,7 @@ public class MyLauncher extends Repast3Launcher {
 	}
 
 	private void buildSchedule() {
-		getSchedule().scheduleActionBeginning(0, new MainAction());
+//		getSchedule().scheduleActionBeginning(0, new MainAction());
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
 //        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
