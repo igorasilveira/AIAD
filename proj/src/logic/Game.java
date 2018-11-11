@@ -5,7 +5,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -498,37 +501,29 @@ public class Game implements Serializable {
 	private boolean loadTerritories() {
 		ArrayList<Territory> territories = new ArrayList<>();
 		try {
+			InputStream in = getClass().getResourceAsStream("/assets/"+ Game.territoriesFileName); 
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-			File file = new File("src/assets/" + Game.territoriesFileName);
-
-			if (file.exists()) {
-
-				FileReader fr = new FileReader(file);
-				BufferedReader reader = new BufferedReader(fr);
-
-				String line = reader.readLine();
-				int lineCount = 1;
-				while (line != null) {
-					String[] territoryInfo = line.split(";");
-					if (!processTerritoryLine(territories, lineCount, territoryInfo[0], territoryInfo[1].split(","),
-							territoryInfo[2].split("-"))) {
-						System.out.println(
-								"Line format for territories.dat asset should be integers separated by commas");
-						reader.close();
-						return false;
-					}
-					lineCount++;
-					line = reader.readLine();
+			String line = reader.readLine();
+			int lineCount = 1;
+			while (line != null) {
+				String[] territoryInfo = line.split(";");
+				if (!processTerritoryLine(territories, lineCount, territoryInfo[0], territoryInfo[1].split(","),
+						territoryInfo[2].split("-"))) {
+					System.out.println(
+							"Line format for territories.dat asset should be integers separated by commas");
+					reader.close();
+					return false;
 				}
-
-				reader.close();
-
-			} else {
-				System.out.println("Couldn't find " + Game.territoriesFileName + " in \"assets\" folder!");
-				return false;
+				lineCount++;
+				line = reader.readLine();
 			}
 
+			reader.close();
+
+
 		} catch (IOException e) {
+			System.out.println("Error reading territory file");
 			return false;
 		}
 
@@ -544,38 +539,30 @@ public class Game implements Serializable {
 	private boolean loadContinents() {
 		try {
 
-			File file = new File("src/assets/" + Game.continentsFileName);
+			InputStream in = getClass().getResourceAsStream("/assets/"+ Game.continentsFileName); 
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-			if (file.exists()) {
+			String line = reader.readLine();
+			int lineCount = 1;
+			while (line != null) {
+				try {
 
-				FileReader fr = new FileReader(file);
-				BufferedReader reader = new BufferedReader(fr);
-
-				String line = reader.readLine();
-				int lineCount = 1;
-				while (line != null) {
-					try {
-
-						int currentContinentVal = Integer.parseInt(line);
-						continents.add(new Continent(lineCount, currentContinentVal));
-					} catch (Exception e) {
-						System.out.println("Line format for continents.dat asset should be an integer");
-						reader.close();
-						return false;
-					}
-
-					lineCount++;
-					line = reader.readLine();
+					int currentContinentVal = Integer.parseInt(line);
+					continents.add(new Continent(lineCount, currentContinentVal));
+				} catch (Exception e) {
+					System.out.println("Line format for continents.dat asset should be an integer");
+					reader.close();
+					return false;
 				}
 
-				reader.close();
-
-			} else {
-				System.out.println("Couldn't find " + Game.continentsFileName + " in \"assets\" folder!");
-				return false;
+				lineCount++;
+				line = reader.readLine();
 			}
 
+			reader.close();
+
 		} catch (IOException e) {
+			System.out.println("Error reading continent file");
 			return false;
 		}
 
@@ -654,35 +641,26 @@ public class Game implements Serializable {
 	 */
 	private boolean loadCards() {
 		try {
+			InputStream in = getClass().getResourceAsStream("/assets/"+ Game.cardsFileName); 
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-			File file = new File("src/assets/" + Game.cardsFileName);
-
-			if (file.exists()) {
-
-				FileReader fr = new FileReader(file);
-				BufferedReader reader = new BufferedReader(fr);
-
-				String line = reader.readLine();
-				int lineCount = 1;
-				while (line != null) {
-					if (!processCardLine(lineCount, line)) {
-						System.out.println(
-								"Line format for cards.dat asset should be: \"a\" for artillery, \"c\" for cavalry, \"i\" for infantry and \"w\" for wildcard");
-						reader.close();
-						return false;
-					}
-					lineCount++;
-					line = reader.readLine();
+			String line = reader.readLine();
+			int lineCount = 1;
+			while (line != null) {
+				if (!processCardLine(lineCount, line)) {
+					System.out.println(
+							"Line format for cards.dat asset should be: \"a\" for artillery, \"c\" for cavalry, \"i\" for infantry and \"w\" for wildcard");
+					reader.close();
+					return false;
 				}
-
-				reader.close();
-
-			} else {
-				System.out.println("Couldn't find " + Game.cardsFileName + " in \"assets\" folder!");
-				return false;
+				lineCount++;
+				line = reader.readLine();
 			}
 
+			reader.close();
+
 		} catch (IOException e) {
+			System.out.println("Error reading card file");
 			return false;
 		}
 

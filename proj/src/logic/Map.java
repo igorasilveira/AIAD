@@ -22,7 +22,7 @@ public class Map extends Agent implements Drawable {
 	private final String filename = "map.jpg";
 
 	public Map(int x, int y, Object2DTorus space) throws IOException {
-		image = ImageIO.read(new File("src/assets/" + filename));
+		image = ImageIO.read(Map.class.getResource("/assets/" + filename));
 		this.x = x;
 		this.y = y;
 	}
