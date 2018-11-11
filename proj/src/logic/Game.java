@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Random;
 
 import logic.Card.Army;
-import jade.core.AID;
 
 public class Game implements Serializable {
 	public enum GameStage {
@@ -170,8 +169,7 @@ public class Game implements Serializable {
 	}
 
 	public Player findPlayerByID(int id) {
-		for (Player player:
-				players) {
+		for (Player player: players) {
 			if (player.getID() == id)
 				return player;
 		}
@@ -181,14 +179,14 @@ public class Game implements Serializable {
 	//TODO remove this functions
 	public int findByAID(AID aid) {
 		for (Player player :
-				players) {
+			players) {
 			if (player.getAid() == aid)
 				return player.getID();
 		}
 		return -1;
 	}
 
-	private void playingTurn()
+	public void playingTurn()
 	{
 		Player currentPlayer = this.players.get(this.turn);
 		currentPlayer.setUnits(0);
@@ -506,11 +504,23 @@ public class Game implements Serializable {
 
 					for(Territory neighbour : territory.getNeighbours()) {
 						if(neighbour.getPlayerID() != id) {
-							int dice = r.nextInt(3)+1;
-							attacks.add(new Attack(territory, neighbour, dice));
+							attacks.add(new Attack(territory, neighbour, 1));
 						}
 					}
 				}
+			}
+		}
+
+		return attacks;
+	}
+
+	public ArrayList<Attack> getDefenseOptions(Territory defender) {
+		ArrayList<Attack> attacks = new ArrayList<Attack>();
+
+		for (Territory attacker : defender.getNeighbours()) {
+			if(attacker.getPlayerID() != defender.getPlayerID())
+			{
+				attacks.add(new Attack(attacker, defender, 1));
 			}
 		}
 
@@ -594,6 +604,21 @@ public class Game implements Serializable {
 				if(territory.territoryID == id) {
 					return territory;
 				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 *
+	 * @param id continent id
+	 * @return continent corresponding to the searched id
+	 */
+	public Continent getContinent(int id) {
+		for (Continent continent : this.continents) {
+			if(continent.continentID == id) {
+				return continent;
 			}
 		}
 
@@ -762,7 +787,7 @@ public class Game implements Serializable {
 	 * Function that processes lines from the board asset
 	 * @param currentTerritoryID line number that corresponds to current territory id
 	 * @param neighbours line content (array with neighbours' id's)
-	 * @param area
+	 * @param area line content (array with boundaries coordinates)
 	 * @return true if successfull, false otherwise
 	 */
 	private boolean processTerritoryLine(ArrayList<Territory> territories, int currentTerritoryID, String continent, String[] neighbours, String[] area) {

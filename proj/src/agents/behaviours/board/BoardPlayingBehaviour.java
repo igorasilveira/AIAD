@@ -1,8 +1,7 @@
 package agents.behaviours.board;
 
-import java.awt.*;
+import java.awt.Toolkit;
 import java.io.IOException;
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -25,6 +24,11 @@ import logic.*;
 import logic.Game.GameStage;
 import sajas.core.Agent;
 import sajas.core.behaviours.Behaviour;
+import logic.Attack;
+import logic.Fortify;
+import logic.Game;
+import logic.Player;
+import logic.Territory;
 
 public class BoardPlayingBehaviour extends Behaviour {
 
@@ -274,7 +278,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 	@Override
 	public boolean done() {
 		if (game.isGameFinished() != 0) {
-			System.out.println(game.getPlayers().get(0).getAid().getLocalName() + " HAS OWN THE GAME!");
+			System.out.println(game.getPlayers().get(0).getAid().getLocalName() + " HAS WON THE GAME!");
 
 			Toolkit.getDefaultToolkit().beep();
 

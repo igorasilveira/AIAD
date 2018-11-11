@@ -6,7 +6,7 @@ public class Attack implements Serializable {
 	private final Territory attacker;
 	private final Territory defender;
 
-	private final int diceAmount;
+	private int diceAmount;
 	
 	public Attack(Territory attacker, Territory defender, int diceAmount) {
 		this.attacker = attacker;
@@ -24,5 +24,9 @@ public class Attack implements Serializable {
 
 	public int getDiceAmount() {
 		return diceAmount;
+	}
+	
+	public void setDiceAmount(int diceAmount) {
+		this.diceAmount = diceAmount;
 	}
 }
