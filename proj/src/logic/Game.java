@@ -761,6 +761,16 @@ public class Game implements Serializable {
 		return firstPlayerID;
 	}
 
+	public Player getPlayerByID(int id) {
+		for (Player player : this.players) {
+			if(player.getID() == id) {
+				return player;
+			}
+		}
+		
+		return null;
+	}
+	
 	public ArrayList<Player> getPlayers() {
 		return players;
 	}
