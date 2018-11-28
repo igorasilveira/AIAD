@@ -11,19 +11,7 @@
 
 Run class `MyLauncher.java`
 
-## TODO
-* implementar regras do jogo
-	  - [ ] Cards Functionality (Earning, trading) (if there's time)
-
-* implementar tabuleiro como agente que:
-  * controla a vez do jogador (tabuleiro toma iniciativa de mandar estado do jogo ao agente jogador)
-  * a cada reposta do jogador atualiza o estado do jogo e efetua qualquer que seja o passo seguinte na lógica de jogo
-* implementar jogadores como agentes
-  1. começar com jogadas aleatorias
-  2. passar para agentes puramente competitivos
-  3. implementar negociação de cooperação
-
-### Comunicação entre agentes
+## Comunicação entre agentes
 * Board->Player 
 	* send: game state (class game) 
 		* REQUEST 
@@ -44,7 +32,7 @@ Run class `MyLauncher.java`
 		* ACCEPT-PROPOSAL
 		* REJECT-PROPOSAL
 
-### Estratégias
+## Estratégias
 * Decidir se atacar, fortificar ou nada
 	* Critérios: 
 		1. Aggressive ataca 75% das vezes que tem ataques
