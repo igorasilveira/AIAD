@@ -8,6 +8,7 @@ import agents.PlayerAgent;
 import agents.PlayerMindset;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import logic.Continent;
 import logic.Game;
@@ -19,6 +20,8 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
 import uchicago.src.reflector.ListPropertyDescriptor;
+import uchicago.src.sim.analysis.DataRecorder;
+import uchicago.src.sim.analysis.NumericDataSource;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
@@ -30,7 +33,7 @@ import uchicago.src.sim.space.Object2DTorus;
 
 public class MyLauncher extends Repast3Launcher {
 
-	private static boolean BATCH_MODE = false;
+	private static boolean BATCH_MODE = true;
 
 	private BoardAgent boardAgent;
 
@@ -49,6 +52,8 @@ public class MyLauncher extends Repast3Launcher {
 	private Object2DTorus background;
 	private ArrayList<TextDisplay> infoDisplays;
 	private OpenSequenceGraph plot;
+
+	private DataRecorder dataRecorder;
 
 	private Random random;
 
@@ -76,9 +81,9 @@ public class MyLauncher extends Repast3Launcher {
 		return new String[] {"numberOfPlayers", "playerOneMindset", "playerTwoMindset", "playerThreeMindset", "playerFourMindset", "playerFiveMindset", "playerSixMindset", };
 	}
 
-//	public Schedule getSchedule() {
-//		return schedule;
-//	}
+	//	public Schedule getSchedule() {
+	//		return schedule;
+	//	}
 
 
 	@Override
@@ -185,6 +190,12 @@ public class MyLauncher extends Repast3Launcher {
 		buildSchedule();
 	}
 
+	class NumDataSource implements NumericDataSource {
+		public double execute() {
+			return agentList.size();
+		}
+	}
+
 	private void buildModel() {
 		agentList = new ArrayList<>();
 		mapAgent = new ArrayList<>();
@@ -199,6 +210,8 @@ public class MyLauncher extends Repast3Launcher {
 			e.printStackTrace();
 		}
 
+		dataRecorder = new DataRecorder("data.txt", this);
+		dataRecorder.addNumericDataSource("agentsSize", new NumDataSource());
 	}
 
 	private void buildDisplay() {
@@ -227,36 +240,37 @@ public class MyLauncher extends Repast3Launcher {
 		}
 		dsurf.display();
 
-//        // graph
-//        if (plot != null) plot.dispose();
-//        plot = new OpenSequenceGraph("Colors and Agents", this);
-//        plot.setAxisTitles("time", "n");
-//        // plot number of different existing colors
-//        plot.addSequence("Number of colors", new Sequence() {
-//            public double getSValue() {
-//                return agentColors.size();
-//            }
-//        });
-//        // plot number of agents with the most abundant color
-//        plot.addSequence("Top color", new Sequence() {
-//            public double getSValue() {
-//                int n = 0;
-//                Enumeration<Integer> agentsPerColor = agentColors.elements();
-//                while(agentsPerColor.hasMoreElements()) {
-//                    int c = agentsPerColor.nextElement();
-//                    if(c>n) n=c;
-//                }
-//                return n;
-//            }
-//        });
-//        plot.display();
+		//        // graph
+		//        if (plot != null) plot.dispose();
+		//        plot = new OpenSequenceGraph("Colors and Agents", this);
+		//        plot.setAxisTitles("time", "n");
+		//        // plot number of different existing colors
+		//        plot.addSequence("Number of colors", new Sequence() {
+		//            public double getSValue() {
+		//                return agentColors.size();
+		//            }
+		//        });
+		//        // plot number of agents with the most abundant color
+		//        plot.addSequence("Top color", new Sequence() {
+		//            public double getSValue() {
+		//                int n = 0;
+		//                Enumeration<Integer> agentsPerColor = agentColors.elements();
+		//                while(agentsPerColor.hasMoreElements()) {
+		//                    int c = agentsPerColor.nextElement();
+		//                    if(c>n) n=c;
+		//                }
+		//                return n;
+		//            }
+		//        });
+		//        plot.display();
 	}
 
 	private void buildSchedule() {
 		getSchedule().scheduleActionBeginning(0, new MainAction());
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
-//        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
+		//        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
+		getSchedule().scheduleActionAtEnd(dataRecorder, "writeToFile");
 	}
 
 	/**
@@ -265,7 +279,7 @@ public class MyLauncher extends Repast3Launcher {
 	 */
 	public static void main(String[] args) {
 		SimInit init = new SimInit();
-		init.setNumRuns(5);   // works only in batch mode
+		init.setNumRuns(3);   // works only in batch mode
 		init.loadModel(new MyLauncher(), null, BATCH_MODE);
 	}
 
@@ -273,30 +287,30 @@ public class MyLauncher extends Repast3Launcher {
 
 		@Override
 		public void execute() {
-			if (!BATCH_MODE) {
 
-				int[] counts = {0, 0, 0, 0, 0, 0, 0};
-				int[] troups = {0, 0, 0, 0, 0, 0, 0};
-				Game currentGame = boardAgent.getGame();
+			int[] counts = {0, 0, 0, 0, 0, 0, 0};
+			int[] troups = {0, 0, 0, 0, 0, 0, 0};
+			Game currentGame = boardAgent.getGame();
 
-				for (Unit unit : agentList) {
-					space.putObjectAt(unit.getX(), unit.getY(), null);
-				}
+			for (Unit unit : agentList) {
+				space.putObjectAt(unit.getX(), unit.getY(), null);
+			}
 
-				agentList.clear();
+			agentList.clear();
 
-				if (currentGame != null) {
-					for (Continent continent : currentGame.getContinents()) {
-						for (Territory territory : continent.getTerritories()) {
-							counts[territory.getPlayerID()] = counts[territory.getPlayerID()] + 1;
-							troups[territory.getPlayerID()] = troups[territory.getPlayerID()] + territory.getUnits();
-							for (Unit unit : territory.getUnitsList()) {
-								space.putObjectAt(unit.getX(), unit.getY(), unit);
-								agentList.add(unit);
-							}
+			if (currentGame != null) {
+				for (Continent continent : currentGame.getContinents()) {
+					for (Territory territory : continent.getTerritories()) {
+						counts[territory.getPlayerID()] = counts[territory.getPlayerID()] + 1;
+						troups[territory.getPlayerID()] = troups[territory.getPlayerID()] + territory.getUnits();
+						for (Unit unit : territory.getUnitsList()) {
+							space.putObjectAt(unit.getX(), unit.getY(), unit);
+							agentList.add(unit);
 						}
 					}
+				}
 
+				if (!BATCH_MODE)
 					for (int i = 0; i < numberOfPlayers; i++) {
 						infoDisplays.get(i).clearLine(0);
 						infoDisplays.get(i).addLine("#Territories: " + counts[i + 1], 0);
@@ -304,10 +318,22 @@ public class MyLauncher extends Repast3Launcher {
 						infoDisplays.get(i).addLine("#Troups: " + troups[i + 1], 1);
 					}
 
-					if (BATCH_MODE)
-						if (currentGame.isGameFinished() != 0)
-							fireEndSim();
+				if (currentGame.isGameFinished() != 0) {
+					// shutdown
+
+					try {
+
+						boardAgent.getContainerController().getPlatformController().kill();
+
+					} catch (ControllerException e) {
+
+						e.printStackTrace();
+					}
 				}
+				
+				
+				if (agentList.size() > 0)
+					dataRecorder.record();
 			}
 		}
 	}
