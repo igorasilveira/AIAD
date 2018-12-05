@@ -12,20 +12,20 @@
 Run class `MyLauncher.java`
 
 ## Comunicação entre agentes
-* Board->Player 
-	* send: game state (class game) 
-		* REQUEST 
+* Board->Player
+	* send: game state (class game)
+		* REQUEST
 	* answer: Player->Board
-* Player->Board 
-	* send: move (attack class or fortify class) or end turn 
-		* PROPOSE 
-	* answer: worked or not 
+* Player->Board
+	* send: move (attack class or fortify class) or end turn
+		* PROPOSE
+	* answer: worked or not
 		* AGREE REFUSE
-* Board->Player 
-	* send: game state + attack class 
+* Board->Player
+	* send: game state + attack class
 		* ??
 	* answer: number of dice
-* Player->Player 
+* Player->Player
 	* send: treaty proposition
 		* PROPOSE
 	* answer: yes or no
@@ -34,7 +34,7 @@ Run class `MyLauncher.java`
 
 ## Estratégias
 * Decidir se atacar, fortificar ou nada
-	* Critérios: 
+	* Critérios:
 		1. Aggressive ataca 75% das vezes que tem ataques
 		2. Defensive fortifica 75% das vezes que tem fortificações
 		3. Aleatório decide aleatoriamente
@@ -75,7 +75,7 @@ Run class `MyLauncher.java`
 	* Critérios:
 		1. Agentes agressivos e defensivos entregam cartas mal puderem.
 		2. Agentes smart tentam nao entregar cartas o maximo tempo possível, de modo a receberem mais unidades quando entregarem o seu set.
-		3. Agentes aleatórios decidem à sorte. 
+		3. Agentes aleatórios decidem à sorte.
 
 ## Decisions
  * Attack, Fortify or Nothing
@@ -91,8 +91,6 @@ Run class `MyLauncher.java`
  	* number of dice chosen by the attacker and the defender
 	* number of units of the territory under attack
  * How to setup
- 	* ?
- * How to Trade cards
  	* ?
 
 ## Links  

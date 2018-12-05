@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import agents.BoardAgent;
+import agents.dataminer.DecisionFortify;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
 import agents.messages.board.RequestPlayerAction;
@@ -132,7 +133,9 @@ public class BoardPlayingBehaviour extends Behaviour {
 //						System.out.println(myAgent.getLocalName() + " Received ATTACK from " + currentPlayer.getLocalName());
 
 						Attack attack = ((ProposePlayerAttack) response.getContentObject()).getAttack();
-
+						
+						// TODO write decisionAttack
+						
 						//Request defender to choose dice amount
 						RequestPlayerDefend requestPlayerDefend = new RequestPlayerDefend(game, attack);
 
@@ -157,6 +160,8 @@ public class BoardPlayingBehaviour extends Behaviour {
 						if (defenderResponse != null) {
 							messageSent = false;
 
+							// TODO write decisionDefend
+							
 //							System.out.println(myAgent.getLocalName() + " Received DEFEND from Player " + defenderAID.getLocalName());
 							// resolve attack
 							int defenderDiceAmount = ((ProposePlayerDefend) defenderResponse.getContentObject()).getDiceAmount();
@@ -189,18 +194,14 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 								attackerTerritory.decreaseUnits(1);
 
-								//TODO move units from the attacking territory if you want
 								int amount = new Random().nextInt(attackerTerritory.getUnits());
 								attackerTerritory.decreaseUnits(amount);
 								defenderTerritory.increaseUnits(amount);
 
 								//check if player was eliminated
 								//remove player from list
-								//TODO need to get cards from the player and if the total is 5 or more then you have to turn in
-								//card sets and place the new units
 
 								if (game.playerLost(defenderID)) {
-									// TODO send defender LOST message?
 									game.removePlayer(defenderID);
 								}
 //								System.out.println("Turn: " + currentPlayer.getLocalName() + "  changed territory " + defenderTerritory.territoryID);
@@ -222,7 +223,12 @@ public class BoardPlayingBehaviour extends Behaviour {
 						Fortify fortification = ((ProposePlayerFortify) response.getContentObject()).getFortify();
 						Territory originTerritory = game.getTerritory(fortification.from.territoryID);
 						Territory destinationTerritory = game.getTerritory(fortification.to.territoryID);
-
+						
+						// write decisionFortify
+						int originDisadvantage = game.calculateDefenderDisadvantage(originTerritory);
+						int destinationDisadvantage = game.calculateDefenderDisadvantage(destinationTerritory);
+						
+						((BoardAgent) myAgent).pushDecision(new DecisionFortify(game.getCurrentPlayer().getID(), originDisadvantage, destinationDisadvantage));
 //						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
 //						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Random;
 
 import jade.core.AID;
@@ -785,6 +786,49 @@ public class Game implements Serializable {
 
 	public ArrayList<Continent> getContinents() {
 		return continents;
+	}
+
+	public int calculateDefenderDisadvantage(Territory territory) {
+	
+		ArrayList<Attack> potencialRisksList = getDefenseOptions(territory);
+	
+		// Defender disadvantage is
+		// (max(total units of same player surrounding territory)) - (its units in a territory)
+		int defenderUnits = territory.getUnits();
+		if(potencialRisksList.isEmpty())
+		{
+			return defenderUnits;
+		}
+		Hashtable<Integer, Integer> surroundingUnits = new Hashtable<>();
+	
+		for (Attack attack : potencialRisksList) {
+			if(surroundingUnits.containsKey(attack.getAttacker().getPlayerID()))
+			{
+				int units =  surroundingUnits.get(attack.getAttacker().getPlayerID());
+				units += attack.getAttacker().getUnits();
+				surroundingUnits.remove(attack.getAttacker().getPlayerID());
+				surroundingUnits.put(attack.getAttacker().getPlayerID(), units);
+			} else {
+				surroundingUnits.put(attack.getAttacker().getPlayerID(), attack.getAttacker().getUnits());
+			}
+		}
+	
+	
+		ArrayList<Integer> values = new ArrayList<>(surroundingUnits.values());
+		Collections.sort(values);
+		Collections.reverse(values);
+		return  values.get(0) - defenderUnits;
+	}
+
+	public int calculateAttackerAdvantage(ArrayList<Attack> list) {
+		// Attacker advantage is
+		// (its total amount of units surrounding the target) - (target territory's units)
+		int valueList = - list.get(0).getDefender().getUnits();
+	
+		for (Attack attack : list) {
+			valueList += attack.getAttacker().getUnits();
+		}
+		return valueList;
 	}
 
 }

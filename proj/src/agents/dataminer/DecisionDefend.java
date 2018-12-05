@@ -8,8 +8,8 @@ public class DecisionDefend extends Decision {
 	private int numDiceDefender;
 	private int numUnitsUnderAttack;
 
-	public DecisionDefend(Actions playerAction, int playerID, int numDiceAttacker, int numDiceDefender, int numUnitsUnderAttack) {
-		super(playerAction, playerID);
+	public DecisionDefend(int playerID, int numDiceAttacker, int numDiceDefender, int numUnitsUnderAttack) {
+		super(Actions.Defend, playerID);
 		this.numDiceAttacker = numDiceAttacker;
 		this.numDiceDefender = numDiceDefender;
 		this.numUnitsUnderAttack = numUnitsUnderAttack;
