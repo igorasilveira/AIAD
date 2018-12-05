@@ -20,9 +20,7 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
 import uchicago.src.reflector.ListPropertyDescriptor;
-import uchicago.src.sim.analysis.DataRecorder;
-import uchicago.src.sim.analysis.NumericDataSource;
-import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.analysis.*;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
@@ -34,6 +32,10 @@ import uchicago.src.sim.space.Object2DTorus;
 public class MyLauncher extends Repast3Launcher {
 
 	private static boolean BATCH_MODE = true;
+
+	private int runNumber = 1;
+
+	private ArrayList<String> roundWinners;
 
 	private BoardAgent boardAgent;
 
@@ -131,6 +133,10 @@ public class MyLauncher extends Repast3Launcher {
 	@Override
 	public void setup() {
 		super.setup();
+
+		roundWinners = new ArrayList<>();
+		runNumber = 1;
+
 		infoDisplays = new ArrayList<>();
 		schedule = new Schedule();
 		if (dsurf != null) dsurf.dispose();
@@ -196,6 +202,12 @@ public class MyLauncher extends Repast3Launcher {
 		}
 	}
 
+	class Winners implements DataSource {
+		public String execute() {
+			return roundWinners.toString();
+		}
+	}
+
 	private void buildModel() {
 		agentList = new ArrayList<>();
 		mapAgent = new ArrayList<>();
@@ -212,6 +224,7 @@ public class MyLauncher extends Repast3Launcher {
 
 		dataRecorder = new DataRecorder("data.txt", this);
 		dataRecorder.addNumericDataSource("agentsSize", new NumDataSource());
+		dataRecorder.addObjectDataSource("winners", new Winners());
 	}
 
 	private void buildDisplay() {
@@ -279,7 +292,7 @@ public class MyLauncher extends Repast3Launcher {
 	 */
 	public static void main(String[] args) {
 		SimInit init = new SimInit();
-		init.setNumRuns(3);   // works only in batch mode
+		init.setNumRuns(1);   // works only in batch mode
 		init.loadModel(new MyLauncher(), null, BATCH_MODE);
 	}
 
@@ -318,11 +331,14 @@ public class MyLauncher extends Repast3Launcher {
 						infoDisplays.get(i).addLine("#Troups: " + troups[i + 1], 1);
 					}
 
-				if (currentGame.isGameFinished() != 0) {
+				int gameFinished = currentGame.isGameFinished();
+
+				if (gameFinished != 0) {
 					// shutdown
 
 					try {
-
+						if (roundWinners.size() < runNumber)
+							roundWinners.add(currentGame.getPlayerByID(gameFinished).getAid().getLocalName());
 						boardAgent.getContainerController().getPlatformController().kill();
 
 					} catch (ControllerException e) {
@@ -331,7 +347,7 @@ public class MyLauncher extends Repast3Launcher {
 					}
 				}
 				
-				
+
 				if (agentList.size() > 0)
 					dataRecorder.record();
 			}
