@@ -21,4 +21,12 @@ public class DecisionFortify extends Decision {
 		return destinyDisadvantage;
 	}
 
+	@Override
+	public String toString() {
+		return originDisadvantage + "," + destinyDisadvantage;
+	}
+
+	public static String header() {
+		return "finalResult,originDisadvantage,destinyDisadvantage";
+	}
 }

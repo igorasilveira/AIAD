@@ -28,4 +28,13 @@ public class DecisionDefend extends Decision {
 		return numUnitsUnderAttack;
 	}
 
+	@Override
+	public String toString() {
+		return numDiceAttacker + "," + numDiceDefender + "," + numUnitsUnderAttack;
+	}
+	
+	public static String header() {
+		return "finalResult,numDiceAttacker,numDiceDefender,numUnitsUnderAttack";
+	}
+
 }

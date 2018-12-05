@@ -31,5 +31,16 @@ public class DecisionAttack extends Decision{
 	public int getAttackerAdvantage() {
 		return attackingTerritoryPieces - defendingTerritoryPieces;
 	}
+	
+	
+	
+	public static String header() {
+		return "dinalResut,diceChosen,attackingTerritoryPieces,defendingTerritoryPieces";
+	}
+
+	@Override
+	public String toString() {
+		return diceChosen + "," + attackingTerritoryPieces + "," + defendingTerritoryPieces;
+	}
 
 }
