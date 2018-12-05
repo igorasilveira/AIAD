@@ -6,17 +6,11 @@ import java.util.Vector;
 import agents.BoardAgent;
 import agents.PlayerAgent;
 import agents.PlayerMindset;
-import agents.messages.Actions;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
-import logic.Continent;
-import logic.Game;
-import logic.Map;
-import logic.Territory;
-import logic.Unit;
-import logic.Utils;
+import logic.*;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
@@ -36,7 +30,7 @@ public class MyLauncher extends Repast3Launcher {
 
 	private int runNumber = 1;
 
-	private ArrayList<String> roundWinners;
+	private int winner;
 
 	private BoardAgent boardAgent;
 
@@ -59,6 +53,7 @@ public class MyLauncher extends Repast3Launcher {
 	private DataRecorder fortifyRecorder;
 	private DataRecorder attackRecorder;
 	private DataRecorder defendRecorder;
+	private DataRecorder winnersRecorder;
 
 	private Random random;
 
@@ -74,8 +69,8 @@ public class MyLauncher extends Repast3Launcher {
 		this.spaceSize = 150;
 		this.numberOfPlayers = 3;
 		this.playerOneMindset = PlayerMindset.Smart;
-		this.playerTwoMindset = PlayerMindset.Defensive;
-		this.playerThreeMindset = PlayerMindset.Aggressive;
+		this.playerTwoMindset = PlayerMindset.Aggressive;
+		this.playerThreeMindset = PlayerMindset.Smart;
 		this.playerFourMindset = PlayerMindset.Defensive;
 		this.playerFiveMindset = PlayerMindset.Random;
 		this.playerSixMindset = PlayerMindset.Random;
@@ -137,7 +132,7 @@ public class MyLauncher extends Repast3Launcher {
 	public void setup() {
 		super.setup();
 
-		roundWinners = new ArrayList<>();
+		winner = 0;
 		runNumber = 1;
 
 		infoDisplays = new ArrayList<>();
@@ -205,6 +200,21 @@ public class MyLauncher extends Repast3Launcher {
 		}
 	}
 
+	class ResultColumn implements DataSource {
+
+		@Override
+		public String execute() {
+			return "%finalResult%";
+		}
+	}
+
+	class RoundWinner implements DataSource {
+		@Override
+		public Object execute() {
+			return winner;
+		}
+	}
+
 	private void buildModel() {
 		agentList = new ArrayList<>();
 		mapAgent = new ArrayList<>();
@@ -221,15 +231,22 @@ public class MyLauncher extends Repast3Launcher {
 
 		// Fortify
 		fortifyRecorder = new DataRecorder("sims/fortify.txt", this);
+		//fortifyRecorder.addObjectDataSource("finalResult", new ResultColumn());
 		fortifyRecorder.addObjectDataSource("play", new Decision());
 
 		// Attack
 		attackRecorder = new DataRecorder("sims/attack.txt", this);
+		//attackRecorder.addObjectDataSource("finalResult", new ResultColumn());
 		attackRecorder.addObjectDataSource("play", new Decision());
 
 		// Defend
 		defendRecorder = new DataRecorder("sims/defend.txt", this);
+		//defendRecorder.addObjectDataSource("finalResult", new ResultColumn());
 		defendRecorder.addObjectDataSource("play", new Decision());
+
+		// Winners
+		winnersRecorder = new DataRecorder("sims/winners.txt", this);
+		winnersRecorder.addObjectDataSource("winner", new RoundWinner());
 	}
 
 	private void buildDisplay() {
@@ -288,9 +305,7 @@ public class MyLauncher extends Repast3Launcher {
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
 		//        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
-		getSchedule().scheduleActionAtEnd(fortifyRecorder, "writeToFile");
-		getSchedule().scheduleActionAtEnd(attackRecorder, "writeToFile");
-		getSchedule().scheduleActionAtEnd(defendRecorder, "writeToFile");
+		getSchedule().scheduleActionAtEnd(new FinalAction());
 	}
 
 	/**
@@ -299,8 +314,22 @@ public class MyLauncher extends Repast3Launcher {
 	 */
 	public static void main(String[] args) {
 		SimInit init = new SimInit();
-		init.setNumRuns(1);   // works only in batch mode
+		init.setNumRuns(5);   // works only in batch mode
 		init.loadModel(new MyLauncher(), null, BATCH_MODE);
+	}
+
+	private class FinalAction extends BasicAction {
+
+		@Override
+		public void execute() {
+			// Write recorders to file
+			fortifyRecorder.writeToFile();
+			attackRecorder.writeToFile();
+			defendRecorder.writeToFile();
+
+			winnersRecorder.record();
+			winnersRecorder.writeToFile();
+		}
 	}
 
 	private class MainAction extends BasicAction {
@@ -346,8 +375,9 @@ public class MyLauncher extends Repast3Launcher {
 					// shutdown
 
 					try {
-						if (roundWinners.size() < runNumber)
-							roundWinners.add(currentGame.getPlayerByID(gameFinished).getAid().getLocalName());
+						//if (roundWinners.size() < runNumber)
+						winner = gameFinished;
+
 						boardAgent.getContainerController().getPlatformController().kill();
 
 					} catch (ControllerException e) {
@@ -437,5 +467,17 @@ public class MyLauncher extends Repast3Launcher {
 
 	public void setPlayerSixMindset(PlayerMindset playerSixMindset) {
 		this.playerSixMindset = playerSixMindset;
+	}
+
+	private class TestAction extends BasicAction {
+		@Override
+		public void execute() {
+			Game current = boardAgent.getGame();
+
+			for (Player player:
+				 current.getPlayers()) {
+				System.out.println(player.getID() + "   -    " + player.getAid().getLocalName());
+			}
+		}
 	}
 }

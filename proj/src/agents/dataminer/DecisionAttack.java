@@ -35,12 +35,12 @@ public class DecisionAttack extends Decision{
 	
 	
 	public static String header() {
-		return "dinalResut,diceChosen,attackingTerritoryPieces,defendingTerritoryPieces";
+		return "finalResut,diceChosen,attackingTerritoryPieces,defendingTerritoryPieces";
 	}
 
 	@Override
 	public String toString() {
-		return diceChosen + "," + attackingTerritoryPieces + "," + defendingTerritoryPieces;
+		return super.getPlayerID() + "," + diceChosen + "," + attackingTerritoryPieces + "," + defendingTerritoryPieces;
 	}
 
 }

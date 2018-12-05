@@ -30,7 +30,7 @@ public class DecisionDefend extends Decision {
 
 	@Override
 	public String toString() {
-		return numDiceAttacker + "," + numDiceDefender + "," + numUnitsUnderAttack;
+		return super.getPlayerID() + "," + numDiceAttacker + "," + numDiceDefender + "," + numUnitsUnderAttack;
 	}
 	
 	public static String header() {

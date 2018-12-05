@@ -225,7 +225,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 						break;
 					case Fortify:
-						System.out.println(myAgent.getLocalName() + " Received FORTIFY from " + currentPlayer.getLocalName());
+						//System.out.println(myAgent.getLocalName() + " Received FORTIFY from " + currentPlayer.getLocalName());
 
 						Fortify fortification = ((ProposePlayerFortify) response.getContentObject()).getFortify();
 						Territory originTerritory = game.getTerritory(fortification.from.territoryID);
@@ -237,7 +237,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 						
 						((BoardAgent) myAgent).pushDecision(new DecisionFortify(game.getCurrentPlayer().getID(), originDisadvantage, destinationDisadvantage));
 //						
-						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+						//System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
 //						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 
 						if(originTerritory.getUnits() <= fortification.getAmount()) { return; }

@@ -23,7 +23,7 @@ public class DecisionFortify extends Decision {
 
 	@Override
 	public String toString() {
-		return originDisadvantage + "," + destinyDisadvantage;
+		return super.getPlayerID() + "," + originDisadvantage + "," + destinyDisadvantage;
 	}
 
 	public static String header() {
