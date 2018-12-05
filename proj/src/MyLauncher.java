@@ -6,6 +6,7 @@ import java.util.Vector;
 import agents.BoardAgent;
 import agents.PlayerAgent;
 import agents.PlayerMindset;
+import agents.messages.Actions;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.ControllerException;
@@ -55,7 +56,9 @@ public class MyLauncher extends Repast3Launcher {
 	private ArrayList<TextDisplay> infoDisplays;
 	private OpenSequenceGraph plot;
 
-	private DataRecorder dataRecorder;
+	private DataRecorder fortifyRecorder;
+	private DataRecorder attackRecorder;
+	private DataRecorder defendRecorder;
 
 	private Random random;
 
@@ -196,15 +199,9 @@ public class MyLauncher extends Repast3Launcher {
 		buildSchedule();
 	}
 
-	class NumDataSource implements NumericDataSource {
-		public double execute() {
-			return agentList.size();
-		}
-	}
-
-	class Winners implements DataSource {
-		public String execute() {
-			return roundWinners.toString();
+	class Decision implements DataSource {
+		public Object execute() {
+			return boardAgent.popDecision().toString();
 		}
 	}
 
@@ -222,9 +219,17 @@ public class MyLauncher extends Repast3Launcher {
 			e.printStackTrace();
 		}
 
-		dataRecorder = new DataRecorder("data.txt", this);
-		dataRecorder.addNumericDataSource("agentsSize", new NumDataSource());
-		dataRecorder.addObjectDataSource("winners", new Winners());
+		// Fortify
+		fortifyRecorder = new DataRecorder("sims/fortify.txt", this);
+		fortifyRecorder.addObjectDataSource("play", new Decision());
+
+		// Attack
+		attackRecorder = new DataRecorder("sims/attack.txt", this);
+		attackRecorder.addObjectDataSource("play", new Decision());
+
+		// Defend
+		defendRecorder = new DataRecorder("sims/defend.txt", this);
+		defendRecorder.addObjectDataSource("play", new Decision());
 	}
 
 	private void buildDisplay() {
@@ -283,7 +288,9 @@ public class MyLauncher extends Repast3Launcher {
 		if (!BATCH_MODE)
 			getSchedule().scheduleActionAtInterval(1, dsurf, "updateDisplay", Schedule.LAST);
 		//        schedule.scheduleActionAtInterval(1, plot, "step", Schedule.LAST);
-		getSchedule().scheduleActionAtEnd(dataRecorder, "writeToFile");
+		getSchedule().scheduleActionAtEnd(fortifyRecorder, "writeToFile");
+		getSchedule().scheduleActionAtEnd(attackRecorder, "writeToFile");
+		getSchedule().scheduleActionAtEnd(defendRecorder, "writeToFile");
 	}
 
 	/**
@@ -323,13 +330,15 @@ public class MyLauncher extends Repast3Launcher {
 					}
 				}
 
-				if (!BATCH_MODE)
+				if (!BATCH_MODE) {
+
 					for (int i = 0; i < numberOfPlayers; i++) {
 						infoDisplays.get(i).clearLine(0);
 						infoDisplays.get(i).addLine("#Territories: " + counts[i + 1], 0);
 						infoDisplays.get(i).clearLine(1);
 						infoDisplays.get(i).addLine("#Troups: " + troups[i + 1], 1);
 					}
+				}
 
 				int gameFinished = currentGame.isGameFinished();
 
@@ -346,10 +355,24 @@ public class MyLauncher extends Repast3Launcher {
 						e.printStackTrace();
 					}
 				}
-				
 
-				if (agentList.size() > 0)
-					dataRecorder.record();
+				if (agentList.size() > 0) {
+					if (boardAgent.peekDecision() != null) {
+						switch (boardAgent.peekDecision().getPlayerAction()) {
+							case Fortify:
+								fortifyRecorder.record();
+								break;
+							case Attack:
+								attackRecorder.record();
+								break;
+							case Defend:
+								defendRecorder.record();
+								break;
+							default:
+								break;
+						}
+					}
+				}
 			}
 		}
 	}
