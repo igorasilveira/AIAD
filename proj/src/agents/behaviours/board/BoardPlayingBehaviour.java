@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import agents.BoardAgent;
+import agents.dataminer.DecisionDefend;
 import agents.dataminer.DecisionFortify;
 import agents.messages.Actions;
 import agents.messages.PlayerAction;
@@ -160,17 +161,18 @@ public class BoardPlayingBehaviour extends Behaviour {
 						if (defenderResponse != null) {
 							messageSent = false;
 
-							// TODO write decisionDefend
-							
 //							System.out.println(myAgent.getLocalName() + " Received DEFEND from Player " + defenderAID.getLocalName());
 							// resolve attack
 							int defenderDiceAmount = ((ProposePlayerDefend) defenderResponse.getContentObject()).getDiceAmount();
 							boolean[] result = game.diceRollWinner(attack.getDiceAmount(), defenderDiceAmount);
-
+							
 							int i = 0;
 
 							Territory attackerTerritory = game.getTerritory(attack.getAttacker().territoryID);
 							Territory defenderTerritory = game.getTerritory(attack.getDefender().territoryID);
+							
+							// TODO write decisionDefend
+							((BoardAgent) myAgent).pushDecision(new DecisionDefend(defenderID, attack.getDiceAmount(), defenderDiceAmount, defenderTerritory.getUnits()));
 
 							while (i < result.length && game.getTerritory(attackerTerritory.territoryID).getUnits() >= 2 && game.getTerritory(defenderTerritory.territoryID).getUnits() >= 1) {
 								if (result[i]) {
