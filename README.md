@@ -77,6 +77,24 @@ Run class `MyLauncher.java`
 		2. Agentes smart tentam nao entregar cartas o maximo tempo possível, de modo a receberem mais unidades quando entregarem o seu set.
 		3. Agentes aleatórios decidem à sorte. 
 
+## Decisions
+ * Attack, Fortify or Nothing
+ * How to attack
+ 	* difference of attacking pieces vs defending pieces (attacker’s advantage)
+	* number of dice chosen
+		* number of pieces on the attacking territory
+		* number of pieces on the defending territory
+ * How to fortify
+ 	* difference between the maximum amount of pieces of the same player around the origin territory and the amount of pieces of the current player’s territory (territory’s disadvantage)
+	* destination territory’s disadvantage
+ * How to defend
+ 	* number of dice chosen by the attacker and the defender
+	* number of units of the territory under attack
+ * How to setup
+ 	* ?
+ * How to Trade cards
+ 	* ?
+
 ## Links  
   * [Game Description (wikipedia)](https://en.wikipedia.org/wiki/Risk_(game))
   * [Game Rules](http://www.ultraboardgames.com/risk/game-rules.php)
