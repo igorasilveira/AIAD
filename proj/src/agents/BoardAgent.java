@@ -87,4 +87,8 @@ public class BoardAgent extends Agent {
 	public Decision popDecision() {		
 		return decisions.poll();
 	}
+	
+	public Decision peekDecision() {		
+		return decisions.peek();
+	}
 }
