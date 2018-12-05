@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import agents.BoardAgent;
+import agents.dataminer.DecisionAttack;
 import agents.dataminer.DecisionDefend;
 import agents.dataminer.DecisionFortify;
 import agents.messages.Actions;
@@ -135,8 +136,12 @@ public class BoardPlayingBehaviour extends Behaviour {
 
 						Attack attack = ((ProposePlayerAttack) response.getContentObject()).getAttack();
 						
-						// TODO write decisionAttack
+						//write decisionAttack
 						
+						int attackingPieces = attack.getAttacker().getUnits();
+						int defendingPieces = attack.getDefender().getUnits();
+						
+						((BoardAgent) myAgent).pushDecision(new DecisionAttack(game.getCurrentPlayer().getID(), attack.getDiceAmount(), attackingPieces, defendingPieces));
 						//Request defender to choose dice amount
 						RequestPlayerDefend requestPlayerDefend = new RequestPlayerDefend(game, attack);
 
@@ -171,7 +176,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 							Territory attackerTerritory = game.getTerritory(attack.getAttacker().territoryID);
 							Territory defenderTerritory = game.getTerritory(attack.getDefender().territoryID);
 							
-							// TODO write decisionDefend
+							// write decisionDefend
 							((BoardAgent) myAgent).pushDecision(new DecisionDefend(defenderID, attack.getDiceAmount(), defenderDiceAmount, defenderTerritory.getUnits()));
 
 							while (i < result.length && game.getTerritory(attackerTerritory.territoryID).getUnits() >= 2 && game.getTerritory(defenderTerritory.territoryID).getUnits() >= 1) {
@@ -231,7 +236,8 @@ public class BoardPlayingBehaviour extends Behaviour {
 						int destinationDisadvantage = game.calculateDefenderDisadvantage(destinationTerritory);
 						
 						((BoardAgent) myAgent).pushDecision(new DecisionFortify(game.getCurrentPlayer().getID(), originDisadvantage, destinationDisadvantage));
-//						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
+//						
+						System.out.println("Territory: " + originTerritory.territoryID + " has "+ originTerritory.getUnits() +" units");
 //						System.out.println("Territory: " + destinationTerritory.territoryID + " has "+ destinationTerritory.getUnits() +" units");
 
 						if(originTerritory.getUnits() <= fortification.getAmount()) { return; }
