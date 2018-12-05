@@ -190,8 +190,8 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		case Smart:
 			if (fortify != null)
 			{
-				int originDisadvantage = calculateDefenderDisadvantage(fortify.from);
-				int destinationDisadvantage = calculateDefenderDisadvantage(fortify.to);
+				int originDisadvantage = lastGameState.calculateDefenderDisadvantage(fortify.from);
+				int destinationDisadvantage = lastGameState.calculateDefenderDisadvantage(fortify.to);
 				if((originDisadvantage < 0) &&
 						(originDisadvantage * destinationDisadvantage <= 0))
 				{
@@ -277,18 +277,18 @@ public class PlayerPlayingBehaviour extends Behaviour {
 
 		// Sort defenders by calculating the advantage of the attacker in each attack
 		// Best atacks will be at front
-		Collections.sort(orderedOptions, (list1, list2) -> calculateAttackerAdvantage(list2)-calculateAttackerAdvantage(list1));
+		Collections.sort(orderedOptions, (list1, list2) -> lastGameState.calculateAttackerAdvantage(list2)-lastGameState.calculateAttackerAdvantage(list1));
 
 		//Choose best attacking territory
 		Comparator<Attack> compareAttackerUnits = (attack1, attack2) -> attack2.getAttacker().getUnits() - attack1.getAttacker().getUnits();
 
 		// Order the top options' attacks to choose the best attacker
 		int maxIndex = 0;
-		int maxAdvantage = calculateAttackerAdvantage(orderedOptions.get(0));
+		int maxAdvantage = lastGameState.calculateAttackerAdvantage(orderedOptions.get(0));
 
 		for (int i = 1; i < orderedOptions.size(); i++) {
 
-			if(calculateAttackerAdvantage(orderedOptions.get(i)) < maxAdvantage)
+			if(lastGameState.calculateAttackerAdvantage(orderedOptions.get(i)) < maxAdvantage)
 			{
 				Collections.sort(orderedOptions.get(i), compareAttackerUnits);
 				break;
@@ -311,49 +311,6 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		return chosenAttack;
 	}
 
-
-	private int calculateAttackerAdvantage(ArrayList<Attack> list) {
-		// Attacker advantage is
-		// (its total amount of units surrounding the target) - (target territory's units)
-		int valueList = - list.get(0).getDefender().getUnits();
-
-		for (Attack attack : list) {
-			valueList += attack.getAttacker().getUnits();
-		}
-		return valueList;
-	}
-
-	private int calculateDefenderDisadvantage(Territory territory) {
-
-		ArrayList<Attack> potencialRisksList = lastGameState.getDefenseOptions(territory);
-
-		// Defender disadvantage is
-		// (max(total units of same player surrounding territory)) - (its units in a territory)
-		int defenderUnits = territory.getUnits();
-		if(potencialRisksList.isEmpty())
-		{
-			return defenderUnits;
-		}
-		Hashtable<Integer, Integer> surroundingUnits = new Hashtable<>();
-
-		for (Attack attack : potencialRisksList) {
-			if(surroundingUnits.containsKey(attack.getAttacker().getPlayerID()))
-			{
-				int units =  surroundingUnits.get(attack.getAttacker().getPlayerID());
-				units += attack.getAttacker().getUnits();
-				surroundingUnits.remove(attack.getAttacker().getPlayerID());
-				surroundingUnits.put(attack.getAttacker().getPlayerID(), units);
-			} else {
-				surroundingUnits.put(attack.getAttacker().getPlayerID(), attack.getAttacker().getUnits());
-			}
-		}
-
-
-		ArrayList<Integer> values = new ArrayList<>(surroundingUnits.values());
-		Collections.sort(values);
-		Collections.reverse(values);
-		return  values.get(0) - defenderUnits;
-	}
 
 	private boolean chooseToTrade() {
 		switch(((PlayerAgent)myAgent).getMindset()) {
@@ -494,11 +451,11 @@ public class PlayerPlayingBehaviour extends Behaviour {
 		for (Fortify fortify : fortifications) {
 			if(! territoriesDisadvantage.containsKey(fortify.from.territoryID))
 			{
-				territoriesDisadvantage.put(fortify.from.territoryID, calculateDefenderDisadvantage(fortify.from));
+				territoriesDisadvantage.put(fortify.from.territoryID, lastGameState.calculateDefenderDisadvantage(fortify.from));
 			}
 			if(! territoriesDisadvantage.containsKey(fortify.to.territoryID))
 			{
-				territoriesDisadvantage.put(fortify.to.territoryID, calculateDefenderDisadvantage(fortify.to));
+				territoriesDisadvantage.put(fortify.to.territoryID, lastGameState.calculateDefenderDisadvantage(fortify.to));
 			}
 		}
 		chosenFortification = fortifications.get(0);
