@@ -7,11 +7,12 @@ package agents.messages;
  * Attack - propose an attack
  * Fortify - propose a fortification
  * Done - propose no action
- * Defend - request player to defnd himself
- * Treaty - propose a treaty to another player
+ * Defend - request player to defend himself
+ * TradeCards - propose player card trade
+ * End - used in data recording to sign a player ended its game
  * 
  */
 public enum Actions {
-	Setup, EndSetup, Play, Attack, Fortify, Done, Defend, Treaty, TradeCards
+	Setup, EndSetup, Play, Attack, Fortify, Done, Defend, TradeCards, End
 }
 
