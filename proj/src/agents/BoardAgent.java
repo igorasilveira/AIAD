@@ -23,7 +23,7 @@ public class BoardAgent extends Agent {
 	private SequentialBehaviour sequentialBehaviour;
 
 	private ConcurrentLinkedQueue<Decision> decisions;
-	
+
 	private ArrayList<AID> players = new ArrayList<>();
 
 	public void setup() {
@@ -86,5 +86,9 @@ public class BoardAgent extends Agent {
 	
 	public Decision popDecision() {		
 		return decisions.poll();
+	}
+	
+	public Decision peekDecision() {		
+		return decisions.peek();
 	}
 }
