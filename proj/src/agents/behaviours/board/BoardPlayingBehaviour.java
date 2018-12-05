@@ -274,7 +274,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 	@Override
 	public boolean done() {
 		if (game.isGameFinished() != 0) {
-			System.out.println("PLAYER " + game.getPlayerByID(game.isGameFinished()).getID() + " HAS WON THE GAME!");
+			System.out.println(game.getPlayerByID(game.isGameFinished()).getAid().getLocalName() + " HAS WON THE GAME!");
 
 			Toolkit.getDefaultToolkit().beep();
 
