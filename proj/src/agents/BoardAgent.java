@@ -80,7 +80,7 @@ public class BoardAgent extends Agent {
 		return sequentialBehaviour;
 	}
 	
-	public void addDecision(Decision decision){
+	public void pushDecision(Decision decision){
 		decisions.add(decision);
 	}
 	
