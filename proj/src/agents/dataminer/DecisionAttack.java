@@ -4,22 +4,16 @@ import agents.messages.Actions;
 
 public class DecisionAttack extends Decision{
 
-	private int AttackDefenseDiff;
 	private int diceChosen;
 	private int attackingTerritoryPieces;
 	private int defendingTerritoryPieces;
 	
-	public DecisionAttack(int playerID, int AttackDefenseDiff, int diceChosen, int attackingPieces, int defendingPieces) {
+	public DecisionAttack(int playerID, int diceChosen, int attackingPieces, int defendingPieces) {
 		super(Actions.Attack, playerID);
-		this.AttackDefenseDiff = AttackDefenseDiff;
 		this.diceChosen = diceChosen;
 		this.attackingTerritoryPieces = attackingPieces;
 		this.defendingTerritoryPieces = defendingPieces;
 		
-	}
-
-	public int getAttackDefenseDiff() {
-		return AttackDefenseDiff;
 	}
 
 	public int getDiceChosen() {

@@ -7,8 +7,8 @@ public class DesisionFortify extends Decision {
 	private int originDisadvantage;
 	private int destinyDisadvantage;
 	
-	public DesisionFortify(Actions playerAction, int playerID, int originDisadvantage, int destinyDisadvantage) {
-		super(playerAction, playerID);
+	public DesisionFortify(int playerID, int originDisadvantage, int destinyDisadvantage) {
+		super(Actions.Fortify, playerID);
 		this.originDisadvantage = originDisadvantage;
 		this.destinyDisadvantage = destinyDisadvantage;
 	}
