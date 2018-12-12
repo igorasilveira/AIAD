@@ -1,0 +1,17 @@
+Timestamp: 12/dez/2018 9:08:35
+NumberOfPlayers: 3
+PlayerFiveMindset: Random
+PlayerFourMindset: Defensive
+PlayerOneMindset: Smart
+PlayerSixMindset: Random
+PlayerThreeMindset: Smart
+PlayerTwoMindset: Aggressive
+
+
+"run","tick","RngSeed","play"
+2,3166143.0,1544605721629,3,2,0
+4,4693743.0,1544605733023,2,2,0
+4,4693984.0,1544605733023,2,3,0
+5,4606945.0,1544605738637,1,2,0
+
+End Time: 12/dez/2018 9:09:05
