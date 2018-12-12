@@ -138,10 +138,11 @@ public class BoardPlayingBehaviour extends Behaviour {
 						
 						//write decisionAttack
 						
+						int playerID = game.getCurrentPlayer().getID();
 						int attackingPieces = attack.getAttacker().getUnits();
 						int defendingPieces = attack.getDefender().getUnits();
-						
-						((BoardAgent) myAgent).pushDecision(new DecisionAttack(game.getCurrentPlayer().getID(), attack.getDiceAmount(), attackingPieces, defendingPieces));
+						int territoryAmount = game.getClaimedTerritories(playerID).size();
+						((BoardAgent) myAgent).pushDecision(new DecisionAttack(playerID, attack.getDiceAmount(), attackingPieces , defendingPieces, territoryAmount));
 						//Request defender to choose dice amount
 						RequestPlayerDefend requestPlayerDefend = new RequestPlayerDefend(game, attack);
 

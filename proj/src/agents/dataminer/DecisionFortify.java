@@ -27,6 +27,6 @@ public class DecisionFortify extends Decision {
 	}
 
 	public static String header() {
-		return "finalResult,originDisadvantage,destinyDisadvantage";
+		return "\"run\",\"a\",\"b\",\"finalResult\",\"originDisadvantage\",\"destinyDisadvantage\"";
 	}
 }

@@ -34,7 +34,7 @@ public class DecisionDefend extends Decision {
 	}
 	
 	public static String header() {
-		return "finalResult,numDiceAttacker,numDiceDefender,numUnitsUnderAttack";
+		return "\"run\",\"a\",\"b\",\"finalResult\",\"numDiceAttacker\",\"numDiceDefender\",\"numUnitsUnderAttack\"";
 	}
 
 }

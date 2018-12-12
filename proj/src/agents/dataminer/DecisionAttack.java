@@ -7,13 +7,14 @@ public class DecisionAttack extends Decision{
 	private int diceChosen;
 	private int attackingTerritoryPieces;
 	private int defendingTerritoryPieces;
+	private int territoryAmount;
 	
-	public DecisionAttack(int playerID, int diceChosen, int attackingPieces, int defendingPieces) {
+	public DecisionAttack(int playerID, int diceChosen, int attackingPieces, int defendingPieces, int territoryAmount) {
 		super(Actions.Attack, playerID);
 		this.diceChosen = diceChosen;
 		this.attackingTerritoryPieces = attackingPieces;
 		this.defendingTerritoryPieces = defendingPieces;
-		
+		this.territoryAmount = territoryAmount;
 	}
 
 	public int getDiceChosen() {
@@ -28,19 +29,18 @@ public class DecisionAttack extends Decision{
 		return defendingTerritoryPieces;
 	}
 	
-	public int getAttackerAdvantage() {
-		return attackingTerritoryPieces - defendingTerritoryPieces;
-	}
-	
 	
 	
 	public static String header() {
-		return "finalResut,diceChosen,attackingTerritoryPieces,defendingTerritoryPieces";
+		return "\"run\",\"a\",\"b\",\"finalResut\",\"diceChosen\",\"attackingTerritoryPieces\",\"defendingTerritoryPieces\",\"territoryAmount\"";
 	}
 
 	@Override
 	public String toString() {
-		return super.getPlayerID() + "," + diceChosen + "," + attackingTerritoryPieces + "," + defendingTerritoryPieces;
+		return super.getPlayerID() + "," + diceChosen + "," + attackingTerritoryPieces + "," + defendingTerritoryPieces + "," +  territoryAmount;
 	}
 
+	public int getTerritoryAmount() {
+		return territoryAmount;
+	}
 }
