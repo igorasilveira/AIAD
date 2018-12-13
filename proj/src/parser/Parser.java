@@ -10,25 +10,43 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 
 import agents.dataminer.DecisionAttack;
+import agents.dataminer.DecisionDefend;
+import agents.dataminer.DecisionFortify;
 
 public class Parser {
-	public static void parseAttack(String winnersPath, String attackPath, String outputPath) throws IOException {
+	public enum Type {
+		Attack, Defend, Fortify; 
+	}
+	
+	public static void parseFile(Type type, String winnersPath, String filePath, String outputPath) throws IOException {
 		FileOutputStream outputStream = new FileOutputStream(outputPath);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
         BufferedWriter writer = new BufferedWriter(outputStreamWriter); 
         
-        BufferedReader attackReader = new BufferedReader(new FileReader(new File(attackPath)));
+        BufferedReader reader = new BufferedReader(new FileReader(new File(filePath)));
         
         HashMap<Integer, Integer> winners = Parser.parseWinners(winnersPath);
         
         String line = null;
-		while(!(line = attackReader.readLine()).startsWith("\"")) {
+		while(!(line = reader.readLine()).startsWith("\"")) {
 			writer.write(line+"\n");
 		}
 		
-		writer.write(DecisionAttack.header()+"\n");
+		switch(type) {
+		case Attack:
+			writer.write(DecisionAttack.header()+"\n");
+			break;
+		case Defend:
+			writer.write(DecisionDefend.header()+"\n");
+			break;
+		case Fortify:
+			writer.write(DecisionFortify.header()+"\n");
+			break;
+		default:
+			break;
+		}
 		
-		while(!(line = attackReader.readLine()).equals("")) {
+		while(!(line = reader.readLine()).equals("")) {
 			String[] elem = line.split(",");
 			int run = Integer.parseInt(elem[0]);
 			
@@ -54,8 +72,14 @@ public class Parser {
 			writer.write("\n");
 		}
 		
+		writer.write("\n");
+		
+		while((line = reader.readLine()) != null) {
+			writer.write(line+"\n");
+		}
+		
 		writer.close();
-		attackReader.close();
+		reader.close();
 	}
 	
 	public static HashMap<Integer, Integer> parseWinners(String winnersPath) throws IOException {
@@ -77,6 +101,6 @@ public class Parser {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		Parser.parseAttack("sims/winners.txt","sims/attack.txt","sims/output.txt");
+		Parser.parseFile(Type.Fortify, "sims/winners.txt","sims/fortify.txt","sims/output.txt");
 	}
 }
