@@ -10,3 +10,4 @@ package agents;
 public enum PlayerMindset {
 	Aggressive, Defensive, Random, Smart
 }
+

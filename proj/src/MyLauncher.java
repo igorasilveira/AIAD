@@ -69,9 +69,9 @@ public class MyLauncher extends Repast3Launcher {
 		this.spaceSize = 150;
 		this.numberOfPlayers = 3;
 		this.playerOneMindset = PlayerMindset.Smart;
-		this.playerTwoMindset = PlayerMindset.Aggressive;
-		this.playerThreeMindset = PlayerMindset.Smart;
-		this.playerFourMindset = PlayerMindset.Defensive;
+		this.playerTwoMindset = PlayerMindset.Defensive;
+		this.playerThreeMindset = PlayerMindset.Aggressive;
+		this.playerFourMindset = PlayerMindset.Random;
 		this.playerFiveMindset = PlayerMindset.Random;
 		this.playerSixMindset = PlayerMindset.Random;
 	}
@@ -314,7 +314,7 @@ public class MyLauncher extends Repast3Launcher {
 	 */
 	public static void main(String[] args) {
 		SimInit init = new SimInit();
-		init.setNumRuns(5);   // works only in batch mode
+		init.setNumRuns(10000);   // works only in batch mode
 		init.loadModel(new MyLauncher(), null, BATCH_MODE);
 	}
 

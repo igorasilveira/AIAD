@@ -75,7 +75,7 @@ public class Parser {
 		writer.write("\n");
 		
 		while((line = reader.readLine()) != null) {
-			writer.write(line+"\n");
+			writer.write('#' + line +"\n");
 		}
 		
 		writer.close();
@@ -101,6 +101,8 @@ public class Parser {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		Parser.parseFile(Type.Fortify, "sims/winners.txt","sims/fortify.txt","sims/output.txt");
+		Parser.parseFile(Type.Fortify, "sims/winners.txt","sims/fortify.txt","sims/outputs/fortify.txt");
+		Parser.parseFile(Type.Attack, "sims/winners.txt","sims/attack.txt","sims/outputs/attack.txt");
+		Parser.parseFile(Type.Defend, "sims/winners.txt","sims/defend.txt","sims/outputs/defend.txt");
 	}
 }

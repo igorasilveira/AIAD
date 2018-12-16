@@ -291,7 +291,7 @@ public class BoardPlayingBehaviour extends Behaviour {
 		if (game.isGameFinished() != 0) {
 			System.out.println(game.getPlayerByID(game.isGameFinished()).getAid().getLocalName() + " HAS WON THE GAME!");
 
-			Toolkit.getDefaultToolkit().beep();
+//			Toolkit.getDefaultToolkit().beep();
 
 			lEndTime = new Date().getTime();
             long output = lEndTime - lStartTime;
